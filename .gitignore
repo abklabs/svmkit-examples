@@ -1,3 +1,5 @@
 *~
 *\#*
 Pulumi.*.yaml
+__pycache__
+venv
