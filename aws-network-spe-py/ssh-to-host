@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+hostindex=$1 ; shift
+
+PRIVKEY=$(mktemp)
+
+cleanup () {
+    rm -f "$PRIVKEY"
+}
+
+trap cleanup EXIT
+
+touch $PRIVKEY
+chmod 600 $PRIVKEY
+
+pulumi stack output --show-secrets nodes_private_key | jq -r ".[$hostindex]" - > $PRIVKEY
+HOSTNAME=$(pulumi stack output nodes_public_ip | jq -r ".[$hostindex]" -)
+
+ssh -o StrictHostKeyChecking=off -o UserKnownHostsFile=/dev/null -i "$PRIVKEY" "admin@$HOSTNAME" "$@"
+

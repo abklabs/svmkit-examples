@@ -1,0 +1,8 @@
+name: aws-network-spe-py
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+    typechecker: pyright
+description: A Python example of a multi-node Solana Permissioned Environment in AWS
