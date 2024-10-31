@@ -79,7 +79,7 @@ Diagnostics:
     0 errors, 0 warnings, 0 informations
 ```
 
-4. Log into the bootstrap node and verify the network is up and talking.
+4. Access the bootstrap node to ensure the network is operational and communicating. Initially, only the bootstrap validator will confirm blocks. The other validators are set up to vote and participate in gossip but will not validate blocks until staked.
 
 ```
 % ./ssh-to-host 0
@@ -92,22 +92,38 @@ individual files in /usr/share/doc/*/copyright.
 
 Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
 permitted by applicable law.
+
 admin@ip-172-31-22-205:~$ solana config set --url http://localhost:8899
 Config File: /home/admin/.config/solana/cli/config.yml
 RPC URL: http://localhost:8899
 WebSocket URL: ws://localhost:8900/ (computed)
 Keypair Path: /home/admin/.config/solana/id.json
 Commitment: confirmed
+
 admin@ip-172-31-22-205:~$ solana gossip
 IP Address      | Identity                                     | Gossip | TPU   | RPC Address           | Version | Feature Set
 ----------------+----------------------------------------------+--------+-------+-----------------------+---------+----------------
-172.31.22.205   | 6SZhdqo62myLUE4KXWbgzrcGWEcCFhKPVQ2UoM1T6LzR | 8001   | 8004  | 172.31.22.205:8899    | 1.18.24 | 3241752014
-172.31.21.22    | FtwBFAtBgpzfvNwP3ErjsuoejavX7pVBkoiymz5P4ksy | 8001   | 8004  | 172.31.21.22:8899     | 1.18.24 | 3241752014
-172.31.24.216   | BoKjqpFQvvyDtuRC9bXJnCRLt5rWpGQM9fS3SWUSTzCU | 8001   | none  | none                  | 1.18.24 | 3241752014
+172.31.37.89    | GvwkabqmKSupJ39ZP5tvNo7XGW89neAB9Es9QuLMFMoY | 8001   | 8004  | 172.31.37.89:8899     | 1.18.24 | 3241752014
+172.31.44.185   | CZXEQH1QqXuDt6PsXmWppV5nDiYfZRNCJjTk3VQbcvgq | 8001   | 8004  | 172.31.44.185:8899    | 1.18.24 | 3241752014
+172.31.40.167   | HJBAoeHmZVywLQv5iXeV5Ph9n8KJPnSx8Qr443R8ta5t | 8001   | 8004  | 172.31.40.167:8899    | 1.18.24 | 3241752014
 Nodes: 3
+
+admin@ip-172-31-22-205:~$ solana validators
+   Identity                                      Vote Account                            Commission  Last Vote        Root Slot     Skip Rate  Credits  Version            Active Stake
+  GvwkabqmKSupJ39ZP5tvNo7XGW89neAB9Es9QuLMFMoY  pABbon2LBNugDkf1t3QBeCA7nbNQPESdXxMw3gqv2fn   100%       1728 (  0)       1697 (  0)   0.00%     1280  1.18.24         0.499999344 SOL (100.00%)
+
+Average Stake-Weighted Skip Rate: 0.00%
+Average Unweighted Skip Rate:     0.00%
+
+Active Stake: 0.499999344 SOL
+
+Stake By Version:
+1.18.24 -    1 current validators (100.00%)
 ```
 
-5. Stake the initial validators
+5. Stake the initial validators by running the staking script.
+
+This process involves setting up vote accounts and staking accounts for each validator node. The script will add SSH keys for secure access, create vote accounts, fund validator keys, and delegate stakes to ensure validators are ready to participate in the network. It will also handle any necessary setup and ensure the validator stake is warmed up before confirming the validator state.
 
 ```
 % ./stake stake-state
