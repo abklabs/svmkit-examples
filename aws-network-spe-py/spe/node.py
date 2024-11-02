@@ -128,3 +128,22 @@ class Genesis:
             opts=pulumi.ResourceOptions(
                 depends_on=[self.bootstrap_node.instance])
         )
+
+class Info:
+    def __init__(self, genesis: Genesis, other_validators=None):
+        self.genesis = genesis
+        self.other_validators = other_validators or []
+
+    def get_info(self):
+        def extract_node_info(node):
+            return {
+                "connection": node.connection,
+                "voteAccountKey": node.vote_account_key,
+                "validatorKey": node.validator_key,
+            }
+
+        return {
+            "treasuryKey": self.genesis.treasury_key,
+            "bootstrap": extract_node_info(self.genesis.bootstrap_node),
+            "otherValidators": [extract_node_info(node) for node in self.other_validators],
+        }

@@ -3,7 +3,7 @@ import pulumi_aws as aws
 import pulumi_tls as tls
 import pulumi_svmkit as svmkit
 
-from spe import Node, Genesis
+from spe import Node, Genesis, Info
 
 total_nodes = 3
 
@@ -57,6 +57,10 @@ for node in nodes:
 
     node.configure_validator(flags, depends_on=[bootstrap_validator])
 
+info = Info(genesis, other_validators=nodes)
+
 pulumi.export("nodes_public_ip", [x.instance.public_ip for x in all_nodes])
 pulumi.export("nodes_private_key", [
               x.ssh_key.private_key_openssh for x in all_nodes])
+
+pulumi.export("speInfo", info.get_info())
