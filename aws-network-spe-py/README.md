@@ -101,7 +101,13 @@ IP Address      | Identity                                     | Gossip | TPU   
 Nodes: 3
 ```
 
-4. (Optional) Tear down the example
+4. Stake the initial validators
+
+```
+% ./stake stake-state
+```
+
+5. (Optional) Tear down the example
 
 ```
 % pulumi down

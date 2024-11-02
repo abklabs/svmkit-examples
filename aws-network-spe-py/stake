@@ -1,0 +1,96 @@
+#!/usr/bin/env ../bin/opsh
+
+lib::import ssh
+
+[[ $# -eq 1 ]] || log::fatal "usage: $0 <statedir>"
+
+STATEDIR=$1
+shift
+
+umask 077
+
+mkdir -p "$STATEDIR"
+
+log::info "storing SPE state inside '$STATEDIR'..."
+cd "$STATEDIR" || log::fatal "couldn't enter state directory '$STATEDIR'!"
+
+SPEINFO=speInfo
+
+log::info "dumping SPE info..."
+pulumi stack output --show-secrets speInfo >"$SPEINFO"
+
+get() {
+    jq --exit-status -r "$@" <"$SPEINFO" || log::fatal "failed to get info for key $*"
+}
+
+ssh::begin
+
+ssh::config <<EOF
+Host *
+     UserKnownHostsFile /dev/null
+     StrictHostKeyChecking off
+EOF
+
+log::info "loading up authentication information..."
+
+log::info "adding key for bootstrap node..."
+get .bootstrap.connection.private_key | ssh::key::add
+
+NODECOUNT=$(get '.otherValidators | length - 1')
+NODEINDICES=$(seq 0 "$NODECOUNT")
+
+log::info "found $NODECOUNT non-bootstrap nodes..."
+
+for i in $NODEINDICES; do
+    log::info "adding key for validator node $i..."
+    get ".otherValidators[$i].connection.private_key" | ssh::key::add
+done
+
+ssh::background::run -L 8899:localhost:8899 "$(get .bootstrap.connection.user)@$(get .bootstrap.connection.host)"
+
+SOLANA="solana -u http://localhost:8899"
+
+log::info "getting validator state..."
+$SOLANA validators
+
+log::info "extracting treasury key..."
+get ".treasuryKey.json" >treasuryKey.json
+
+for i in $NODEINDICES; do
+    # This matches the name in pulumi
+    NODENAME="node$((i + 1))"
+    DIR="$NODENAME"
+    mkdir -p "$DIR"
+
+    if [[ ! -e "$DIR/vote-setup" ]]; then
+        get ".otherValidators[$i].validatorKey.json" >"$DIR/validatorKey.json"
+        get ".otherValidators[$i].voteAccountKey.json" >"$DIR/voteAccountKey.json"
+
+        log::info "creating $NODENAME's vote account..."
+        solana -k treasuryKey.json create-vote-account "$DIR/voteAccountKey.json" "$DIR/validatorKey.json" treasuryKey.json
+
+        log::info "funding $NODENAME's basic accounts..."
+        $SOLANA -k treasuryKey.json transfer --allow-unfunded-recipient "$DIR/validatorKey.json" 100
+        $SOLANA -k treasuryKey.json transfer --allow-unfunded-recipient "$DIR/voteAccountKey.json" 100
+
+        touch "$DIR/vote-setup"
+    else
+        log::info "skipping vote account setup and initial funding of $NODENAME..."
+    fi
+
+    if [[ ! -e "$NODENAME/stake-setup" ]]; then
+        log::info "staking and delegating to $NODENAME..."
+        solana-keygen new --no-passphrase -o "$NODENAME/stakeKey.json"
+        $SOLANA -k treasuryKey.json create-stake-account "$NODENAME/stakeKey.json" 150
+        $SOLANA -k treasuryKey.json delegate-stake "$NODENAME/stakeKey.json" "$NODENAME/voteAccountKey.json"
+        touch "$DIR/stake-setup"
+    else
+        log::info "skipping stake account setup and initial funding of $NODENAME..."
+    fi
+done
+
+log::info "sleeping to let the validator stake warm up..."
+sleep 30
+
+log::info "getting validator state..."
+$SOLANA validators
