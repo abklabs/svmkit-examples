@@ -6,6 +6,14 @@ Welcome to the **SVMKit Examples** repository! This collection of examples is de
 
 This repository acts as a central hub for examples of how to use [SVMKit](https://github.com/abklabs/svmkit?tab=readme-ov-file#svmkit) to build both simple and complex Solana installations with ease. Here, you’ll find a range of example implementations, each demonstrating essential concepts and methods for utilizing **SVMKit**. While this repository does not cover every possible use case, the examples provided aim to serve as a solid foundation for getting started and exploring custom applications with SVMKit.
 
+Here are some examples of how to use SVMKit in various scenarios:
+
+## Examples
+
+- Setting up a Solana Permissioned Environment [(SPE) on AWS](https://github.com/abklabs/svmkit-examples/tree/main/aws-network-spe-py)
+- Setting up a Validator to join [testnet](https://github.com/abklabs/pulumi-svmkit/tree/main/examples) - this is an example for developers hacking on the codebase - we'll add an example for node operators soon. 
+
+## Useful Links
 Until this repository is further populated, we recommend checking out:
 - [SVMKit](https://github.com/abklabs/svmkit?tab=readme-ov-file#svmkit) - Our deployment-agnostic tooling for building Solana validators and Solana Permissioned Environments (SPEs).
 - [Pulumi-SVMKit](https://github.com/abklabs/pulumi-svmkit?tab=readme-ov-file#pulumi-svmkit) - A Pulumi provider built around SVMKit.
