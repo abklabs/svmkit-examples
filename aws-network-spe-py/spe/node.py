@@ -42,7 +42,7 @@ class Node:
         self.instance = aws.ec2.Instance(
             _("instance"),
             ami=ami,
-            instance_type="m5.2xlarge",
+            instance_type="c6i.xlarge",
             key_name=self.key_pair.key_name,
             vpc_security_group_ids=[external_sg.id, internal_sg.id],
             ebs_block_devices=[
