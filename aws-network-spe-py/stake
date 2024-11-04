@@ -88,8 +88,9 @@ for i in $NODEINDICES; do
     fi
 done
 
-log::info "sleeping to let the validator stake warm up..."
-sleep 30
-
-log::info "getting validator state..."
-$SOLANA validators
+log::info "checking validator stake warm-up for 60 seconds, printing every 15 seconds..."
+for i in {1..4}; do
+    $SOLANA validators
+    sleep 15
+    log::info "elapsed $((i * 15)) seconds... (press Ctrl+C to exit)"
+done
