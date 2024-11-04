@@ -28,7 +28,14 @@ Requirement already satisfied: pip in ./venv/lib/python3.13/site-packages (24.2)
 Finished installing dependencies
 ```
 
-2. Run `pulumi up`
+2. Create and select a Pulumi stack
+
+```
+% pulumi stack init new-spe
+Created stack 'new-spe'
+```
+
+3. Run `pulumi up`
 
 ```
 % pulumi up
@@ -72,10 +79,9 @@ Diagnostics:
     0 errors, 0 warnings, 0 informations
 ```
 
-3. Log into the bootstrap node and verify the network is up and talking.
+4. Log into the bootstrap node and verify the network is up and talking.
 
 ```
-% pulumi stack select dev
 % ./ssh-to-host 0
 Warning: Permanently added '54.200.238.38' (ED25519) to the list of known hosts.
 Linux ip-172-31-22-205 6.1.0-26-cloud-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.112-1 (2024-09-30) x86_64
@@ -101,13 +107,13 @@ IP Address      | Identity                                     | Gossip | TPU   
 Nodes: 3
 ```
 
-4. Stake the initial validators
+5. Stake the initial validators
 
 ```
 % ./stake stake-state
 ```
 
-5. (Optional) Tear down the example
+6. (Optional) Tear down the example
 
 ```
 % pulumi down
