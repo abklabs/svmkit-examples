@@ -48,14 +48,14 @@ class Node:
             ebs_block_devices=[
                 {
                     "device_name": "/dev/sdf",
-                    "volume_size": 500,
-                    "volume_type": "io2",
+                    "volume_size": 100,
+                    "volume_type": "gp3",
                     "iops": 5000,
                 },
                 {
                     "device_name": "/dev/sdg",
-                    "volume_size": 1024,
-                    "volume_type": "io2",
+                    "volume_size": 204,
+                    "volume_type": "gp3",
                     "iops": 5000,
                 },
             ],
