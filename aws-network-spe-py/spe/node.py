@@ -24,6 +24,7 @@ ami = aws.ec2.get_ami(
 
 agave_version = "1.18.24-1"
 
+
 class Node:
     def __init__(self, name):
         self.name = name
