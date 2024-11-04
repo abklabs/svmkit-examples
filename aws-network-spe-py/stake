@@ -67,7 +67,7 @@ for i in $NODEINDICES; do
         get ".otherValidators[$i].voteAccountKey.json" >"$DIR/voteAccountKey.json"
 
         log::info "creating $NODENAME's vote account..."
-        solana -k treasuryKey.json create-vote-account "$DIR/voteAccountKey.json" "$DIR/validatorKey.json" treasuryKey.json
+        $SOLANA -k treasuryKey.json create-vote-account "$DIR/voteAccountKey.json" "$DIR/validatorKey.json" treasuryKey.json
 
         log::info "funding $NODENAME's validator key..."
         $SOLANA -k treasuryKey.json transfer --allow-unfunded-recipient "$DIR/validatorKey.json" 100
