@@ -11,10 +11,16 @@ bootstrap_node = Node("bootstrap-node")
 genesis = Genesis(bootstrap_node)
 
 gossip_port = 8001
+rpc_port = 8899
+
+sol_env = svmkit.solana.EnvironmentArgs(
+    rpc_url=bootstrap_node.instance.private_ip.apply(
+        lambda ip: f"http://{ip}:{rpc_port}")
+)
 
 base_flags = svmkit.agave.FlagsArgsDict({
     "only_known_rpc": False,
-    "rpc_port": 8899,
+    "rpc_port": rpc_port,
     "dynamic_port_range": "8002-8020",
     "private_rpc": False,
     "gossip_port": gossip_port,
@@ -36,7 +42,7 @@ bootstrap_flags.update({
 })
 
 bootstrap_validator = bootstrap_node.configure_validator(
-    bootstrap_flags, depends_on=[genesis.genesis])
+    bootstrap_flags, environment=sol_env, depends_on=[genesis.genesis])
 
 nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
 all_nodes = [bootstrap_node] + nodes
@@ -55,7 +61,8 @@ for node in nodes:
         "gossip_host": node.instance.private_ip,
     })
 
-    node.configure_validator(flags, depends_on=[bootstrap_validator])
+    node.configure_validator(flags, environment=sol_env,
+                             depends_on=[bootstrap_validator])
 
 info = Info(genesis, other_validators=nodes)
 

@@ -79,9 +79,10 @@ mount -a
             "private_key": self.ssh_key.private_key_openssh
         })
 
-    def configure_validator(self, flags: Union['svmkit.agave.FlagsArgs', 'svmkit.agave.FlagsArgsDict'], depends_on=[]):
+    def configure_validator(self, flags: Union['svmkit.agave.FlagsArgs', 'svmkit.agave.FlagsArgsDict'], environment: Union['svmkit.solana.EnvironmentArgs', 'svmkit.solana.EnvironmentArgsDict'],  depends_on=[]):
         return svmkit.validator.Agave(
             f"{self.name}-validator",
+            environment=environment,
             connection=self.connection,
             version=agave_version,
             key_pairs={
