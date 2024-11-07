@@ -1,0 +1,129 @@
+#!/usr/bin/env ../bin/opsh
+
+# Define default wallet files and transaction amounts
+PAYER_WALLET="payer.json"
+RECEIVER_WALLET="receiver.json"
+TRANSFER_AMOUNT=2
+MINT_AMOUNT=100
+TOKEN_TRANSFER_AMOUNT=50
+SPEINFO=speInfo
+
+# Import necessary libraries
+lib::import ssh
+
+# Parse command-line options for custom wallet files and transaction amounts
+while getopts "p:r:t:m:x:" opt; do
+  case $opt in
+  p) PAYER_WALLET="$OPTARG" ;;                # Set payer wallet file
+  r) RECEIVER_WALLET="$OPTARG" ;;             # Set receiver wallet file
+  t) TRANSFER_AMOUNT="$OPTARG" ;;             # Set transfer amount from treasury to payer
+  m) MINT_AMOUNT="$OPTARG" ;;                 # Set mint amount for tokens
+  x) TOKEN_TRANSFER_AMOUNT="$OPTARG" ;;       # Set token transfer amount from payer to receiver
+  *) log::fatal "Invalid option: -$OPTARG" ;; # Handle invalid options
+  esac
+done
+
+# Shift positional parameters to remove processed options
+shift $((OPTIND - 1))
+
+# Ensure exactly one positional argument (statedir) is provided
+[[ $# -eq 1 ]] || log::fatal "usage: $0 [-p payer_wallet] [-r receiver_wallet] [-t transfer_amount] [-m mint_amount] [-x token_transfer_amount] <statedir>"
+
+# Set the state directory and secure it
+STATEDIR=$1
+shift
+umask 077
+
+# Create and navigate to the state directory
+mkdir -p "$STATEDIR"
+cd "$STATEDIR" || log::fatal "couldn't enter state directory '$STATEDIR'!"
+log::info "storing demo state inside '$STATEDIR'..."
+
+# Dump SPE information into a file
+log::info "dumping SPE info..."
+pulumi stack output --show-secrets $SPEINFO >"$SPEINFO"
+
+# Function to retrieve information from the SPE info file
+get() {
+  jq --exit-status -r "$@" <"$SPEINFO" || log::fatal "failed to get info for key $*"
+}
+
+# Begin SSH configuration
+ssh::begin
+
+# Configure SSH to ignore host key checking
+ssh::config <<EOF
+Host *
+     UserKnownHostsFile /dev/null
+     StrictHostKeyChecking off
+EOF
+
+# Add SSH key for the bootstrap node
+log::info "adding key for bootstrap node..."
+get .bootstrap.connection.private_key | ssh::key::add
+
+# Set up SSH tunnel to the bootstrap node
+ssh::background::run -L 8899:localhost:8899 "$(get .bootstrap.connection.user)@$(get .bootstrap.connection.host)"
+
+# Define functions to execute Solana and SPL token commands
+exec::solana() {
+  command solana -u http://localhost:8899 "$@"
+}
+
+exec::spl-token() {
+  command spl-token -u http://localhost:8899 "$@"
+}
+
+# Extract and log the treasury public key
+get ".treasuryKey.json" >treasuryKey.json
+treasury_pubkey=$(solana-keygen pubkey treasuryKey.json)
+log::info "Extracted treasury public key: $treasury_pubkey"
+
+# Create payer and receiver wallets if they don't exist
+solana-keygen new --outfile $PAYER_WALLET --no-passphrase --force >/dev/null 2>&1
+solana-keygen new --outfile $RECEIVER_WALLET --no-passphrase --force >/dev/null 2>&1
+
+# Retrieve and log public keys for payer and receiver
+payer_pubkey=$(solana-keygen pubkey $PAYER_WALLET)
+receiver_pubkey=$(solana-keygen pubkey $RECEIVER_WALLET)
+log::info "Payer wallet created with public key: $payer_pubkey"
+log::info "Receiver wallet created with public key: $receiver_pubkey"
+
+# Transfer funds from treasury to payer
+exec::solana transfer --keypair treasuryKey.json $payer_pubkey $TRANSFER_AMOUNT --allow-unfunded-recipient
+
+# Create a new token mint and set payer as the mint authority
+mint=$(exec::spl-token create-token --mint-authority $payer_pubkey --fee-payer $PAYER_WALLET --output json-compact | jq -r '.commandOutput.address')
+
+# Create associated token accounts for payer and receiver
+payer_ata_signature=$(exec::spl-token create-account $mint --owner $payer_pubkey --fee-payer $PAYER_WALLET --output json-compact | jq -r '.signature')
+receiver_ata_signature=$(exec::spl-token create-account $mint --owner $receiver_pubkey --fee-payer $PAYER_WALLET --output json-compact | jq -r '.signature')
+log::info "Created payer associated token account with transaction: $payer_ata_signature"
+log::info "Created receiver associated token account with transaction: $receiver_ata_signature"
+
+# Retrieve and log associated token account addresses
+payer_ata_address=$(exec::spl-token address --token $mint --owner $payer_pubkey --verbose --output json-compact | jq -r '.associatedTokenAddress')
+receiver_ata_address=$(exec::spl-token address --token $mint --owner $receiver_pubkey --verbose --output json-compact | jq -r '.associatedTokenAddress')
+log::info "Payer associated token account address: $payer_ata_address"
+log::info "Receiver associated token account address: $receiver_ata_address"
+
+# Mint tokens to payer's associated token account
+mint_to_payer_signature=$(exec::spl-token mint --fee-payer $PAYER_WALLET --mint-authority $PAYER_WALLET --output json-compact $mint $MINT_AMOUNT -- $payer_ata_address | jq -r '.signature')
+log::info "Minted $MINT_AMOUNT tokens to payer with transaction: $mint_to_payer_signature"
+
+# Check and log the balance of the payer's wallet
+log::info "Checking balance of payer wallet"
+log::info "Payer Public Key: $payer_pubkey"
+log::info "Mint Address: $mint"
+balance=$(exec::spl-token balance --owner $payer_pubkey $mint)
+log::info "Balance: $balance"
+
+# Transfer tokens from payer to receiver
+payer_to_receiver_signature=$(exec::spl-token transfer --fee-payer $PAYER_WALLET --owner $PAYER_WALLET --output json-compact $mint $TOKEN_TRANSFER_AMOUNT $receiver_ata_address | jq -r '.signature')
+log::info "Transfered $TOKEN_TRANSFER_AMOUNT tokens from payer to receiver with transaction: $payer_to_receiver_signature"
+
+# Check and log balances of payer and receiver after transfer
+after_payer_balance=$(exec::spl-token balance --owner $payer_pubkey $mint)
+log::info "Balance of payer: $after_payer_balance"
+after_receiver_balance=$(exec::spl-token balance --owner $receiver_pubkey $mint)
+log::info "Balance of receiver: $after_receiver_balance"
