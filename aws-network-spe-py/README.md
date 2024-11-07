@@ -6,7 +6,7 @@ Genesis is performed, a snapshot is distributed, and gossip is set up on private
 ## Pulumi Configuration Options
 
 | Name              | Description                                                       | Default Value |
-|:------------------|:------------------------------------------------------------------|:--------------|
+| :---------------- | :---------------------------------------------------------------- | :------------ |
 | node:count        | The number of nodes to launch, including the bootstrap node.      | 3             |
 | node:instanceType | The AWS instance type to use for all of the nodes.                | c6i.xlarge    |
 | node:volumeIOPS   | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
