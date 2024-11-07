@@ -5,7 +5,9 @@ import pulumi_svmkit as svmkit
 
 from spe import Node, Genesis, Info
 
-total_nodes = 3
+node_config = pulumi.Config("node")
+
+total_nodes = node_config.get_int("count") or 3
 
 bootstrap_node = Node("bootstrap-node")
 genesis = Genesis(bootstrap_node)

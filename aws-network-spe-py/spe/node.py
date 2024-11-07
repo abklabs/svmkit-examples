@@ -7,6 +7,8 @@ import pulumi_svmkit as svmkit
 
 from .network import external_sg, internal_sg
 
+node_config = pulumi.Config("node")
+
 ami = aws.ec2.get_ami(
     filters=[
         {
@@ -39,10 +41,12 @@ class Node:
         self.validator_key = svmkit.KeyPair(_("validator-key"))
         self.vote_account_key = svmkit.KeyPair(_("vote-account-key"))
 
+        instance_type = node_config.get('instanceType') or "c6i.xlarge"
+        iops = node_config.get_int('volumeIOPS') or 5000
         self.instance = aws.ec2.Instance(
             _("instance"),
             ami=ami,
-            instance_type="c6i.xlarge",
+            instance_type=instance_type,
             key_name=self.key_pair.key_name,
             vpc_security_group_ids=[external_sg.id, internal_sg.id],
             ebs_block_devices=[
@@ -50,13 +54,13 @@ class Node:
                     "device_name": "/dev/sdf",
                     "volume_size": 100,
                     "volume_type": "gp3",
-                    "iops": 5000,
+                    "iops": iops,
                 },
                 {
                     "device_name": "/dev/sdg",
                     "volume_size": 204,
                     "volume_type": "gp3",
-                    "iops": 5000,
+                    "iops": iops,
                 },
             ],
             user_data="""#!/bin/bash

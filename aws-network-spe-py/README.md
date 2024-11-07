@@ -3,6 +3,14 @@
 This example brings up a cluster of Solana validators, all using private addresses, inside an AWS VPC.
 Genesis is performed, a snapshot is distributed, and gossip is set up on private addresses inside the VPC.
 
+## Pulumi Configuration Options
+
+| Name              | Description                                                       | Default Value |
+|:------------------|:------------------------------------------------------------------|:--------------|
+| node:count        | The number of nodes to launch, including the bootstrap node.      | 3             |
+| node:instanceType | The AWS instance type to use for all of the nodes.                | c6i.xlarge    |
+| node:volumeIOPS   | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
+
 ## Running the Example
 
 0. Have `pulumi` installed, logged in to wherever you're storing state, and configured to work with AWS.
