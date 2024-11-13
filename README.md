@@ -17,6 +17,7 @@ Here are some examples of how to use SVMKit in various scenarios:
 Until this repository is further populated, we recommend checking out:
 - [SVMKit](https://github.com/abklabs/svmkit?tab=readme-ov-file#svmkit) - Our deployment-agnostic tooling for building Solana validators and Solana Permissioned Environments (SPEs).
 - [Pulumi-SVMKit](https://github.com/abklabs/pulumi-svmkit?tab=readme-ov-file#pulumi-svmkit) - A Pulumi provider built around SVMKit.
+- [Pulumi Basics](https://github.com/abklabs/svmkit-examples/blob/main/PULUMI.md) - A quick guide on how to use Pulumi.  
 
 ## Getting Started
 
