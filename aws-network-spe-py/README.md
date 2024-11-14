@@ -90,35 +90,19 @@ Diagnostics:
 4. Access the bootstrap node to ensure the network is operational and communicating. Initially, only the bootstrap validator will confirm blocks. The other validators are set up to vote and participate in gossip but will not validate blocks until staked.
 
 ```
-% ./ssh-to-host 0
-Warning: Permanently added '54.200.238.38' (ED25519) to the list of known hosts.
-Linux ip-172-31-22-205 6.1.0-26-cloud-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.112-1 (2024-09-30) x86_64
-
-The programs included with the Debian GNU/Linux system are free software;
-the exact distribution terms for each program are described in the
-individual files in /usr/share/doc/*/copyright.
-
-Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
-permitted by applicable law.
-
-admin@ip-172-31-22-205:~$ solana config set --url http://localhost:8899
-Config File: /home/admin/.config/solana/cli/config.yml
-RPC URL: http://localhost:8899
-WebSocket URL: ws://localhost:8900/ (computed)
-Keypair Path: /home/admin/.config/solana/id.json
-Commitment: confirmed
-
-admin@ip-172-31-22-205:~$ solana gossip
+% ./ssh-to-host 0 solana gossip
+Warning: Permanently added '34.221.138.152' (ED25519) to the list of known hosts.
 IP Address      | Identity                                     | Gossip | TPU   | RPC Address           | Version | Feature Set
 ----------------+----------------------------------------------+--------+-------+-----------------------+---------+----------------
-172.31.37.89    | GvwkabqmKSupJ39ZP5tvNo7XGW89neAB9Es9QuLMFMoY | 8001   | 8004  | 172.31.37.89:8899     | 1.18.24 | 3241752014
-172.31.44.185   | CZXEQH1QqXuDt6PsXmWppV5nDiYfZRNCJjTk3VQbcvgq | 8001   | 8004  | 172.31.44.185:8899    | 1.18.24 | 3241752014
-172.31.40.167   | HJBAoeHmZVywLQv5iXeV5Ph9n8KJPnSx8Qr443R8ta5t | 8001   | 8004  | 172.31.40.167:8899    | 1.18.24 | 3241752014
+172.31.15.168   | FaWcX8EgsvNVzneG9AWxPbc4tW7TwdGHoiLttS4vCJZX | 8001   | 8004  | 172.31.15.168:8899    | 1.18.24 | 3241752014
+172.31.15.107   | DhCUqnynb172CV4SZBaSUBpC156SAMoeo6kBvcwNFbz7 | 8001   | 8004  | 172.31.15.107:8899    | 1.18.24 | 3241752014
+172.31.7.92     | ENzVE5FCbgjQhrmRCtRowaWk16qjvJFScinpHf12rg9d | 8001   | 8004  | 172.31.7.92:8899      | 1.18.24 | 3241752014
 Nodes: 3
 
-admin@ip-172-31-22-205:~$ solana validators
+% ./ssh-to-host 0 solana validators
+Warning: Permanently added '34.221.138.152' (ED25519) to the list of known hosts.
    Identity                                      Vote Account                            Commission  Last Vote        Root Slot     Skip Rate  Credits  Version            Active Stake
-  GvwkabqmKSupJ39ZP5tvNo7XGW89neAB9Es9QuLMFMoY  pABbon2LBNugDkf1t3QBeCA7nbNQPESdXxMw3gqv2fn   100%       1728 (  0)       1697 (  0)   0.00%     1280  1.18.24         0.499999344 SOL (100.00%)
+  FaWcX8EgsvNVzneG9AWxPbc4tW7TwdGHoiLttS4vCJZX  FwHm1TwydnqnGskixP8Dhi3TWDhoJQYp6tPm2YFykjUi  100%        292 (  0)        261 (  0)   0.00%        0  1.18.24         0.499999344 SOL (100.00%)
 
 Average Stake-Weighted Skip Rate: 0.00%
 Average Unweighted Skip Rate:     0.00%
