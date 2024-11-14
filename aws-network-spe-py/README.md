@@ -142,7 +142,7 @@ This process involves setting up vote accounts and staking accounts for each val
 This script mints a token and allocates a portion of the supply to a recipient. Initially, the cluster's treasury provides the necessary funds to the minter.
 
 ```
-% ./demo demo-state
+% ./token-demo token-demo-state
 ```
 
 7. (Optional) Tear down the example
