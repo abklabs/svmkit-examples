@@ -36,8 +36,8 @@ log::info "loading up authentication information..."
 log::info "adding key for bootstrap node..."
 get .bootstrap.connection.private_key | ssh::key::add
 
-NODECOUNT=$(get '.otherValidators | length - 1')
-NODEINDICES=$(seq 0 "$NODECOUNT")
+NODECOUNT=$(get '.otherValidators | length')
+NODEINDICES=$(seq 0 "$(( NODECOUNT - 1))")
 
 log::info "found $NODECOUNT non-bootstrap nodes..."
 
@@ -57,8 +57,7 @@ log::info "extracting treasury key..."
 get ".treasuryKey.json" >treasuryKey.json
 
 for i in $NODEINDICES; do
-    # This matches the name in pulumi
-    NODENAME="node$((i + 1))"
+    NODENAME="node$i"
     DIR="$NODENAME"
     mkdir -p "$DIR"
 
