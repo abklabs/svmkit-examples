@@ -63,8 +63,25 @@ for node in nodes:
         "gossip_host": node.instance.private_ip,
     })
 
-    node.configure_validator(flags, environment=sol_env,
-                             depends_on=[bootstrap_validator])
+    validator = node.configure_validator(flags, environment=sol_env,
+                                         depends_on=[bootstrap_validator])
+
+    transfer = svmkit.account.Transfer(node.name + "-transfer",
+                                       connection=bootstrap_node.connection,
+                                       amount=100,
+                                       recipient_pubkey=node.validator_key.public_key,
+                                       payer_key_pair=genesis.treasury_key.json,
+                                       allow_unfunded_recipient=True,
+                                       opts=pulumi.ResourceOptions(depends_on=[bootstrap_validator]))
+
+    svmkit.account.VoteAccount(node.name + "-voteAccount",
+                               connection=bootstrap_node.connection,
+                               key_pairs={
+                                   "identity": node.validator_key.json,
+                                   "vote_account": node.vote_account_key.json,
+                                   "auth_withdrawer": genesis.treasury_key.json,
+                               },
+                               opts=pulumi.ResourceOptions(depends_on=([transfer])))
 
 info = Info(genesis, other_validators=nodes)
 

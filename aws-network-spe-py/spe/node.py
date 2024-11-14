@@ -143,13 +143,13 @@ class Info:
     def get_info(self):
         def extract_node_info(node):
             return {
-                "connection": node.connection,
                 "voteAccountKey": node.vote_account_key,
-                "validatorKey": node.validator_key,
             }
 
         return {
             "treasuryKey": self.genesis.treasury_key,
-            "bootstrap": extract_node_info(self.genesis.bootstrap_node),
+            "bootstrap": {
+                "connection": self.genesis.bootstrap_node.connection
+            },
             "otherValidators": [extract_node_info(node) for node in self.other_validators],
         }

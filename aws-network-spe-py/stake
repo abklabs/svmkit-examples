@@ -41,11 +41,6 @@ NODEINDICES=$(seq 0 "$(( NODECOUNT - 1))")
 
 log::info "found $NODECOUNT non-bootstrap nodes..."
 
-for i in $NODEINDICES; do
-    log::info "adding key for validator node $i..."
-    get ".otherValidators[$i].connection.private_key" | ssh::key::add
-done
-
 ssh::background::run -L 8899:localhost:8899 "$(get .bootstrap.connection.user)@$(get .bootstrap.connection.host)"
 
 SOLANA="solana -u http://localhost:8899"
@@ -61,23 +56,10 @@ for i in $NODEINDICES; do
     DIR="$NODENAME"
     mkdir -p "$DIR"
 
-    if [[ ! -e "$DIR/vote-setup" ]]; then
-        get ".otherValidators[$i].validatorKey.json" >"$DIR/validatorKey.json"
-        get ".otherValidators[$i].voteAccountKey.json" >"$DIR/voteAccountKey.json"
-
-        log::info "creating $NODENAME's vote account..."
-        $SOLANA -k treasuryKey.json create-vote-account "$DIR/voteAccountKey.json" "$DIR/validatorKey.json" treasuryKey.json
-
-        log::info "funding $NODENAME's validator key..."
-        $SOLANA -k treasuryKey.json transfer --allow-unfunded-recipient "$DIR/validatorKey.json" 100
-
-        touch "$DIR/vote-setup"
-    else
-        log::info "skipping vote account setup and initial funding of $NODENAME..."
-    fi
-
     if [[ ! -e "$NODENAME/stake-setup" ]]; then
         log::info "staking and delegating to $NODENAME..."
+        get ".otherValidators[$i].voteAccountKey.json" >"$DIR/voteAccountKey.json"
+
         solana-keygen new --no-passphrase -o "$NODENAME/stakeKey.json"
         $SOLANA -k treasuryKey.json create-stake-account "$NODENAME/stakeKey.json" 150
         $SOLANA -k treasuryKey.json delegate-stake "$NODENAME/stakeKey.json" "$NODENAME/voteAccountKey.json"
