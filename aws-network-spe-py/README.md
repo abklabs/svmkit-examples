@@ -3,6 +3,8 @@
 This example brings up a cluster of Solana validators, all using private addresses, inside an AWS VPC.
 Genesis is performed, a snapshot is distributed, and gossip is set up on private addresses inside the VPC.
 
+![An example of launching an SPE on AWS](https://github.com/abklabs/svmkit-media/blob/main/SVMKitSPELaunch/10x_speed_shorter.gif?raw=true)
+
 ## Pulumi Configuration Options
 
 | Name              | Description                                                       | Default Value |
