@@ -113,15 +113,7 @@ Stake By Version:
 1.18.24 -    1 current validators (100.00%)
 ```
 
-5. Stake the initial validators by running the staking script.
-
-This process involves setting up vote accounts and staking accounts for each validator node. The script will add SSH keys for secure access, create vote accounts, fund validator keys, and delegate stakes to ensure validators are ready to participate in the network. It will also handle any necessary setup and ensure the validator stake is warmed up before confirming the validator state.
-
-```
-% ./stake stake-state
-```
-
-6. Run token demo script.
+5. Run token demo script.
 
 This script mints a token and allocates a portion of the supply to a recipient. Initially, the cluster's treasury provides the necessary funds to the minter.
 
@@ -129,7 +121,7 @@ This script mints a token and allocates a portion of the supply to a recipient. 
 % ./token-demo token-demo-state
 ```
 
-7. (Optional) Tear down the example
+6. (Optional) Tear down the example
 
 ```
 % pulumi down

@@ -74,14 +74,24 @@ for node in nodes:
                                        allow_unfunded_recipient=True,
                                        opts=pulumi.ResourceOptions(depends_on=[bootstrap_validator]))
 
-    svmkit.account.VoteAccount(node.name + "-voteAccount",
-                               connection=bootstrap_node.connection,
-                               key_pairs={
-                                   "identity": node.validator_key.json,
-                                   "vote_account": node.vote_account_key.json,
-                                   "auth_withdrawer": genesis.treasury_key.json,
-                               },
-                               opts=pulumi.ResourceOptions(depends_on=([transfer])))
+    vote_account = svmkit.account.VoteAccount(node.name + "-voteAccount",
+                                              connection=bootstrap_node.connection,
+                                              key_pairs={
+                                                  "identity": node.validator_key.json,
+                                                  "vote_account": node.vote_account_key.json,
+                                                  "auth_withdrawer": genesis.treasury_key.json,
+                                              },
+                                              opts=pulumi.ResourceOptions(depends_on=([transfer])))
+
+    stake_account_key = svmkit.KeyPair(node.name + "-stakeAccount-key")
+    svmkit.account.StakeAccount(node.name + "-stakeAccount",
+                                connection=bootstrap_node.connection,
+                                key_pairs={
+                                    "stake_account": stake_account_key.json,
+                                    "vote_account": node.vote_account_key.json,
+                                },
+                                amount=150,
+                                opts=pulumi.ResourceOptions(depends_on=([vote_account])))
 
 info = Info(genesis, other_validators=nodes)
 
