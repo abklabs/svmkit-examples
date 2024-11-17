@@ -120,7 +120,7 @@ class Genesis:
             primordial=[
                 {
                     "pubkey": self.bootstrap_node.validator_key.public_key,
-                    "lamports": "10000000000",  # 100 SOL
+                    "lamports": "1000000000000",  # 10000 SOL
                 },
                 {
                     "pubkey": self.treasury_key.public_key,
