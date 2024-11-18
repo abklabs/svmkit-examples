@@ -3,14 +3,45 @@ import pulumi_aws as aws
 import pulumi_tls as tls
 import pulumi_svmkit as svmkit
 
-from spe import Node, Genesis
+from spe import Node, agave_version
 
 node_config = pulumi.Config("node")
 
 total_nodes = node_config.get_int("count") or 3
 
 bootstrap_node = Node("bootstrap-node")
-genesis = Genesis(bootstrap_node)
+faucet_key = svmkit.KeyPair("faucet-key")
+treasury_key = svmkit.KeyPair("treasury-key")
+stake_account_key = svmkit.KeyPair("stake-account-key")
+
+genesis = svmkit.genesis.Solana(
+    "genesis",
+    connection=bootstrap_node.connection,
+    version=agave_version,
+    flags={
+        "ledger_path": "/home/sol/ledger",
+        "identity_pubkey": bootstrap_node.validator_key.public_key,
+        "vote_pubkey": bootstrap_node.vote_account_key.public_key,
+        "stake_pubkey": stake_account_key.public_key,
+        "faucet_pubkey": faucet_key.public_key
+    },
+    primordial=[
+        {
+            "pubkey": bootstrap_node.validator_key.public_key,
+            "lamports": "1000000000000",  # 10000 SOL
+        },
+        {
+            "pubkey": treasury_key.public_key,
+            "lamports": "100000000000000",  # 100000 SOL
+        },
+        {
+            "pubkey": faucet_key.public_key,
+            "lamports": "1000000000000",  # 1000 SOL
+        },
+    ],
+    opts=pulumi.ResourceOptions(
+        depends_on=[bootstrap_node.instance])
+)
 
 gossip_port = 8001
 rpc_port = 8899
@@ -44,7 +75,7 @@ bootstrap_flags.update({
 })
 
 bootstrap_validator = bootstrap_node.configure_validator(
-    bootstrap_flags, environment=sol_env, depends_on=[genesis.genesis])
+    bootstrap_flags, environment=sol_env, depends_on=[genesis])
 
 nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
 all_nodes = [bootstrap_node] + nodes
@@ -58,7 +89,7 @@ for node in nodes:
     flags.update({
         "entry_point": entry_point,
         "known_validator": [x.validator_key.public_key for x in other_nodes],
-        "expected_genesis_hash": genesis.genesis.genesis_hash,
+        "expected_genesis_hash": genesis.genesis_hash,
         "full_rpc_api": node == bootstrap_node,
         "gossip_host": node.instance.private_ip,
     })
@@ -70,7 +101,7 @@ for node in nodes:
                                        connection=bootstrap_node.connection,
                                        amount=100,
                                        recipient_pubkey=node.validator_key.public_key,
-                                       payer_key_pair=genesis.treasury_key.json,
+                                       payer_key_pair=treasury_key.json,
                                        allow_unfunded_recipient=True,
                                        opts=pulumi.ResourceOptions(depends_on=[bootstrap_validator]))
 
@@ -79,7 +110,7 @@ for node in nodes:
                                               key_pairs={
                                                   "identity": node.validator_key.json,
                                                   "vote_account": node.vote_account_key.json,
-                                                  "auth_withdrawer": genesis.treasury_key.json,
+                                                  "auth_withdrawer": treasury_key.json,
                                               },
                                               opts=pulumi.ResourceOptions(depends_on=([transfer])))
 
@@ -99,9 +130,9 @@ pulumi.export("nodes_private_key", [
 
 pulumi.export("speInfo",
               {
-                  "treasuryKey": genesis.treasury_key,
+                  "treasuryKey": treasury_key,
                   "bootstrap": {
-                      "connection": genesis.bootstrap_node.connection
+                      "connection": bootstrap_node.connection
                   },
                   "otherValidators": [{"voteAccountKey": node.vote_account_key} for node in nodes],
               })
