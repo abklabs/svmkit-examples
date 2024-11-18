@@ -3,7 +3,7 @@ import pulumi_aws as aws
 import pulumi_tls as tls
 import pulumi_svmkit as svmkit
 
-from spe import Node, Genesis, Info
+from spe import Node, Genesis
 
 node_config = pulumi.Config("node")
 
@@ -93,10 +93,15 @@ for node in nodes:
                                 amount=150,
                                 opts=pulumi.ResourceOptions(depends_on=([vote_account])))
 
-info = Info(genesis, other_validators=nodes)
-
 pulumi.export("nodes_public_ip", [x.instance.public_ip for x in all_nodes])
 pulumi.export("nodes_private_key", [
               x.ssh_key.private_key_openssh for x in all_nodes])
 
-pulumi.export("speInfo", info.get_info())
+pulumi.export("speInfo",
+              {
+                  "treasuryKey": genesis.treasury_key,
+                  "bootstrap": {
+                      "connection": genesis.bootstrap_node.connection
+                  },
+                  "otherValidators": [{"voteAccountKey": node.vote_account_key} for node in nodes],
+              })
