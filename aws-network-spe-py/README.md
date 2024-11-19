@@ -5,6 +5,10 @@ Genesis is performed, a snapshot is distributed, and gossip is set up on private
 
 ![An example of launching an SPE on AWS](https://github.com/abklabs/svmkit-media/blob/main/SVMKitSPELaunch/10x_speed_shorter.gif?raw=true)
 
+## Here's a short explainer video:
+
+[![YouTube Video](https://img.youtube.com/vi/8rgUikRios4/0.jpg)](https://www.youtube.com/embed/8rgUikRios4?si=lqUuZfgD_9fImpG0)
+
 ## Pulumi Configuration Options
 
 | Name              | Description                                                       | Default Value |
