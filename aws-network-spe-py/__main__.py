@@ -72,6 +72,11 @@ bootstrap_flags.update({
     "full_rpc_api": True,
     "no_voting": False,
     "gossip_host": bootstrap_node.instance.private_ip,
+    "extra_flags": [
+        "--enable-extended-tx-metadata-storage", # Enabled so that
+        "--enable-rpc-transaction-history",      # Solana Explorer has
+                                                 # the data it needs.
+    ]
 })
 
 bootstrap_validator = bootstrap_node.configure_validator(
