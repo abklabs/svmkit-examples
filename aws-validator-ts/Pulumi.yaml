@@ -1,0 +1,10 @@
+name: aws-validator-ts
+description: A Solana validator running in AWS using TypeScript
+runtime:
+  name: nodejs
+  options:
+    packagemanager: yarn
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-typescript
