@@ -94,6 +94,9 @@ mount -a
                 "vote_account": self.vote_account_key.json,
             },
             flags=flags,
+            timeout_config={
+                "rpc_service_timeout": 120,
+            },
             opts=pulumi.ResourceOptions(
                 depends_on=([self.instance] + depends_on))
         )
