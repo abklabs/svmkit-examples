@@ -104,9 +104,11 @@ for node in nodes:
 
     transfer = svmkit.account.Transfer(node.name + "-transfer",
                                        connection=bootstrap_node.connection,
+                                       transaction_options={
+                                           "key_pair": treasury_key.json,
+                                       },
                                        amount=100,
                                        recipient_pubkey=node.validator_key.public_key,
-                                       payer_key_pair=treasury_key.json,
                                        allow_unfunded_recipient=True,
                                        opts=pulumi.ResourceOptions(depends_on=[bootstrap_validator]))
 
@@ -122,6 +124,9 @@ for node in nodes:
     stake_account_key = svmkit.KeyPair(node.name + "-stakeAccount-key")
     svmkit.account.StakeAccount(node.name + "-stakeAccount",
                                 connection=bootstrap_node.connection,
+                                transaction_options={
+                                    "key_pair": treasury_key.json,
+                                },
                                 key_pairs={
                                     "stake_account": stake_account_key.json,
                                     "vote_account": node.vote_account_key.json,
