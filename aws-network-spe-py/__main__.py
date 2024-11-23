@@ -28,7 +28,7 @@ genesis = svmkit.genesis.Solana(
     primordial=[
         {
             "pubkey": bootstrap_node.validator_key.public_key,
-            "lamports": "1000000000000",  # 10000 SOL
+            "lamports": "1000000000000",  # 1000 SOL
         },
         {
             "pubkey": treasury_key.public_key,
