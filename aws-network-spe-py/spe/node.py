@@ -74,7 +74,10 @@ cat <<EOF >> /etc/fstab
 EOF
 systemctl daemon-reload
 mount -a
-"""
+""",
+            tags={
+                "Name": pulumi.get_stack() + "-" + self.name,
+            }
         )
 
         self.connection = svmkit.ssh.ConnectionArgsDict({

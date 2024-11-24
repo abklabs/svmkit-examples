@@ -95,4 +95,7 @@ EOF
 systemctl daemon-reload
 mount -a
 `,
+  tags: {
+    Name: `${pulumi.getStack()}-validator`,
+  },
 });
