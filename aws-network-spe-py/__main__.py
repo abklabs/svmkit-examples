@@ -80,7 +80,8 @@ bootstrap_flags.update({
 })
 
 bootstrap_validator = bootstrap_node.configure_validator(
-    bootstrap_flags, environment=sol_env, depends_on=[genesis])
+    bootstrap_flags, environment=sol_env, startup_policy={"wait_for_rpc_health": True},
+    depends_on=[genesis])
 
 nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
 all_nodes = [bootstrap_node] + nodes
@@ -99,7 +100,7 @@ for node in nodes:
         "gossip_host": node.instance.private_ip,
     })
 
-    validator = node.configure_validator(flags, environment=sol_env,
+    validator = node.configure_validator(flags, environment=sol_env, startup_policy=svmkit.agave.StartupPolicyArgs(),
                                          depends_on=[bootstrap_validator])
 
     transfer = svmkit.account.Transfer(node.name + "-transfer",
