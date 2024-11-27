@@ -79,7 +79,7 @@ Duration: 1m2s
 4. Verify that the validator has connected to the network.
 
 ```
-% ./ssh-to-host tail -f /home/sol/logs
+% ./ssh-to-host tail -f /home/sol/log
 [2024-11-20T17:50:24.275774661Z INFO  solana_download_utils] downloaded 3048373992 bytes 9.3% 17468680.0 bytes/s
 [2024-11-20T17:50:30.278042126Z INFO  solana_download_utils] downloaded 3154173560 bytes 9.6% 17626600.0 bytes/s
 [2024-11-20T17:50:36.286639128Z INFO  solana_download_utils] downloaded 3259296912 bytes 10.0% 17495494.0 bytes/s
