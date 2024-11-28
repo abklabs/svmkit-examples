@@ -91,7 +91,7 @@ mount -a
             f"{self.name}-validator",
             environment=environment,
             connection=self.connection,
-            version=agave_version,
+            variant=svmkit.agave.Variant("mantis"),
             startup_policy=startup_policy,
             shutdown_policy={
                 "force": True,
