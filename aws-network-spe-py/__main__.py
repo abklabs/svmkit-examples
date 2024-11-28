@@ -51,6 +51,14 @@ sol_env = svmkit.solana.EnvironmentArgs(
         lambda ip: f"http://{ip}:{rpc_port}")
 )
 
+base_extra_flags = [
+    # Jito Flags
+    # TODO: Update genesis to include program if required
+    # Reference: https://github.com/ComposableFi/mantis-solana/blob/49a3c502e6a43d839291e95968022e2ca16691a1/multinode-demo/bootstrap-validator.sh  # L187
+    "--tip-payment-program-pubkey=\"DThZmRNNXh7kvTQW9hXeGoWGPKktK8pgVAyoTLjH7UrT\"",
+    "--tip-distribution-program-pubkey=\"FjrdANjvo76aCYQ4kf9FM1R8aESUcEE6F8V7qyoVUQcM\"",
+    "--commission-bps=0",
+]
 base_flags = svmkit.agave.FlagsArgsDict({
     "only_known_rpc": False,
     "rpc_port": rpc_port,
@@ -67,20 +75,25 @@ base_flags = svmkit.agave.FlagsArgsDict({
     "allow_private_addr": True,
 })
 
+# Define bootstrap specific extra flags
+bootstrap_extra_flags = bootstrap_node.validator_key.public_key.apply(lambda k: base_extra_flags + [
+    "--enable-extended-tx-metadata-storage",  # Enabled so that
+    "--enable-rpc-transaction-history",      # Solana Explorer has
+    f"--merkle-root-upload-authority={k}"
+])
+
+# Set bootstrap flags
 bootstrap_flags = base_flags.copy()
 bootstrap_flags.update({
     "full_rpc_api": True,
     "no_voting": False,
     "gossip_host": bootstrap_node.instance.private_ip,
-    "extra_flags": [
-        "--enable-extended-tx-metadata-storage", # Enabled so that
-        "--enable-rpc-transaction-history",      # Solana Explorer has
-                                                 # the data it needs.
-    ]
+    "extra_flags": bootstrap_extra_flags,
 })
 
 bootstrap_validator = bootstrap_node.configure_validator(
-    bootstrap_flags, environment=sol_env, startup_policy={"wait_for_rpc_health": True},
+    bootstrap_flags, environment=sol_env, startup_policy={
+        "wait_for_rpc_health": True},
     depends_on=[genesis])
 
 nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
@@ -91,6 +104,10 @@ for node in nodes:
     entry_point = [x.instance.private_ip.apply(
         lambda v: f"{v}:{gossip_port}") for x in other_nodes]
 
+    # Define node specific extra flags
+    node_extra_flags = node.validator_key.public_key.apply(
+        lambda k: base_extra_flags + [f"--merkle-root-upload-authority={k}"])
+
     flags = base_flags.copy()
     flags.update({
         "entry_point": entry_point,
@@ -98,6 +115,7 @@ for node in nodes:
         "expected_genesis_hash": genesis.genesis_hash,
         "full_rpc_api": node == bootstrap_node,
         "gossip_host": node.instance.private_ip,
+        "extra_flags": node_extra_flags,
     })
 
     validator = node.configure_validator(flags, environment=sol_env, startup_policy=svmkit.agave.StartupPolicyArgs(),
