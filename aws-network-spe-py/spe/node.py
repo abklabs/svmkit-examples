@@ -17,7 +17,7 @@ ami = aws.ec2.get_ami(
         },
         {
             "name": "architecture",
-            "values": ["x86_64"],
+            "values": [node_config.get('instanceArch') or 'x86_64'],
         },
     ],
     owners=["136693071363"],  # Debian

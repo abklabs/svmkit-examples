@@ -11,6 +11,7 @@ use case.  You may have performance problems with the default
 | :---------------- | :---------------------------------------------------------------- | :------------ |
 | solana:network    | The known Solana cluster to connect to.                           | testnet       |
 | node:instanceType | The AWS instance type to use for all of the nodes.                | t3.2xlarge    |
+| node:instanceArch | The AWS architecture type to use for AMI lookup.                  | x86_64        |
 
 ## Running the Example
 

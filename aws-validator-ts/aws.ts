@@ -4,6 +4,7 @@ import * as tls from "@pulumi/tls";
 
 const nodeConfig = new pulumi.Config("node");
 const instanceType = nodeConfig.get("instanceType") ?? "t3.2xlarge";
+const instanceArch = nodeConfig.get("instanceArch") ?? "x86_64";
 
 // Setup a local SSH private key, stored inside Pulumi.
 export const sshKey = new tls.PrivateKey("ssh-key", {
@@ -24,7 +25,7 @@ const ami = pulumi.output(
       },
       {
         name: "architecture",
-        values: ["x86_64"],
+        values: [instanceArch],
       },
     ],
     owners: ["136693071363"], // Debian
