@@ -24,7 +24,7 @@ ami = aws.ec2.get_ami(
     most_recent=True,
 ).id
 
-agave_version = "1.18.24-1"
+agave_version = "1.18.26-1"
 
 
 class Node:
