@@ -5,6 +5,8 @@ non-voting functional example, and shouldn't used for any production
 use case.  You may have performance problems with the default
 `node:instanceType`.
 
+[![Watch the video](https://img.youtube.com/vi/jHvUuGpmU9o/0.jpg)](https://youtu.be/jHvUuGpmU9o)
+
 ## Pulumi Configuration Options
 
 | Name              | Description                                                       | Default Value |
