@@ -18,19 +18,14 @@ external_sg = aws.ec2.SecurityGroup(
             "to_port": 0,
             "cidr_blocks": ["0.0.0.0/0"],
         }
-    ]
+    ],
 )
 
 internal_sg = aws.ec2.SecurityGroup(
     "internal-access",
     description="Permissive internal traffic",
     ingress=[
-        {
-            "protocol": "-1",
-            "from_port": 0,
-            "to_port": 0,
-            "self": True
-        },
+        {"protocol": "-1", "from_port": 0, "to_port": 0, "self": True},
     ],
     egress=[
         {
@@ -39,5 +34,5 @@ internal_sg = aws.ec2.SecurityGroup(
             "to_port": 0,
             "cidr_blocks": ["0.0.0.0/0"],
         }
-    ]
+    ],
 )
