@@ -5,12 +5,15 @@ non-voting functional example, and shouldn't used for any production
 use case.  You may have performance problems with the default
 `node:instanceType`.
 
+[![Watch the video](https://img.youtube.com/vi/jHvUuGpmU9o/0.jpg)](https://youtu.be/jHvUuGpmU9o)
+
 ## Pulumi Configuration Options
 
 | Name              | Description                                                       | Default Value |
 | :---------------- | :---------------------------------------------------------------- | :------------ |
 | solana:network    | The known Solana cluster to connect to.                           | testnet       |
 | node:instanceType | The AWS instance type to use for all of the nodes.                | t3.2xlarge    |
+| node:instanceArch | The AWS architecture type to use for AMI lookup.                  | x86_64        |
 
 ## Running the Example
 

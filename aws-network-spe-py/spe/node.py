@@ -9,7 +9,7 @@ import pulumi_svmkit as svmkit
 
 from .network import external_sg, internal_sg
 
-AGAVE_VERSION = "1.18.24-1"
+AGAVE_VERSION = "1.18.26-1"
 
 ami = aws.ec2.get_ami(
     filters=[
@@ -19,13 +19,12 @@ ami = aws.ec2.get_ami(
         },
         {
             "name": "architecture",
-            "values": ["x86_64"],
+            "values": [node_config.get('instanceArch') or 'x86_64'],
         },
     ],
     owners=["136693071363"],  # Debian
     most_recent=True,
 ).id
-
 
 class Node:
     """A base class for Solana aws nodes."""
