@@ -74,11 +74,6 @@ exec::spl-token() {
   command spl-token -u http://localhost:8899 "$@"
 }
 
-# Extract and log the treasury public key
-get ".treasuryKey.json" >treasuryKey.json
-treasury_pubkey=$(solana-keygen pubkey treasuryKey.json)
-log::info "Extracted treasury public key: $treasury_pubkey"
-
 # Create payer and receiver wallets if they don't exist
 solana-keygen new --outfile $PAYER_WALLET --no-passphrase --force >/dev/null 2>&1
 solana-keygen new --outfile $RECEIVER_WALLET --no-passphrase --force >/dev/null 2>&1
@@ -90,7 +85,9 @@ log::info "Payer wallet created with public key: $payer_pubkey"
 log::info "Receiver wallet created with public key: $receiver_pubkey"
 
 # Transfer funds from treasury to payer
-exec::solana transfer --keypair treasuryKey.json $payer_pubkey $TRANSFER_AMOUNT --allow-unfunded-recipient
+exec::solana airdrop $TRANSFER_AMOUNT $payer_pubkey >/dev/null 2>&1
+payer_balance=$(exec::solana balance $payer_pubkey)
+log::info "Airdropped $payer_balance from the faucet to the payer wallet."
 
 # Create a new token mint and set payer as the mint authority
 mint=$(exec::spl-token create-token --mint-authority $payer_pubkey --fee-payer $PAYER_WALLET --output json-compact | jq -r '.commandOutput.address')
