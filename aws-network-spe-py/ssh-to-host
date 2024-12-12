@@ -19,4 +19,3 @@ pulumi stack output --show-secrets nodes_private_key | jq -r ".[$hostindex]" - >
 HOSTNAME=$(pulumi stack output nodes_public_ip | jq -r ".[$hostindex]" -)
 
 ssh -o StrictHostKeyChecking=off -o UserKnownHostsFile=/dev/null -i "$PRIVKEY" "admin@$HOSTNAME" "$@"
-
