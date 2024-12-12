@@ -63,7 +63,7 @@ log::info "adding key for bootstrap node..."
 get .bootstrap.connection.private_key | ssh::key::add
 
 # Set up SSH tunnel to the bootstrap node
-ssh::background::run -L 8899:localhost:8899 "$(get .bootstrap.connection.user)@$(get .bootstrap.connection.host)"
+ssh::background::run -L 8899:localhost:8899 -q "$(get .bootstrap.connection.user)@$(get .bootstrap.connection.host)"
 
 # Define functions to execute Solana and SPL token commands
 exec::solana() {
