@@ -2,7 +2,28 @@
 
 set -euo pipefail
 
+list_nodes() {
+    pulumi stack output --show-secrets nodes_name | jq -r '.[]' | nl -v 0
+    exit 0
+}
+
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 <node-index> [command]"
+    echo "Available nodes:"
+    list_nodes
+fi
+
 hostindex=$1 ; shift
+
+NODES=$(pulumi stack output --show-secrets nodes_name)
+NODE_COUNT=$(echo "$NODES" | jq -r 'length')
+
+if ! [[ "$hostindex" =~ ^[0-9]+$ ]] || [ "$hostindex" -ge "$NODE_COUNT" ]; then
+    echo "Error: Invalid node index '$hostindex'."
+    echo "Available nodes:"
+    echo "$NODES" | jq -r '.[]' | nl -v 0
+    exit 1
+fi
 
 PRIVKEY=$(mktemp)
 
