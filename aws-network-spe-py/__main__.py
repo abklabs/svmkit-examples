@@ -7,6 +7,7 @@ from spe import Node, AGAVE_VERSION
 
 GOSSIP_PORT = 8001
 RPC_PORT = 8899
+FAUCET_PORT = 9900
 
 node_config = pulumi.Config("node")
 
@@ -51,6 +52,10 @@ sol_env = svmkit.solana.EnvironmentArgs(
         lambda ip: f"http://{ip}:{RPC_PORT}")
 )
 
+rpc_faucet_address = bootstrap_node.instance.private_ip.apply(
+    lambda ip: f"{ip}:{FAUCET_PORT}"
+)
+
 base_flags = svmkit.agave.FlagsArgsDict({
     "only_known_rpc": False,
     "rpc_port": RPC_PORT,
@@ -65,6 +70,7 @@ base_flags = svmkit.agave.FlagsArgsDict({
     "no_wait_for_vote_to_start_leader": True,
     "use_snapshot_archives_at_startup": "when-newest",
     "allow_private_addr": True,
+    "rpc_faucet_address": rpc_faucet_address,
 })
 
 bootstrap_flags = base_flags.copy()
@@ -79,9 +85,19 @@ bootstrap_flags.update({
     ]
 })
 
+faucet = svmkit.faucet.Faucet(
+    "bootstrap-faucet",
+    connection=bootstrap_node.connection,
+    keypair=faucet_key.json,
+    flags={
+        "per_request_cap": 1000,
+    },
+    opts=pulumi.ResourceOptions(depends_on=([genesis])))
+
 bootstrap_validator = bootstrap_node.configure_validator(
-    bootstrap_flags, environment=sol_env, startup_policy={"wait_for_rpc_health": True},
-    depends_on=[genesis])
+    bootstrap_flags, environment=sol_env, startup_policy={
+        "wait_for_rpc_health": True},
+    depends_on=[faucet])
 
 nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
 all_nodes = [bootstrap_node] + nodes
