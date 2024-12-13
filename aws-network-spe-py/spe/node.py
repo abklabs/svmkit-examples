@@ -7,6 +7,8 @@ import pulumi_svmkit as svmkit
 
 from .network import external_sg, internal_sg
 
+AGAVE_VERSION = "1.18.26-1"
+
 node_config = pulumi.Config("node")
 
 ami = aws.ec2.get_ami(
@@ -23,8 +25,6 @@ ami = aws.ec2.get_ami(
     owners=["136693071363"],  # Debian
     most_recent=True,
 ).id
-
-agave_version = "1.18.26-1"
 
 
 class Node:
@@ -91,7 +91,7 @@ mount -a
             f"{self.name}-validator",
             environment=environment,
             connection=self.connection,
-            version=agave_version,
+            version=AGAVE_VERSION,
             startup_policy=startup_policy,
             shutdown_policy={
                 "force": True,

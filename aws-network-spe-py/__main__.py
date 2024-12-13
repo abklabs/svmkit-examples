@@ -3,7 +3,10 @@ import pulumi_aws as aws
 import pulumi_tls as tls
 import pulumi_svmkit as svmkit
 
-from spe import Node, agave_version
+from spe import Node, AGAVE_VERSION
+
+GOSSIP_PORT = 8001
+RPC_PORT = 8899
 
 node_config = pulumi.Config("node")
 
@@ -17,7 +20,7 @@ stake_account_key = svmkit.KeyPair("stake-account-key")
 genesis = svmkit.genesis.Solana(
     "genesis",
     connection=bootstrap_node.connection,
-    version=agave_version,
+    version=AGAVE_VERSION,
     flags={
         "ledger_path": "/home/sol/ledger",
         "identity_pubkey": bootstrap_node.validator_key.public_key,
@@ -43,20 +46,17 @@ genesis = svmkit.genesis.Solana(
         depends_on=[bootstrap_node.instance])
 )
 
-gossip_port = 8001
-rpc_port = 8899
-
 sol_env = svmkit.solana.EnvironmentArgs(
     rpc_url=bootstrap_node.instance.private_ip.apply(
-        lambda ip: f"http://{ip}:{rpc_port}")
+        lambda ip: f"http://{ip}:{RPC_PORT}")
 )
 
 base_flags = svmkit.agave.FlagsArgsDict({
     "only_known_rpc": False,
-    "rpc_port": rpc_port,
+    "rpc_port": RPC_PORT,
     "dynamic_port_range": "8002-8020",
     "private_rpc": False,
-    "gossip_port": gossip_port,
+    "gossip_port": GOSSIP_PORT,
     "rpc_bind_address": "0.0.0.0",
     "wal_recovery_mode": "skip_any_corrupted_record",
     "limit_ledger_size": 50000000,
@@ -89,7 +89,7 @@ all_nodes = [bootstrap_node] + nodes
 for node in nodes:
     other_nodes = [x for x in all_nodes if x != node]
     entry_point = [x.instance.private_ip.apply(
-        lambda v: f"{v}:{gossip_port}") for x in other_nodes]
+        lambda v: f"{v}:{GOSSIP_PORT}") for x in other_nodes]
 
     flags = base_flags.copy()
     flags.update({
