@@ -57,17 +57,17 @@ Previewing update (new-validator)
 Do you want to perform this update? yes
 Updating (new-validator)
 
-View in Browser (Ctrl+O): https://app.pulumi.com/alexander_guy/aws-validator-ts/new-validator/updates/1
+View in Browser (Ctrl+O): https://app.pulumi.com/alexander_guy/aws-validator-agave-ts/new-validator/updates/1
 
-     Type                       Name                            Status              
- +   pulumi:pulumi:Stack        aws-validator-ts-new-validator  created (60s)       
- +   ├─ svmkit:index:KeyPair    vote-account-key                created (0.18s)     
- +   ├─ svmkit:index:KeyPair    validator-key                   created (0.39s)     
- +   ├─ tls:index:PrivateKey    ssh-key                         created (0.29s)     
- +   ├─ aws:ec2:SecurityGroup   security-group                  created (4s)        
- +   ├─ aws:ec2:KeyPair         keypair                         created (0.70s)     
- +   ├─ aws:ec2:Instance        instance                        created (14s)       
- +   └─ svmkit:validator:Agave  validator                       created (36s)       
+     Type                       Name                            Status
+ +   pulumi:pulumi:Stack        aws-validator-agave-ts-new-validator  created (60s)
+ +   ├─ svmkit:index:KeyPair    vote-account-key                      created (0.18s)
+ +   ├─ svmkit:index:KeyPair    validator-key                         created (0.39s)
+ +   ├─ tls:index:PrivateKey    ssh-key                               created (0.29s)
+ +   ├─ aws:ec2:SecurityGroup   security-group                        created (4s)
+ +   ├─ aws:ec2:KeyPair         keypair                               created (0.70s)
+ +   ├─ aws:ec2:Instance        instance                              created (14s)
+ +   └─ svmkit:validator:Agave  validator                             created (36s)
 
 Outputs:
     PUBLIC_DNS_NAME: "ec2-35-86-146-3.us-west-2.compute.amazonaws.com"

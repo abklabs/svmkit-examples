@@ -1,5 +1,5 @@
-name: aws-validator-ts
-description: A Solana validator running in AWS using TypeScript
+name: aws-validator-agave-ts
+description: An Agave validator running in AWS using TypeScript
 runtime:
   name: nodejs
   options:

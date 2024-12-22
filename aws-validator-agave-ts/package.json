@@ -1,5 +1,5 @@
 {
-  "name": "aws-validator-ts",
+  "name": "aws-validator-agave-ts",
   "main": "index.ts",
   "license": "GPLv3",
   "devDependencies": {
