@@ -1,5 +1,5 @@
 name: aws-validator-fd-ts
-description: An Agave validator running in AWS using TypeScript
+description: A Frankendancer validator running in AWS using TypeScript
 runtime:
   name: nodejs
   options:
