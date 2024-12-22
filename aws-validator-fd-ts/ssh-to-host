@@ -1,0 +1,10 @@
+#!/usr/bin/env ../bin/opsh
+
+PUBLIC_DNS_NAME=$(pulumi stack output PUBLIC_DNS_NAME)
+
+PRIVKEY=$(temp::file)
+chmod 600 "$PRIVKEY"
+log::info "saving validator host key in $PRIVKEY..."
+pulumi stack output SSH_PRIVATE_KEY --show-secrets >"$PRIVKEY"
+
+ssh -o StrictHostKeyChecking=off -o UserKnownHostsFile=/dev/null -i "$PRIVKEY" "admin@$PUBLIC_DNS_NAME" "$@"
