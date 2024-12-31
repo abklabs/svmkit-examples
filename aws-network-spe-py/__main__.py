@@ -99,6 +99,16 @@ bootstrap_validator = bootstrap_node.configure_validator(
         "wait_for_rpc_health": True},
     depends_on=[faucet])
 
+explorer = svmkit.explorer.Explorer(
+    "bootstrap-explorer",
+    connection=bootstrap_node.connection,
+    environment=sol_env,
+    flags={
+        "hostname": "0.0.0.0",
+        "port": 3000,
+    },
+    opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator])))
+
 nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
 all_nodes = [bootstrap_node] + nodes
 
