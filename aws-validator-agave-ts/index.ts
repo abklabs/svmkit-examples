@@ -62,5 +62,6 @@ new svmkit.validator.Agave(
 );
 
 // Expose information required to SSH to the validator host.
-export const PUBLIC_DNS_NAME = instance.publicDns;
-export const SSH_PRIVATE_KEY = sshKey.privateKeyOpenssh;
+export const nodes_name = ["instance"];
+export const nodes_public_ip = [instance.publicIp];
+export const nodes_private_key = [sshKey.privateKeyOpenssh];
