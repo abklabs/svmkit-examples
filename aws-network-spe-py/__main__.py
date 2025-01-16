@@ -103,6 +103,10 @@ explorer = svmkit.explorer.Explorer(
     "bootstrap-explorer",
     connection=bootstrap_node.connection,
     environment=sol_env,
+    name="Demo",
+    symbol="DMO",
+    cluster_name="demonet",
+    rpcurl="http://localhost:8899",
     flags={
         "hostname": "0.0.0.0",
         "port": 3000,
