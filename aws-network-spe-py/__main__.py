@@ -2,6 +2,8 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_tls as tls
 import pulumi_svmkit as svmkit
+from typing import cast
+
 
 from spe import Node, AGAVE_VERSION
 
@@ -12,6 +14,19 @@ FAUCET_PORT = 9900
 node_config = pulumi.Config("node")
 
 total_nodes = node_config.get_int("count") or 3
+
+# Watchtower Notification Config
+watchtower_config = pulumi.Config("watchtower")
+
+slack_webhook_url = watchtower_config.get("slack_webhook_url") or None
+discord_webhook_url = watchtower_config.get("discord_webhook_url") or None
+telegram_bot_token = watchtower_config.get("telegram_bot_token") or None
+telegram_chat_id = watchtower_config.get("telegram_chat_id") or None
+pagerduty_integration_key = watchtower_config.get("pagerduty_integration_key") or None
+twilio_account_sid = watchtower_config.get("twilio_account_sid") or None
+twilio_auth_token = watchtower_config.get("twilio_auth_token") or None
+twilio_to_number = watchtower_config.get("twilio_to_number") or None
+twilio_from_number = watchtower_config.get("twilio_from_number") or None
 
 bootstrap_node = Node("bootstrap-node")
 faucet_key = svmkit.KeyPair("faucet-key")
@@ -164,6 +179,48 @@ for node in nodes:
                                 },
                                 amount=150,
                                 opts=pulumi.ResourceOptions(depends_on=([vote_account])))
+
+watchtower_notifications: svmkit.watchtower.NotificationConfigArgsDict = {}
+
+if slack_webhook_url:
+    watchtower_notifications["slack"] = cast(svmkit.watchtower.SlackConfigArgsDict, {
+        "webhookUrl": slack_webhook_url
+    })
+
+if discord_webhook_url:
+    watchtower_notifications["discord"] = cast(svmkit.watchtower.DiscordConfigArgsDict, {
+        "webhookUrl": discord_webhook_url
+    })
+
+if telegram_bot_token and telegram_chat_id:
+    watchtower_notifications["telegram"] = cast(svmkit.watchtower.TelegramConfigArgsDict, {
+        "botToken": telegram_bot_token,
+        "chatId": telegram_chat_id
+    })
+
+if pagerduty_integration_key:
+    watchtower_notifications["pager_duty"] = cast(svmkit.watchtower.PagerDutyConfigArgsDict, {
+        "integrationKey": pagerduty_integration_key
+    })
+
+if twilio_account_sid and twilio_auth_token and twilio_to_number and twilio_from_number:
+    watchtower_notifications["twilio"] = cast(svmkit.watchtower.TwilioConfigArgsDict, {
+        "accountSid": twilio_account_sid,
+        "authToken": twilio_auth_token,
+        "toNumber": twilio_to_number,
+        "fromNumber": twilio_from_number
+    })
+
+watchtower = svmkit.watchtower.Watchtower(
+    'bootstrap-watchtower',
+    connection=bootstrap_node.connection,
+    environment=sol_env,
+    flags={
+        "validator_identity": [node.validator_key.public_key for node in all_nodes],
+    },
+    notifications=watchtower_notifications,
+    opts=pulumi.ResourceOptions(depends_on=([explorer]))
+)
 
 pulumi.export("nodes_name", [x.name for x in all_nodes])
 pulumi.export("nodes_public_ip", [x.instance.public_ip for x in all_nodes])
