@@ -1,4 +1,7 @@
+import pulumi
 import pulumi_aws as aws
+
+stack_name = pulumi.get_stack()
 
 external_sg = aws.ec2.SecurityGroup(
     "external-access",
@@ -19,6 +22,9 @@ external_sg = aws.ec2.SecurityGroup(
             "cidr_blocks": ["0.0.0.0/0"],
         }
     ],
+    tags={
+        "Stack": stack_name,
+    }
 )
 
 internal_sg = aws.ec2.SecurityGroup(
@@ -35,4 +41,7 @@ internal_sg = aws.ec2.SecurityGroup(
             "cidr_blocks": ["0.0.0.0/0"],
         }
     ],
+    tags={
+        "Stack": stack_name,
+    }
 )

@@ -43,6 +43,9 @@ class Node:
 
         instance_type = node_config.get('instanceType') or "c6i.xlarge"
         iops = node_config.get_int('volumeIOPS') or 5000
+
+        stack_name = pulumi.get_stack()
+
         self.instance = aws.ec2.Instance(
             _("instance"),
             ami=ami,
@@ -76,7 +79,8 @@ systemctl daemon-reload
 mount -a
 """,
             tags={
-                "Name": pulumi.get_stack() + "-" + self.name,
+                "Name": stack_name + "-" + self.name,
+                "Stack": stack_name,
             }
         )
 
