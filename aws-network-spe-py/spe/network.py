@@ -13,6 +13,18 @@ external_sg = aws.ec2.SecurityGroup(
             "to_port": 22,
             "cidr_blocks": ["0.0.0.0/0"],
         },
+        {
+            "protocol": "tcp",
+            "from_port": 3000,
+            "to_port": 3000,
+            "cidr_blocks": ["0.0.0.0/0"],
+        },
+        {
+            "protocol": "tcp",
+            "from_port": 8899,
+            "to_port": 8899,
+            "cidr_blocks": ["0.0.0.0/0"],
+        },
     ],
     egress=[
         {
