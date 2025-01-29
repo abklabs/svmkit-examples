@@ -122,7 +122,8 @@ explorer = svmkit.explorer.Explorer(
     name="Demo",
     symbol="DMO",
     cluster_name="demonet",
-    rpcurl="http://localhost:8899",
+    rpcurl=bootstrap_node.instance.public_dns.apply(
+        lambda ip: f"http://{ip}:{RPC_PORT}"),
     flags={
         "hostname": "0.0.0.0",
         "port": 3000,
