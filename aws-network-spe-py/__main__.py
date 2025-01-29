@@ -119,9 +119,9 @@ explorer = svmkit.explorer.Explorer(
     "bootstrap-explorer",
     connection=bootstrap_node.connection,
     environment=sol_env,
-    name="Demo",
-    symbol="DMO",
-    cluster_name="demonet",
+    name="SVMKIT Explorer",
+    symbol="KIT",
+    cluster_name="svmkitnet",
     rpcurl=bootstrap_node.instance.public_dns.apply(
         lambda ip: f"http://{ip}:{RPC_PORT}"),
     flags={
