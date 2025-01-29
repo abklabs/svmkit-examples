@@ -219,7 +219,7 @@ watchtower = svmkit.watchtower.Watchtower(
         "validator_identity": [node.validator_key.public_key for node in all_nodes],
     },
     notifications=watchtower_notifications,
-    opts=pulumi.ResourceOptions(depends_on=([explorer]))
+    opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator]))
 )
 
 pulumi.export("nodes_name", [x.name for x in all_nodes])
