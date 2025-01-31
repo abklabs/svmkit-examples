@@ -77,7 +77,7 @@ Resources:
 4. Verify that the validator has connected to the network.
 
 ```
-% ./ssh-to-host sudo journalctl -f -u svmkit-fd-validator
+% ./ssh-to-host 0 sudo journalctl -f -u svmkit-fd-validator
 INFO:	saving validator host key in /var/folders/56/ljnh2nx524s73bm0dyw3hy780000gn/T/tmp.gsnuaIbzwS/tmp.uxlxVQYehz...
 Warning: Permanently added 'ec2-35-86-195-35.us-west-2.compute.amazonaws.com' (ED25519) to the list of known hosts.
 Dec 22 13:04:23 ip-172-31-53-101 fdctl[2228]: NOTICE  12-22 13:04:23.220832 2228   14   bank:3 src/disco/topo/fd_topo_run.c(32): booting tile bank:3 pid:2227 tid:2284
@@ -95,7 +95,7 @@ Dec 22 13:04:23 ip-172-31-53-101 fdctl[2276]: WARNING 12-22 13:04:23.883328 2276
 5. Connect to the Frankendancer UI:
 
 ```
-% ./ssh-to-host -L 8080:localhost:80
+% ./ssh-to-host 0 -L 8080:localhost:80
 ```
 
 Now use your local browser to access the proxied HTTP port via [http://localhost:8080](http://localhost:8080).
@@ -107,7 +107,7 @@ Now use your local browser to access the proxied HTTP port via [http://localhost
 - Create stake for your validator.
 
 Please see the [Solana Operations](https://docs.solanalabs.com/operations/) manual for more information.
-To SSH into the validator node you just created, run `./ssh-to-host` with no arguments.
+To SSH into the validator node you just created, run `./ssh-to-host 0` with no additional arguments.
 
 7. (Optional) Tear down the example
 
