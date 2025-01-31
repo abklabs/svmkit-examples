@@ -1,0 +1,6 @@
+name: gcp-validator-agave-ts
+description: An Agave validator configuration written in TypeScript running on GCP.
+runtime:
+  name: nodejs
+  options:
+    packagemanager: yarn
