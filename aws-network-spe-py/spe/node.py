@@ -61,7 +61,7 @@ class Node:
                 },
                 {
                     "device_name": "/dev/sdg",
-                    "volume_size": 204,
+                    "volume_size": 500,
                     "volume_type": "gp3",
                     "iops": iops,
                 },
