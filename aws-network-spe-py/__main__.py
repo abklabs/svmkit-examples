@@ -222,6 +222,13 @@ watchtower = svmkit.watchtower.Watchtower(
     opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator]))
 )
 
+for node in all_nodes:
+    tuner = svmkit.tuner.Tuner(
+        node.name + "-tuner",
+        connection=node.connection,
+        opts=pulumi.ResourceOptions(depends_on=([node.instance]))
+    )
+
 pulumi.export("nodes_name", [x.name for x in all_nodes])
 pulumi.export("nodes_public_ip", [x.instance.public_ip for x in all_nodes])
 pulumi.export("nodes_private_key", [
