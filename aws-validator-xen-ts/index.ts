@@ -51,15 +51,13 @@ new svmkit.validator.Agave(
         "entrypoint1.testnet.x1.xyz:8001",
         "entrypoint2.testnet.x1.xyz:8000",
         "entrypoint3.testnet.x1.xyz:8000",
-        "owlnet.dev:8001",
       ],
       knownValidator: [
         "Abt4r6uhFs7yPwR3jT5qbnLjBtasgHkRVAd1W6H5yonT",
         "5NfpgFCwrYzcgJkda9bRJvccycLUo3dvVQsVAK2W43Um",
         "FcrZRBfVk2h634L9yvkysJdmvdAprq1NM4u263NuR6LC",
-        "Tpsu5EYTJAXAat19VEh54zuauHvUBuryivSFRC3RiFk",
       ],
-      expectedGenesisHash: "FdLygQvVzQ3KmKjUYWtdawuTaCTW2aeZNkjSzLuA5bZ6",
+      expectedGenesisHash:"C7ucgdDEhxLTpXHhWSZxavSVmaNTUJWwT5iTdeaviDho"
     },
   },
   {
