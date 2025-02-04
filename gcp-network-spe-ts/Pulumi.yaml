@@ -1,0 +1,6 @@
+name: gcp-network-spe-ts
+description: A TypeScript example of a multi-node Solana Permissioned Environment in GCP
+runtime:
+  name: nodejs
+  options:
+    packagemanager: yarn
