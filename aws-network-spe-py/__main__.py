@@ -234,6 +234,9 @@ for node in all_nodes:
 
 pulumi.export("nodes_name", [x.name for x in all_nodes])
 pulumi.export("nodes_public_ip", [x.instance.public_ip for x in all_nodes])
+pulumi.export("nodes_private_ip", [x.instance.private_ip for x in all_nodes])
+pulumi.export("nodes_public_keys", [
+              x.validator_key.public_key for x in all_nodes])
 pulumi.export("nodes_private_key", [
               x.ssh_key.private_key_openssh for x in all_nodes])
 
