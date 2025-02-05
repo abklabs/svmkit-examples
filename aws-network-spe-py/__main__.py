@@ -22,7 +22,8 @@ slack_webhook_url = watchtower_config.get("slack_webhook_url") or None
 discord_webhook_url = watchtower_config.get("discord_webhook_url") or None
 telegram_bot_token = watchtower_config.get("telegram_bot_token") or None
 telegram_chat_id = watchtower_config.get("telegram_chat_id") or None
-pagerduty_integration_key = watchtower_config.get("pagerduty_integration_key") or None
+pagerduty_integration_key = watchtower_config.get(
+    "pagerduty_integration_key") or None
 twilio_account_sid = watchtower_config.get("twilio_account_sid") or None
 twilio_auth_token = watchtower_config.get("twilio_auth_token") or None
 twilio_to_number = watchtower_config.get("twilio_to_number") or None
@@ -94,7 +95,7 @@ bootstrap_flags.update({
     "no_voting": False,
     "gossip_host": bootstrap_node.instance.private_ip,
     "extra_flags": [
-        "--enable-extended-tx-metadata-storage", # Enabled so that
+        "--enable-extended-tx-metadata-storage",  # Enabled so that
         "--enable-rpc-transaction-history",      # Solana Explorer has
                                                  # the data it needs.
     ]
