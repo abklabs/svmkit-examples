@@ -19,7 +19,7 @@ new svmkit.validator.Agave(
   "validator",
   {
     connection,
-    variant: "xen",
+    variant: "tachyon",
     environment: {
       rpcURL: "https://rpc.testnet.x1.xyz",
     },

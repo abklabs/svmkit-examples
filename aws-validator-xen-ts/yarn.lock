@@ -1485,10 +1485,10 @@
     "@smithy/types" "^3.7.1"
     tslib "^2.6.2"
 
-"@svmkit/pulumi-svmkit@^0.18.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@svmkit/pulumi-svmkit/-/pulumi-svmkit-0.18.0.tgz#d6b96b3aa5458913f304220736492bc00a631570"
-  integrity sha512-n5u17xdS97Iv++69yMES5AGRmRJl/qirPrVK8GpiPr1ITvgW0JJOSzz0sNp+4GYYSQiUeJSNUUR1ZA/sFVOdeA==
+"@svmkit/pulumi-svmkit@^0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@svmkit/pulumi-svmkit/-/pulumi-svmkit-0.27.0.tgz#689619d06f9a076cc074935c1e8f69ede2c3a73e"
+  integrity sha512-YFGdWXFpkZkwdRpS7Tm3GoTOgLCLrbGFVlaToukL7WkI+cdYnEf5HuW7oOZI6Fq4SLn/TTLlCHtRpYz5CGeAwQ==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
 
