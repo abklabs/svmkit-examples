@@ -15,6 +15,8 @@ node_config = pulumi.Config("node")
 
 total_nodes = node_config.get_int("count") or 3
 
+tuner_config = pulumi.Config("tuner")
+
 # Watchtower Notification Config
 watchtower_config = pulumi.Config("watchtower")
 
@@ -222,10 +224,25 @@ watchtower = svmkit.watchtower.Watchtower(
     opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator]))
 )
 
+tuner_variant_name = tuner_config.get("variant") or "generic"
+tuner_variant = svmkit.tuner.TunerVariant(tuner_variant_name)
+
+generic_tuner_params_output = svmkit.tuner.get_default_tuner_params_output(variant=tuner_variant)
+
+params = generic_tuner_params_output.apply(lambda p: cast(svmkit.tuner.TunerParamsArgsDict, {
+    "cpu_governor": p.cpu_governor,
+    "kernel": p.kernel,
+    "net": p.net,
+    "vm": p.vm,
+}))
+
+pulumi.export("tuner_params", params)
+
 for node in all_nodes:
     tuner = svmkit.tuner.Tuner(
         node.name + "-tuner",
         connection=node.connection,
+        params=params,
         opts=pulumi.ResourceOptions(depends_on=([node.instance]))
     )
 
