@@ -1,8 +1,47 @@
-name: aws-network-spe-py
+name: ${PROJECT}
+description: ${DESCRIPTION}
 runtime:
   name: python
   options:
     toolchain: pip
     virtualenv: venv
     typechecker: pyright
-description: A Python example of a multi-node Solana Permissioned Environment in AWS
+template:
+  important: true
+  config:
+    aws:region:
+      description: "The AWS region to deploy into"
+      default: "us-west-2"
+    validator:stake:
+      description: "The amount of stake to distribute to each validator in SOL"
+      default: 10
+    node:count:
+      description: "The number of nodes to deploy"
+      default: 3
+    watchtower:slack_webhook_url:
+      description: "The Slack webhook URL for Watchtower notifications"
+      default: null
+    watchtower:discord_webhook_url:
+      description: "The Discord webhook URL for Watchtower notifications"
+      default: null
+    watchtower:telegram_bot_token:
+      description: "The Telegram bot token for Watchtower notifications"
+      default: null
+    watchtower:telegram_chat_id:
+      description: "The Telegram chat ID for Watchtower notifications"
+      default: null
+    watchtower:pagerduty_integration_key:
+      description: "The PagerDuty integration key for Watchtower notifications"
+      default: null
+    watchtower:twilio_account_sid:
+      description: "The Twilio account SID for Watchtower notifications"
+      default: null
+    watchtower:twilio_auth_token:
+      description: "The Twilio auth token for Watchtower notifications"
+      default: null
+    watchtower:twilio_to_number:
+      description: "The Twilio 'to' number for Watchtower notifications"
+      default: null
+    watchtower:twilio_from_number:
+      description: "The Twilio 'from' number for Watchtower notifications"
+      default: null

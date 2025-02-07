@@ -13,20 +13,26 @@ FAUCET_PORT = 9900
 
 node_config = pulumi.Config("node")
 
-total_nodes = node_config.get_int("count") or 3
+total_nodes = node_config.get_int("count")
 
 # Watchtower Notification Config
 watchtower_config = pulumi.Config("watchtower")
 
-slack_webhook_url = watchtower_config.get("slack_webhook_url") or None
-discord_webhook_url = watchtower_config.get("discord_webhook_url") or None
-telegram_bot_token = watchtower_config.get("telegram_bot_token") or None
-telegram_chat_id = watchtower_config.get("telegram_chat_id") or None
-pagerduty_integration_key = watchtower_config.get("pagerduty_integration_key") or None
-twilio_account_sid = watchtower_config.get("twilio_account_sid") or None
-twilio_auth_token = watchtower_config.get("twilio_auth_token") or None
-twilio_to_number = watchtower_config.get("twilio_to_number") or None
-twilio_from_number = watchtower_config.get("twilio_from_number") or None
+slack_webhook_url = watchtower_config.get("slack_webhook_url")
+discord_webhook_url = watchtower_config.get("discord_webhook_url")
+telegram_bot_token = watchtower_config.get("telegram_bot_token")
+telegram_chat_id = watchtower_config.get("telegram_chat_id")
+pagerduty_integration_key = watchtower_config.get(
+    "pagerduty_integration_key")
+twilio_account_sid = watchtower_config.get("twilio_account_sid")
+twilio_auth_token = watchtower_config.get("twilio_auth_token")
+twilio_to_number = watchtower_config.get("twilio_to_number")
+twilio_from_number = watchtower_config.get("twilio_from_number")
+
+# Validator Config
+validator_config = pulumi.Config("validator")
+
+validator_stake_amount = validator_config.get_int("stake")
 
 bootstrap_node = Node("bootstrap-node")
 faucet_key = svmkit.KeyPair("faucet-key")
@@ -42,7 +48,8 @@ genesis = svmkit.genesis.Solana(
         "identity_pubkey": bootstrap_node.validator_key.public_key,
         "vote_pubkey": bootstrap_node.vote_account_key.public_key,
         "stake_pubkey": stake_account_key.public_key,
-        "faucet_pubkey": faucet_key.public_key
+        "faucet_pubkey": faucet_key.public_key,
+        "bootstrap_validator_stake_lamports": validator_stake_amount * 1_000_000_000,
     },
     primordial=[
         {
@@ -94,7 +101,7 @@ bootstrap_flags.update({
     "no_voting": False,
     "gossip_host": bootstrap_node.instance.private_ip,
     "extra_flags": [
-        "--enable-extended-tx-metadata-storage", # Enabled so that
+        "--enable-extended-tx-metadata-storage",  # Enabled so that
         "--enable-rpc-transaction-history",      # Solana Explorer has
                                                  # the data it needs.
     ]
@@ -177,7 +184,7 @@ for node in nodes:
                                     "stake_account": stake_account_key.json,
                                     "vote_account": node.vote_account_key.json,
                                 },
-                                amount=150,
+                                amount=validator_stake_amount,
                                 opts=pulumi.ResourceOptions(depends_on=([vote_account])))
 
 watchtower_notifications: svmkit.watchtower.NotificationConfigArgsDict = {}
