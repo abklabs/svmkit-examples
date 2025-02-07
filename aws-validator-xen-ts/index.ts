@@ -57,7 +57,7 @@ new svmkit.validator.Agave(
         "5NfpgFCwrYzcgJkda9bRJvccycLUo3dvVQsVAK2W43Um",
         "FcrZRBfVk2h634L9yvkysJdmvdAprq1NM4u263NuR6LC",
       ],
-      expectedGenesisHash:"C7ucgdDEhxLTpXHhWSZxavSVmaNTUJWwT5iTdeaviDho"
+      expectedGenesisHash: "C7ucgdDEhxLTpXHhWSZxavSVmaNTUJWwT5iTdeaviDho",
     },
   },
   {
