@@ -79,7 +79,7 @@ export const instance = new aws.ec2.Instance("instance", {
     },
     {
       deviceName: "/dev/sdg",
-      volumeSize: 200,
+      volumeSize: 500,
       volumeType: "io2",
       iops: 16000,
     },
