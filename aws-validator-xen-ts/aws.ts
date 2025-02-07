@@ -98,5 +98,6 @@ mount -a
 `,
   tags: {
     Name: `${pulumi.getStack()}-validator`,
+    Stack: pulumi.getStack(),
   },
 });
