@@ -86,6 +86,13 @@ base_flags = svmkit.agave.FlagsArgsDict({
     "use_snapshot_archives_at_startup": "when-newest",
     "allow_private_addr": True,
     "rpc_faucet_address": rpc_faucet_address,
+    "wait_for_supermajority": 32810,
+    "hard_fork": [32810],
+    "no_snapshot_fetch": True,
+    "expected_bank_hash": "5YnpkLsZPu9sGEq8wFFRWjGfuo1MhaoPAFUTJ17unZDQ",
+    "extra_flags": [
+        "--expected-shred-version 3434",
+    ],
 })
 
 bootstrap_flags = base_flags.copy()
@@ -94,10 +101,11 @@ bootstrap_flags.update({
     "no_voting": False,
     "gossip_host": bootstrap_node.instance.private_ip,
     "extra_flags": [
-        "--enable-extended-tx-metadata-storage", # Enabled so that
+        "--enable-extended-tx-metadata-storage",  # Enabled so that
         "--enable-rpc-transaction-history",      # Solana Explorer has
                                                  # the data it needs.
-    ]
+        "--expected-shred-version 3434",
+    ],
 })
 
 faucet = svmkit.faucet.Faucet(
