@@ -1,0 +1,12 @@
+name: demo-templates
+description: ""
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+    typechecker: pyright
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: ../aws-network-spe-py
