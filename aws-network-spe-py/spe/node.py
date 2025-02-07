@@ -108,10 +108,6 @@ mount -a
             timeout_config={
                 "rpc_service_timeout": 120,
             },
-            info={
-                "name": self.name,
-                "details": "An AWS network-based SPE validator node.",
-            },
             opts=pulumi.ResourceOptions(
                 depends_on=([self.instance] + depends_on))
         )
