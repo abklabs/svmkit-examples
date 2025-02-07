@@ -7,7 +7,7 @@ import pulumi_svmkit as svmkit
 
 from .network import external_sg, internal_sg
 
-AGAVE_VERSION = "1.18.26-1"
+AGAVE_VERSION = "2.1.11-1"
 
 node_config = pulumi.Config("node")
 
