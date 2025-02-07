@@ -80,26 +80,47 @@ Shred version: 65416
 
 _The `--expected-bank-hash`is the one after the text `Successfully created snapshot for slot {SLOT}, hash {EXPECTED_BANK_HASH}:`_
 
-3. Add extra arguments to the `agave-validator` command for all validators
+3. Update flags on the validator.
+
+```typescript
+new svmkit.validator.Agave(
+  "validator",
+  {
+    connection,
+    keyPairs: {
+      identity: validatorKey.json,
+      voteAccount: voteAccountKey.json,
+    },
+    flags: {
+      hardFork: [32179],
+      expectedBankHash: "6spvWBo8JyYqtYM8qurjGyRz8M49Pe2bLwTF4k2wfZpF",
+      expectedShredVersion: 65416,
+      noSnapshotFetch: true,
+    },
+  },
+  {
+    dependsOn: [instance],
+  }
+);
+```
+
+5. Apply changes
 
 ```
-$sol vim run-validator
+pulumi up
 
-agave-validator \
-  --wait-for-supermajority 32179
-  --expected-bank-hash 6spvWBo8JyYqtYM8qurjGyRz8M49Pe2bLwTF4k2wfZpF
-  --hard-fork 32179
-  --shred-version 65416
-  --no-snapshot-fetch
+     Type                       Name                          Plan        Info
+     pulumi:pulumi:Stack        aws-network-spe-py-hard-fork              3 messages
+ +-  ├─ svmkit:validator:Agave  bootstrap-node-validator      replace     [diff:]
+ +-  ├─ svmkit:validator:Agave  node1-validator               replace     [diff:]
+ +-  └─ svmkit:validator:Agave  node0-validator               replace     [diff:]
+
+Resources:
+    +-3 to replace
+    36 unchanged
 ```
 
-5. Restart validators
-
-```
-$ sudo systemctl restart svmkit-agave-validator
-```
-
-Restart the bootstrap validator and then all other validators.
+This will restart the validators with the flags needed to hard-fork the network.
 
 4. Confirm block production is restored
 
