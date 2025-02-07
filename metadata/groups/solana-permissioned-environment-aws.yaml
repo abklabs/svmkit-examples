@@ -1,0 +1,8 @@
+name: Solana Permissioned Environment (SPE)
+kind: architecture
+parent: spe
+slug: aws
+clouds:
+  - aws
+templates:
+  - spe-aws-ts
