@@ -5,7 +5,8 @@ import pulumi_svmkit as svmkit
 from typing import cast
 
 
-from spe import Node, AGAVE_VERSION
+from spe import Node, Agave, AGAVE_VERSION
+
 
 GOSSIP_PORT = 8001
 RPC_PORT = 8899
@@ -73,35 +74,6 @@ rpc_faucet_address = bootstrap_node.instance.private_ip.apply(
     lambda ip: f"{ip}:{FAUCET_PORT}"
 )
 
-base_flags = svmkit.agave.FlagsArgsDict({
-    "only_known_rpc": False,
-    "rpc_port": RPC_PORT,
-    "dynamic_port_range": "8002-8020",
-    "private_rpc": False,
-    "gossip_port": GOSSIP_PORT,
-    "rpc_bind_address": "0.0.0.0",
-    "wal_recovery_mode": "skip_any_corrupted_record",
-    "limit_ledger_size": 50000000,
-    "block_production_method": "central-scheduler",
-    "full_snapshot_interval_slots": 1000,
-    "no_wait_for_vote_to_start_leader": True,
-    "use_snapshot_archives_at_startup": "when-newest",
-    "allow_private_addr": True,
-    "rpc_faucet_address": rpc_faucet_address,
-})
-
-bootstrap_flags = base_flags.copy()
-bootstrap_flags.update({
-    "full_rpc_api": True,
-    "no_voting": False,
-    "gossip_host": bootstrap_node.instance.private_ip,
-    "extra_flags": [
-        "--enable-extended-tx-metadata-storage", # Enabled so that
-        "--enable-rpc-transaction-history",      # Solana Explorer has
-                                                 # the data it needs.
-    ]
-})
-
 faucet = svmkit.faucet.Faucet(
     "bootstrap-faucet",
     connection=bootstrap_node.connection,
@@ -109,12 +81,27 @@ faucet = svmkit.faucet.Faucet(
     flags={
         "per_request_cap": 1000,
     },
-    opts=pulumi.ResourceOptions(depends_on=([genesis])))
+    opts=pulumi.ResourceOptions(depends_on=[genesis]))
 
-bootstrap_validator = bootstrap_node.configure_validator(
-    bootstrap_flags, environment=sol_env, startup_policy={
-        "wait_for_rpc_health": True},
-    depends_on=[faucet])
+bootstrap_validator = Agave("bootstrap-validator", node=bootstrap_node, flags=svmkit.agave.FlagsArgsDict({
+    "rpc_port": RPC_PORT,
+    "gossip_port": GOSSIP_PORT,
+    "full_rpc_api": True,
+    "no_voting": False,
+    "rpc_faucet_address": rpc_faucet_address,
+    "gossip_host": bootstrap_node.instance.private_ip,
+    "no_wait_for_vote_to_start_leader": False,
+    "rpc_bind_address": "0.0.0.0",
+    "wal_recovery_mode": "skip_any_corrupted_record",
+    "extra_flags": [
+        "--enable-extended-tx-metadata-storage",  # Enabled so that
+        "--enable-rpc-transaction-history",      # Solana Explorer has
+                                                 # the data it needs.
+    ]
+}),
+    environment=sol_env, startup_policy={
+    "wait_for_rpc_health": True
+}, opts=pulumi.ResourceOptions(depends_on=[bootstrap_node.instance]))
 
 explorer = svmkit.explorer.Explorer(
     "bootstrap-explorer",
@@ -138,17 +125,22 @@ for node in nodes:
     entry_point = [x.instance.private_ip.apply(
         lambda v: f"{v}:{GOSSIP_PORT}") for x in other_nodes]
 
-    flags = base_flags.copy()
-    flags.update({
-        "entry_point": entry_point,
-        "known_validator": [x.validator_key.public_key for x in other_nodes],
-        "expected_genesis_hash": genesis.genesis_hash,
-        "full_rpc_api": node == bootstrap_node,
-        "gossip_host": node.instance.private_ip,
-    })
-
-    validator = node.configure_validator(flags, environment=sol_env, startup_policy=svmkit.agave.StartupPolicyArgs(),
-                                         depends_on=[bootstrap_validator])
+    validator = Agave(node.name + "-validator",
+                      node=node,
+                      flags=svmkit.agave.FlagsArgsDict({
+                          "no_wait_for_vote_to_start_leader": False,
+                          "rpc_port": RPC_PORT,
+                          "gossip_port": GOSSIP_PORT,
+                          "rpc_bind_address": "0.0.0.0",
+                          "wal_recovery_mode": "skip_any_corrupted_record",
+                          "entry_point": entry_point,
+                          "known_validator": [x.validator_key.public_key for x in other_nodes],
+                          "expected_genesis_hash": genesis.genesis_hash,
+                          "gossip_host": node.instance.private_ip,
+                      }),
+                      environment=sol_env,
+                      startup_policy=svmkit.agave.StartupPolicyArgs(),
+                      opts=pulumi.ResourceOptions(depends_on=[node.instance]))
 
     transfer = svmkit.account.Transfer(node.name + "-transfer",
                                        connection=bootstrap_node.connection,

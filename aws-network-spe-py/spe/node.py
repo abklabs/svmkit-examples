@@ -89,29 +89,3 @@ mount -a
             "user": "admin",
             "private_key": self.ssh_key.private_key_openssh,
         })
-
-    def configure_validator(self, flags: Union['svmkit.agave.FlagsArgs', 'svmkit.agave.FlagsArgsDict'], environment: Union['svmkit.solana.EnvironmentArgs', 'svmkit.solana.EnvironmentArgsDict'], startup_policy: Union['svmkit.agave.StartupPolicyArgs', 'svmkit.agave.StartupPolicyArgsDict'], depends_on=[]):
-        return svmkit.validator.Agave(
-            f"{self.name}-validator",
-            environment=environment,
-            connection=self.connection,
-            version=AGAVE_VERSION,
-            startup_policy=startup_policy,
-            shutdown_policy={
-                "force": True,
-            },
-            key_pairs={
-                "identity": self.validator_key.json,
-                "vote_account": self.vote_account_key.json,
-            },
-            flags=flags,
-            timeout_config={
-                "rpc_service_timeout": 120,
-            },
-            info={
-                "name": self.name,
-                "details": "An AWS network-based SPE validator node.",
-            },
-            opts=pulumi.ResourceOptions(
-                depends_on=([self.instance] + depends_on))
-        )
