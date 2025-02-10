@@ -45,7 +45,9 @@ genesis = svmkit.genesis.Solana(
         "identity_pubkey": bootstrap_node.validator_key.public_key,
         "vote_pubkey": bootstrap_node.vote_account_key.public_key,
         "stake_pubkey": stake_account_key.public_key,
-        "faucet_pubkey": faucet_key.public_key
+        "faucet_pubkey": faucet_key.public_key,
+        "enable_warmup_epochs": True,
+        "bootstrap_validator_stake_lamports": 10000000000,  # 10 SOL
     },
     primordial=[
         {
@@ -171,8 +173,8 @@ for node in nodes:
                                     "stake_account": stake_account_key.json,
                                     "vote_account": node.vote_account_key.json,
                                 },
-                                amount=150,
-                                opts=pulumi.ResourceOptions(depends_on=([vote_account])))
+                                amount=10,
+                                opts=pulumi.ResourceOptions(depends_on=[vote_account]))
 
 watchtower_notifications: svmkit.watchtower.NotificationConfigArgsDict = {}
 
