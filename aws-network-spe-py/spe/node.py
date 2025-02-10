@@ -41,7 +41,7 @@ class Node:
         self.validator_key = svmkit.KeyPair(_("validator-key"))
         self.vote_account_key = svmkit.KeyPair(_("vote-account-key"))
 
-        instance_type = node_config.get('instanceType') or "c6i.xlarge"
+        instance_type = node_config.get('instanceType') or "r7a.4xlarge"
         iops = node_config.get_int('volumeIOPS') or 5000
 
         stack_name = pulumi.get_stack()

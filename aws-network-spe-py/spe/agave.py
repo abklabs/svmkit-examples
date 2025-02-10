@@ -1,4 +1,4 @@
-from typing import Union, Dict, Any
+from typing import Union
 from spe.node import Node
 import pulumi
 import pulumi_svmkit as svmkit
@@ -7,14 +7,14 @@ AGAVE_VERSION = "1.18.26-1"
 
 
 class Agave(pulumi.ComponentResource):
-    def __init__(self, name: str, node: Node, flags: svmkit.agave.FlagsArgsDict, environment: Union['svmkit.solana.EnvironmentArgs', 'svmkit.solana.EnvironmentArgsDict'], startup_policy: Union['svmkit.agave.StartupPolicyArgs', 'svmkit.agave.StartupPolicyArgsDict'], opts: pulumi.ResourceOptions = pulumi.ResourceOptions()) -> None:
+    def __init__(self, name: str, node: Node, version: str | None, flags: svmkit.agave.FlagsArgsDict, environment: Union['svmkit.solana.EnvironmentArgs', 'svmkit.solana.EnvironmentArgsDict'], startup_policy: Union['svmkit.agave.StartupPolicyArgs', 'svmkit.agave.StartupPolicyArgsDict'], opts: pulumi.ResourceOptions = pulumi.ResourceOptions()) -> None:
         super().__init__('svmkit-examples:spe:Agave', name, None, opts)
 
         svmkit.validator.Agave(
-            name,
+            name + "-agave-validator",
             environment=environment,
             connection=node.connection,
-            version=AGAVE_VERSION,
+            version=version,
             startup_policy=startup_policy,
             shutdown_policy={
                 "force": True,
@@ -31,5 +31,7 @@ class Agave(pulumi.ComponentResource):
                 "name": name,
                 "details": "An AWS network-based SPE validator node.",
             },
-            opts=opts
+            opts=pulumi.ResourceOptions.merge(
+                opts,
+                pulumi.ResourceOptions(parent=self))
         )
