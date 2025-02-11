@@ -7,7 +7,7 @@ import pulumi_svmkit as svmkit
 
 from .network import external_sg, internal_sg
 
-AGAVE_VERSION = "1.18.26-1"
+AGAVE_VERSION = "2.1.11-1"
 
 node_config = pulumi.Config("node")
 
@@ -107,10 +107,6 @@ mount -a
             flags=flags,
             timeout_config={
                 "rpc_service_timeout": 120,
-            },
-            info={
-                "name": self.name,
-                "details": "An AWS network-based SPE validator node.",
             },
             opts=pulumi.ResourceOptions(
                 depends_on=([self.instance] + depends_on))
