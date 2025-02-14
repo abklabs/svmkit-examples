@@ -32,15 +32,15 @@ const genesis = new svmkit.genesis.Solana(
     primordial: [
       {
         pubkey: bootstrapNode.validatorKey.publicKey,
-        lamports: "1000000000000", // 1000 SOL
+        lamports: 1000000000000, // 1000 SOL
       },
       {
         pubkey: treasuryKey.publicKey,
-        lamports: "100000000000000", // 100000 SOL
+        lamports: 100000000000000, // 100000 SOL
       },
       {
         pubkey: faucetKey.publicKey,
-        lamports: "1000000000000", // 1000 SOL
+        lamports: 1000000000000, // 1000 SOL
       },
     ],
   },

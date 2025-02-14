@@ -49,15 +49,15 @@ genesis = svmkit.genesis.Solana(
     primordial=[
         {
             "pubkey": bootstrap_node.validator_key.public_key,
-            "lamports": "1000000000000",  # 1000 SOL
+            "lamports": 1000000000000,  # 1000 SOL
         },
         {
             "pubkey": treasury_key.public_key,
-            "lamports": "100000000000000",  # 100000 SOL
+            "lamports": 100000000000000,  # 100000 SOL
         },
         {
             "pubkey": faucet_key.public_key,
-            "lamports": "1000000000000",  # 1000 SOL
+            "lamports": 1000000000000,  # 1000 SOL
         },
     ],
     opts=pulumi.ResourceOptions(
