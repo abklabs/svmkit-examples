@@ -4,9 +4,12 @@ from spe.node import Node
 import pulumi
 import pulumi_svmkit as svmkit
 
+FIREDANCER_VERSION = "0.305.20111-2"
+FIREDANCER_DEFAULT_INSTANCE_TYPE = "r7a.8xlarge"
+
 
 class Firedancer(pulumi.ComponentResource):
-    def __init__(self, name: str, node: Node, version: str | None, config: svmkit.firedancer.ConfigArgsDict, environment: Union[svmkit.solana.EnvironmentArgs, svmkit.solana.EnvironmentArgsDict], opts: pulumi.ResourceOptions = pulumi.ResourceOptions()) -> None:
+    def __init__(self, name: str, node: Node, version: str | None, config: svmkit.firedancer.ConfigArgsDict, environment: Union[svmkit.solana.EnvironmentArgs, svmkit.solana.EnvironmentArgsDict], opts: pulumi.ResourceOptions | None = None) -> None:
         super().__init__('svmkit-examples:spe:Firedancer', name, None, opts)
 
         svmkit.validator.Firedancer(
@@ -19,7 +22,5 @@ class Firedancer(pulumi.ComponentResource):
                 "vote_account": node.vote_account_key.json,
             },
             config=config,
-            opts=pulumi.ResourceOptions.merge(
-                opts,
-                pulumi.ResourceOptions(parent=self))
+            opts=pulumi.ResourceOptions(parent=self)
         )

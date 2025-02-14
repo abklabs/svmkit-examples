@@ -4,7 +4,7 @@ import pulumi_tls as tls
 import pulumi_svmkit as svmkit
 from typing import cast, List
 
-from spe import Node, Agave, AGAVE_VERSION, ValidatorLayout, Firedancer, GOSSIP_PORT, RPC_PORT, FAUCET_PORT
+from spe import Node, Agave, AgaveLayout, FiredancerLayout, AGAVE_VERSION, AGAVE_DEFAULT_INSTANCE_TYPE, ValidatorLayout, Firedancer, GOSSIP_PORT, RPC_PORT, FAUCET_PORT
 
 
 node_config = pulumi.Config("node")
@@ -13,10 +13,18 @@ total_nodes = node_config.get_int("count") or 3
 node_layout = node_config.get_object("layout") or None
 
 node_manifest: List[ValidatorLayout] = (
-    [{"kind": layout.get("kind"), "version": layout.get("version")}
-     for layout in node_layout]
+    [
+        AgaveLayout(
+            version=layout.get("version"),
+            instance_type=layout.get("instance_type")
+        ) if layout.get("kind") == "agave" else FiredancerLayout(
+            version=layout.get("version"),
+            instance_type=layout.get("instance_type")
+        )
+        for layout in node_layout
+    ]
     if node_layout
-    else [{"kind": "agave", "version": AGAVE_VERSION}] * total_nodes
+    else [AgaveLayout(version=AGAVE_VERSION, instance_type=AGAVE_DEFAULT_INSTANCE_TYPE)] * total_nodes
 )
 
 tuner_config = pulumi.Config("tuner")
@@ -35,7 +43,12 @@ twilio_auth_token = watchtower_config.get("twilio_auth_token") or None
 twilio_to_number = watchtower_config.get("twilio_to_number") or None
 twilio_from_number = watchtower_config.get("twilio_from_number") or None
 
-bootstrap_node = Node("bootstrap-node")
+bootstrap_manifest = node_manifest[0]
+bootstrap_kind = bootstrap_manifest.kind
+bootstrap_version = bootstrap_manifest.version
+bootstrap_instance_type = bootstrap_manifest.instance_type
+
+bootstrap_node = Node("bootstrap-node", instance_type=bootstrap_instance_type)
 faucet_key = svmkit.KeyPair("faucet-key")
 treasury_key = svmkit.KeyPair("treasury-key")
 stake_account_key = svmkit.KeyPair("stake-account-key")
@@ -51,6 +64,7 @@ genesis = svmkit.genesis.Solana(
         "stake_pubkey": stake_account_key.public_key,
         "faucet_pubkey": faucet_key.public_key,
         "enable_warmup_epochs": True,
+        "slot_per_epoch": 8192,
         "bootstrap_validator_stake_lamports": 10000000000,  # 10 SOL
     },
     primordial=[
@@ -68,7 +82,7 @@ genesis = svmkit.genesis.Solana(
         },
     ],
     opts=pulumi.ResourceOptions(
-        depends_on=[bootstrap_node.instance])
+        depends_on=[bootstrap_node])
 )
 
 sol_env = svmkit.solana.EnvironmentArgs(
@@ -89,9 +103,6 @@ faucet = svmkit.faucet.Faucet(
     },
     opts=pulumi.ResourceOptions(depends_on=[genesis]))
 
-bootstrap_manifest = node_manifest[0]
-bootstrap_kind = bootstrap_manifest.get("kind")
-bootstrap_version = bootstrap_manifest.get("version")
 
 if bootstrap_kind == "agave":
     bootstrap_validator = Agave(
@@ -144,7 +155,6 @@ elif bootstrap_kind == "firedancer":
             "layout": svmkit.firedancer.ConfigLayoutArgsDict({
                 "affinity": "auto",
                 "agave_affinity": "auto",
-                "bank_tile_count": 2,
                 "verify_tile_count": 1,
             }),
             "ledger": svmkit.firedancer.ConfigLedgerArgsDict({
@@ -193,7 +203,8 @@ explorer = svmkit.explorer.Explorer(
 
 consensus_manifest = node_manifest[1:]
 
-nodes = [Node(f"node{n}") for n in range(len(consensus_manifest))]
+nodes = [Node(f"node-{i}", instance_type=m.instance_type)
+         for i, m in enumerate(consensus_manifest)]
 all_nodes = [bootstrap_node] + nodes
 
 for i, node in enumerate(nodes):
@@ -204,8 +215,8 @@ for i, node in enumerate(nodes):
     known_validators = [x.validator_key.public_key for x in other_nodes]
     expected_genesis_hash = genesis.genesis_hash
 
-    validator_kind = consensus_manifest[i]["kind"]
-    validator_version = consensus_manifest[i]["version"]
+    validator_kind = consensus_manifest[i].kind
+    validator_version = consensus_manifest[i].version
 
     if validator_kind == "agave":
         validator = Agave(node.name,
@@ -235,7 +246,7 @@ for i, node in enumerate(nodes):
                           }),
                           environment=sol_env,
                           startup_policy=svmkit.agave.StartupPolicyArgs(),
-                          opts=pulumi.ResourceOptions(depends_on=[node.instance, bootstrap_validator]))
+                          opts=pulumi.ResourceOptions(depends_on=[node, bootstrap_validator]))
     elif validator_kind == "firedancer":
         validator = Firedancer(
             node.name,
@@ -251,7 +262,6 @@ for i, node in enumerate(nodes):
                     "layout": svmkit.firedancer.ConfigLayoutArgsDict({
                         "affinity": "auto",
                         "agave_affinity": "auto",
-                        "bank_tile_count": 2,
                         "verify_tile_count": 1,
 
                     }),
@@ -371,7 +381,6 @@ params = generic_tuner_params_output.apply(lambda p: cast(svmkit.tuner.TunerPara
     "net": p.net,
     "vm": p.vm,
 }))
-
 pulumi.export("tuner_params", params)
 
 for node in all_nodes:
