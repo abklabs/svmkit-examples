@@ -128,7 +128,32 @@ This script mints a token and allocates a portion of the supply to a recipient. 
 % ./token-demo token-demo-state
 ```
 
-6. (Optional) Tear down the example
+6. Access the RPC and Explorer via Port Forwarding (Optional)
+
+In the example, the deployed validators and explorer are running remotely, so you’ll need to forward the relevant ports to your local machine if you wish to interact with the RPC API or view the Explorer in your browser. The Solana JSON RPC API typically listens on port 8899 and the Explorer on port 3000.
+
+
+Forward the ports to your local machine:
+
+```
+./ssh-to-host 0 -L 8899:localhost:8899 -L 3000:localhost:3000
+```
+Test the RPC API by running the following command:
+```
+curl http://localhost:8899 -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0","id": 1,"method": "getHealth"}'
+```
+Additionally you can set your local Solana config to the same port to interact with the cluster:
+```
+solana set --url http://localhost:8899
+
+solana block
+```
+View the explorer for the SPE in your browser at `http://localhost:3000` . Note that the explorer
+frontend requires access to the node as well, so you need to make sure you've forwarded the
+validator's RPC port to your local machine as well.
+
+
+7. (Optional) Tear down the example
 
 ```
 % pulumi down
