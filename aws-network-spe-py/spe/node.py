@@ -11,6 +11,8 @@ AGAVE_VERSION = "1.18.26-1"
 
 node_config = pulumi.Config("node")
 
+stack_name = pulumi.get_stack()
+
 ami = aws.ec2.get_ami(
     filters=[
         {
@@ -27,24 +29,24 @@ ami = aws.ec2.get_ami(
 ).id
 
 
-class Node:
-    def __init__(self, name):
+class Node(pulumi.ComponentResource):
+    def __init__(self, name: str, instance_type: str, iops: int = 5000, opts=None) -> None:
+        super().__init__('svmkit-examples:aws:Node', name, None, opts)
+
         self.name = name
 
         def _(s):
             return f"{self.name}-{s}"
 
-        self.ssh_key = tls.PrivateKey(_("ssh-key"), algorithm="ED25519")
+        self.ssh_key = tls.PrivateKey(
+            _("ssh-key"), algorithm="ED25519", opts=pulumi.ResourceOptions(parent=self))
         self.key_pair = aws.ec2.KeyPair(
-            _("keypair"), public_key=self.ssh_key.public_key_openssh)
+            _("keypair"), public_key=self.ssh_key.public_key_openssh, opts=pulumi.ResourceOptions(parent=self))
 
-        self.validator_key = svmkit.KeyPair(_("validator-key"))
-        self.vote_account_key = svmkit.KeyPair(_("vote-account-key"))
-
-        instance_type = node_config.get('instanceType') or "c6i.xlarge"
-        iops = node_config.get_int('volumeIOPS') or 5000
-
-        stack_name = pulumi.get_stack()
+        self.validator_key = svmkit.KeyPair(
+            _("validator-key"), opts=pulumi.ResourceOptions(parent=self))
+        self.vote_account_key = svmkit.KeyPair(
+            _("vote-account-key"), opts=pulumi.ResourceOptions(parent=self))
 
         self.instance = aws.ec2.Instance(
             _("instance"),
@@ -79,9 +81,10 @@ systemctl daemon-reload
 mount -a
 """,
             tags={
-                "Name": stack_name + "-" + self.name,
+                "Name": stack_name + "-" + name,
                 "Stack": stack_name,
-            }
+            },
+            opts=pulumi.ResourceOptions(parent=self)
         )
 
         self.connection = svmkit.ssh.ConnectionArgsDict({
@@ -90,28 +93,11 @@ mount -a
             "private_key": self.ssh_key.private_key_openssh,
         })
 
-    def configure_validator(self, flags: Union['svmkit.agave.FlagsArgs', 'svmkit.agave.FlagsArgsDict'], environment: Union['svmkit.solana.EnvironmentArgs', 'svmkit.solana.EnvironmentArgsDict'], startup_policy: Union['svmkit.agave.StartupPolicyArgs', 'svmkit.agave.StartupPolicyArgsDict'], depends_on=[]):
-        return svmkit.validator.Agave(
-            f"{self.name}-validator",
-            environment=environment,
-            connection=self.connection,
-            version=AGAVE_VERSION,
-            startup_policy=startup_policy,
-            shutdown_policy={
-                "force": True,
-            },
-            key_pairs={
-                "identity": self.validator_key.json,
-                "vote_account": self.vote_account_key.json,
-            },
-            flags=flags,
-            timeout_config={
-                "rpc_service_timeout": 120,
-            },
-            info={
-                "name": self.name,
-                "details": "An AWS network-based SPE validator node.",
-            },
-            opts=pulumi.ResourceOptions(
-                depends_on=([self.instance] + depends_on))
-        )
+        self.register_outputs({
+            "ssh_key": self.ssh_key,
+            "key_pair": self.key_pair,
+            "validator_key": self.validator_key,
+            "vote_account_key": self.vote_account_key,
+            "instance": self.instance,
+            "connection": self.connection,
+        })
