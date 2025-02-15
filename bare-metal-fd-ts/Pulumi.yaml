@@ -1,4 +1,4 @@
-name: bare-metal-agave-ts
+name: bare-metal-fd-ts
 description: An Agave validator running on any remote machine using TypeScript
 runtime:
   name: nodejs

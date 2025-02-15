@@ -24,7 +24,6 @@ const connection = {
 
 // Instantiate a new Firedancer instance on the machine.
 new svmkit.validator.Firedancer(
-
   "fd",
   {
     connection,

@@ -1,5 +1,5 @@
 {
-  "name": "bare-metal-agave-ts",
+  "name": "bare-metal-fd-ts",
   "main": "index.ts",
   "license": "GPL-3.0",
   "devDependencies": {
