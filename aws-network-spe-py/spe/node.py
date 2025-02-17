@@ -7,7 +7,7 @@ import pulumi_svmkit as svmkit
 
 from .network import external_sg, internal_sg
 
-AGAVE_VERSION = "1.18.26-1"
+AGAVE_VERSION = "2.1.13-1"
 
 node_config = pulumi.Config("node")
 
@@ -55,13 +55,13 @@ class Node:
             ebs_block_devices=[
                 {
                     "device_name": "/dev/sdf",
-                    "volume_size": 100,
+                    "volume_size": 20,
                     "volume_type": "gp3",
                     "iops": iops,
                 },
                 {
                     "device_name": "/dev/sdg",
-                    "volume_size": 204,
+                    "volume_size": 500,
                     "volume_type": "gp3",
                     "iops": iops,
                 },

@@ -48,6 +48,7 @@ genesis = svmkit.genesis.Solana(
         "faucet_pubkey": faucet_key.public_key,
         "bootstrap_validator_stake_lamports": 10000000000,  # 10 SOL
         "enable_warmup_epochs": True,
+        "slot_per_epoch": 8192,
     },
     primordial=[
         {
@@ -119,19 +120,19 @@ bootstrap_validator = bootstrap_node.configure_validator(
         "wait_for_rpc_health": True},
     depends_on=[faucet])
 
-explorer = svmkit.explorer.Explorer(
-    "bootstrap-explorer",
-    connection=bootstrap_node.connection,
-    environment=sol_env,
-    name="Demo",
-    symbol="DMO",
-    cluster_name="demonet",
-    rpcurl="http://localhost:8899",
-    flags={
-        "hostname": "0.0.0.0",
-        "port": 3000,
-    },
-    opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator])))
+# explorer = svmkit.explorer.Explorer(
+#     "bootstrap-explorer",
+#     connection=bootstrap_node.connection,
+#     environment=sol_env,
+#     name="Demo",
+#     symbol="DMO",
+#     cluster_name="demonet",
+#     rpcurl="http://localhost:8899",
+#     flags={
+#         "hostname": "0.0.0.0",
+#         "port": 3000,
+#     },
+#     opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator])))
 
 nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
 all_nodes = [bootstrap_node] + nodes
