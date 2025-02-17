@@ -28,6 +28,7 @@ const genesis = new svmkit.genesis.Solana(
       votePubkey: bootstrapNode.voteAccountKey.publicKey,
       stakePubkey: stakeAccountKey.publicKey,
       faucetPubkey: faucetKey.publicKey,
+      bootstrapValidatorStakeLamports: 10000000000, // 10 SOL
     },
     primordial: [
       {
