@@ -46,7 +46,7 @@ const genesis = new svmkit.genesis.Solana(
   },
   {
     dependsOn: [bootstrapNode.instance],
-  },
+  }
 );
 
 const solEnv = {
@@ -54,7 +54,7 @@ const solEnv = {
 };
 
 const rpcFaucetAddress = bootstrapNode.privateIP.apply(
-  (ip) => `${ip}:${faucetPort}`,
+  (ip) => `${ip}:${faucetPort}`
 );
 
 const baseFlags: svmkit.types.input.agave.FlagsArgs = {
@@ -94,7 +94,7 @@ const faucet = new svmkit.faucet.Faucet(
   },
   {
     dependsOn: [genesis],
-  },
+  }
 );
 
 const bootstrapValidator = bootstrapNode.configureValidator(
@@ -104,7 +104,7 @@ const bootstrapValidator = bootstrapNode.configureValidator(
     waitForRPCHealth: true,
   },
   [faucet],
-  runnerConfig,
+  runnerConfig
 );
 
 const nodes = [...Array(totalNodes - 1)].map((_, i) => new Node(`node${i}`));
@@ -113,7 +113,7 @@ const allNodes = [bootstrapNode, ...nodes];
 nodes.forEach((node) => {
   const otherNodes = allNodes.filter((x) => x != node);
   const entryPoint = otherNodes.map((node) =>
-    node.privateIP.apply((v) => `${v}:${gossipPort}`),
+    node.privateIP.apply((v) => `${v}:${gossipPort}`)
   );
 
   const flags: svmkit.types.input.agave.FlagsArgs = {
@@ -130,7 +130,7 @@ nodes.forEach((node) => {
     solEnv,
     {},
     [bootstrapValidator],
-    runnerConfig,
+    runnerConfig
   );
 
   const transfer = new svmkit.account.Transfer(
@@ -146,7 +146,7 @@ nodes.forEach((node) => {
     },
     {
       dependsOn: [bootstrapValidator],
-    },
+    }
   );
   const voteAccount = new svmkit.account.VoteAccount(
     node.name + "-voteAccount",
@@ -160,7 +160,7 @@ nodes.forEach((node) => {
     },
     {
       dependsOn: [transfer],
-    },
+    }
   );
 
   const stakeAccountKey = new svmkit.KeyPair(node.name + "-stakeAccount-key");
@@ -176,18 +176,18 @@ nodes.forEach((node) => {
         stakeAccount: stakeAccountKey.json,
         voteAccount: node.voteAccountKey.json,
       },
-      amount: 150,
+      amount: 10,
     },
     {
       dependsOn: [voteAccount],
-    },
+    }
   );
 });
 
 export const nodes_name = allNodes.map((x) => x.name);
 export const nodes_public_ip = allNodes.map((x) => x.publicIP);
 export const nodes_private_key = allNodes.map(
-  (x) => x.sshKey.privateKeyOpenssh,
+  (x) => x.sshKey.privateKeyOpenssh
 );
 export const speInfo = {
   treasuryKey: treasuryKey,
