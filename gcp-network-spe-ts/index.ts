@@ -28,6 +28,7 @@ const genesis = new svmkit.genesis.Solana(
       votePubkey: bootstrapNode.voteAccountKey.publicKey,
       stakePubkey: stakeAccountKey.publicKey,
       faucetPubkey: faucetKey.publicKey,
+      bootstrapValidatorStakeLamports: 10000000000, // 10 SOL
     },
     primordial: [
       {
@@ -176,7 +177,7 @@ nodes.forEach((node) => {
         stakeAccount: stakeAccountKey.json,
         voteAccount: node.voteAccountKey.json,
       },
-      amount: 150,
+      amount: 10,
     },
     {
       dependsOn: [voteAccount],
