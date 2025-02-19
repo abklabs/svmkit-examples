@@ -44,6 +44,7 @@ class Node:
         instance_type = node_config.get('instanceType') or "c6i.xlarge"
         iops = node_config.get_int('volumeIOPS') or 5000
         root_volume_size = node_config.get_int('rootVolumeSize') or 20
+        swap_size = node_config.get_int('swapSize') or 8192
 
         stack_name = pulumi.get_stack()
 
@@ -72,7 +73,7 @@ class Node:
                     "iops": iops,
                 },
             ],
-            user_data="""#!/bin/bash
+            user_data=f"""#!/bin/bash
 # Format the /dev/sdf and /dev/sdg devices with the ext4 filesystem.
 mkfs -t ext4 /dev/sdf
 mkfs -t ext4 /dev/sdg
@@ -81,15 +82,22 @@ mkfs -t ext4 /dev/sdg
 mkdir -p /home/sol/accounts
 mkdir -p /home/sol/ledger
 
-# Append entries to /etc/fstab to mount the devices at boot.
+# Append entries to /etc/fstab to mount the devices and swap at boot.
 cat <<EOF >> /etc/fstab
 /dev/sdf	/home/sol/accounts	ext4	defaults	0	0
 /dev/sdg	/home/sol/ledger	ext4	defaults	0	0
+/swapfile none swap sw 0 0
 EOF
+
+# Setup swap space
+fallocate -l {swap_size}M /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
 
 # Reload systemd manager configuration and mount all filesystems.
 systemctl daemon-reload
 mount -a
+swapon -a
 """,
             tags={
                 "Name": stack_name + "-" + self.name,
