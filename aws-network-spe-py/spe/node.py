@@ -67,14 +67,21 @@ class Node:
                 },
             ],
             user_data="""#!/bin/bash
+# Format the /dev/sdf and /dev/sdg devices with the ext4 filesystem.
 mkfs -t ext4 /dev/sdf
 mkfs -t ext4 /dev/sdg
+
+# Create directories for Solana accounts and ledger data.
 mkdir -p /home/sol/accounts
 mkdir -p /home/sol/ledger
+
+# Append entries to /etc/fstab to mount the devices at boot.
 cat <<EOF >> /etc/fstab
 /dev/sdf	/home/sol/accounts	ext4	defaults	0	0
 /dev/sdg	/home/sol/ledger	ext4	defaults	0	0
 EOF
+
+# Reload systemd manager configuration and mount all filesystems.
 systemctl daemon-reload
 mount -a
 """,
