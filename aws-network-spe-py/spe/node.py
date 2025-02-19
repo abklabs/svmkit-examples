@@ -43,6 +43,7 @@ class Node:
 
         instance_type = node_config.get('instanceType') or "c6i.xlarge"
         iops = node_config.get_int('volumeIOPS') or 5000
+        root_volume_size = node_config.get_int('rootVolumeSize') or 20
 
         stack_name = pulumi.get_stack()
 
@@ -51,6 +52,11 @@ class Node:
             ami=ami,
             instance_type=instance_type,
             key_name=self.key_pair.key_name,
+            root_block_device={
+                "volume_size": root_volume_size,
+                "volume_type": "gp3",
+                "iops": iops,
+            },
             vpc_security_group_ids=[external_sg.id, internal_sg.id],
             ebs_block_devices=[
                 {
