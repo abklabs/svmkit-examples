@@ -238,6 +238,7 @@ params = generic_tuner_params_output.apply(lambda p: cast(svmkit.tuner.TunerPara
     "kernel": p.kernel,
     "net": p.net,
     "vm": p.vm,
+    "fs": p.fs,
 }))
 
 pulumi.export("tuner_params", params)
