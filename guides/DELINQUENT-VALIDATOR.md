@@ -44,7 +44,7 @@ unknown -    0 current validators ( 0.00%)   1 delinquent validators (25.00%)
 Run the following command to check recent logs:
 
 ```
-tail -n 100 /home/sol/log
+journalctl -n 100 -u svmkit-agave-validator
 ```
 
 Look for errors related to connection issues, missing votes, or performance degradation.
@@ -93,7 +93,7 @@ solana catchup --our-localhost
 If the validator is struggling to catch up, check logs for issues related to voting on the heaviest fork or interpreting the leader schedule:
 
 ```
-tail /home/sol/log
+journalctl -u svmkit-agave-validator
 ```
 
 Example of failure logs:
