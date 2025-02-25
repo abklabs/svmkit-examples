@@ -2,6 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as svmkit from "@svmkit/pulumi-svmkit";
 
 const solanaConfig = new pulumi.Config("solana");
+const tunerConfig = new pulumi.Config("tuner");
 
 // AWS-specific resources are created inside.
 import { sshKey, instance } from "./gcp";
@@ -27,6 +28,37 @@ const connection = {
   privateKey: sshKey.privateKeyOpenssh,
   dialErrorLimit: 50,
 };
+
+// Tuner setup
+const tunerVariant =
+    tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
+    svmkit.tuner.TunerVariant.Generic;
+
+// Retrieve the default tuner parameters for that variant
+const genericTunerParamsOutput = svmkit.tuner.getDefaultTunerParamsOutput({
+  variant: tunerVariant,
+});
+
+// "Apply" those params so we can pass them to the Tuner constructor
+const tunerParams = genericTunerParamsOutput.apply((p) => ({
+  cpuGovernor: p.cpuGovernor,
+  kernel: p.kernel,
+  net: p.net,
+  vm: p.vm,
+  fs: p.fs,
+}));
+
+// Create the Tuner resource on the EC2 instance
+const tuner = new svmkit.tuner.Tuner(
+  "tuner",
+  {
+    connection,
+    params: tunerParams,
+  },
+  {
+    dependsOn: [instance],
+  }
+);
 
 // Instantiate a new Agave instance on the machine.
 new svmkit.validator.Agave(

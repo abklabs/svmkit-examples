@@ -4,6 +4,7 @@ import { Node, agaveVersion } from "./spe";
 
 const nodeConfig = new pulumi.Config("node");
 const totalNodes = nodeConfig.getNumber("count") ?? 3;
+const tunerConfig = new pulumi.Config("tuner");
 
 const gossipPort = 8001;
 const rpcPort = 8899;
@@ -16,6 +17,37 @@ const stakeAccountKey = new svmkit.KeyPair("stake-account-key");
 const bootstrapNode = new Node("bootstrap-node");
 
 const runnerConfig = {};
+
+// Tuner setup
+const tunerVariant =
+    tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
+    svmkit.tuner.TunerVariant.Generic;
+
+// Retrieve the default tuner parameters for that variant
+const genericTunerParamsOutput = svmkit.tuner.getDefaultTunerParamsOutput({
+  variant: tunerVariant,
+});
+
+// "Apply" those params so we can pass them to the Tuner constructor
+const tunerParams = genericTunerParamsOutput.apply((p) => ({
+  cpuGovernor: p.cpuGovernor,
+  kernel: p.kernel,
+  net: p.net,
+  vm: p.vm,
+  fs: p.fs,
+}));
+
+// Create the Tuner resource on the EC2 instance
+const tuner = new svmkit.tuner.Tuner(
+  "tuner",
+  {
+    connection: bootstrapNode.connection,
+    params: tunerParams,
+  },
+  {
+    dependsOn: [bootstrapNode.instance],
+  }
+);
 
 const genesis = new svmkit.genesis.Solana(
   "genesis",
@@ -117,6 +149,17 @@ nodes.forEach((node) => {
   const entryPoint = otherNodes.map((node) =>
     node.privateIP.apply((v) => `${v}:${gossipPort}`)
   );
+
+  const tuner = new svmkit.tuner.Tuner(
+      node.name + "-tuner",
+      {
+        connection: node.connection,
+        params: tunerParams,
+      },
+      {
+        dependsOn: [node.instance],
+      }
+    );
 
   const flags: svmkit.types.input.agave.FlagsArgs = {
     ...baseFlags,
