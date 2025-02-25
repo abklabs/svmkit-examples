@@ -477,10 +477,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-4.6.0.tgz#3c7c9c46e678feefe7a2e5bb609d3dbd665ffb3f"
   integrity sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==
 
-"@svmkit/pulumi-svmkit@^0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@svmkit/pulumi-svmkit/-/pulumi-svmkit-0.24.0.tgz#c66d75b6bea30c421f33a21754eca6304e1c6ee8"
-  integrity sha512-qJttil2lpSD9D53pLSmctfI5bbIOXA8MZ7jmfJfcxtl9HhRxlKOVdbU/ae9UvJZFYumWTI6nPcMHE7MII99hZw==
+"@svmkit/pulumi-svmkit@^0.34.0":
+  version "0.34.0"
+  resolved "https://registry.yarnpkg.com/@svmkit/pulumi-svmkit/-/pulumi-svmkit-0.34.0.tgz#6c4cb99a6013fc24e8fdb1d70c3b6bd59c2ae36d"
+  integrity sha512-7Upcti2jFrasf1jxwDm9bY+4jkVhvzQ/+LfVYzl10a+QlWTCly6rcvzNzSh5tWPHukSp7W+tu6+orhnBB62WIA==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
 
