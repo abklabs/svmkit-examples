@@ -1,0 +1,16 @@
+{
+  "name": "bare-metal-fd-ts",
+  "main": "index.ts",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@types/node": "^18",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "typescript-language-server": "^4.3.3"
+  },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.113.0",
+    "@pulumi/tls": "^5.0.9",
+    "@svmkit/pulumi-svmkit": "^0.34.0"
+  }
+}
