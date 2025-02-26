@@ -2,18 +2,29 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_tls as tls
 import pulumi_svmkit as svmkit
-from typing import cast
+from typing import cast, List
 
-
-from spe import Node, AGAVE_VERSION
-
-GOSSIP_PORT = 8001
-RPC_PORT = 8899
-FAUCET_PORT = 9900
+from spe import Node, AgaveLayout, FiredancerLayout, ValidatorLayout, GOSSIP_PORT, RPC_PORT, FAUCET_PORT, GENESIS_VERSION, Validator
 
 node_config = pulumi.Config("node")
 
 total_nodes = node_config.get_int("count") or 3
+node_layout = node_config.get_object("layout") or None
+
+validator_layouts: List[ValidatorLayout] = (
+    [
+        AgaveLayout(
+            version=layout.get("version"),
+            instance_type=layout.get("instance_type")
+        ) if layout.get("kind") == "agave" else FiredancerLayout(
+            version=layout.get("version"),
+            instance_type=layout.get("instance_type")
+        )
+        for layout in node_layout
+    ]
+    if node_layout
+    else [AgaveLayout(version=None, instance_type=None)] * total_nodes
+)
 
 tuner_config = pulumi.Config("tuner")
 
@@ -31,7 +42,10 @@ twilio_auth_token = watchtower_config.get("twilio_auth_token") or None
 twilio_to_number = watchtower_config.get("twilio_to_number") or None
 twilio_from_number = watchtower_config.get("twilio_from_number") or None
 
-bootstrap_node = Node("bootstrap-node")
+bootstrap_layout = validator_layouts[0]
+bootstrap_instance_type = bootstrap_layout.instance_type
+
+bootstrap_node = Node("bootstrap-node", instance_type=bootstrap_instance_type)
 faucet_key = svmkit.KeyPair("faucet-key")
 treasury_key = svmkit.KeyPair("treasury-key")
 stake_account_key = svmkit.KeyPair("stake-account-key")
@@ -39,7 +53,7 @@ stake_account_key = svmkit.KeyPair("stake-account-key")
 genesis = svmkit.genesis.Solana(
     "genesis",
     connection=bootstrap_node.connection,
-    version=AGAVE_VERSION,
+    version=GENESIS_VERSION,
     flags={
         "ledger_path": "/home/sol/ledger",
         "identity_pubkey": bootstrap_node.validator_key.public_key,
@@ -65,7 +79,7 @@ genesis = svmkit.genesis.Solana(
         },
     ],
     opts=pulumi.ResourceOptions(
-        depends_on=[bootstrap_node.instance])
+        depends_on=[bootstrap_node])
 )
 
 sol_env = svmkit.solana.EnvironmentArgs(
@@ -77,35 +91,6 @@ rpc_faucet_address = bootstrap_node.instance.private_ip.apply(
     lambda ip: f"{ip}:{FAUCET_PORT}"
 )
 
-base_flags = svmkit.agave.FlagsArgsDict({
-    "only_known_rpc": False,
-    "rpc_port": RPC_PORT,
-    "dynamic_port_range": "8002-8020",
-    "private_rpc": False,
-    "gossip_port": GOSSIP_PORT,
-    "rpc_bind_address": "0.0.0.0",
-    "wal_recovery_mode": "skip_any_corrupted_record",
-    "limit_ledger_size": 50000000,
-    "block_production_method": "central-scheduler",
-    "full_snapshot_interval_slots": 1000,
-    "no_wait_for_vote_to_start_leader": True,
-    "use_snapshot_archives_at_startup": "when-newest",
-    "allow_private_addr": True,
-    "rpc_faucet_address": rpc_faucet_address,
-})
-
-bootstrap_flags = base_flags.copy()
-bootstrap_flags.update({
-    "full_rpc_api": True,
-    "no_voting": False,
-    "gossip_host": bootstrap_node.instance.private_ip,
-    "extra_flags": [
-        "--enable-extended-tx-metadata-storage",  # Enabled so that
-        "--enable-rpc-transaction-history",      # Solana Explorer has
-                                                 # the data it needs.
-    ]
-})
-
 faucet = svmkit.faucet.Faucet(
     "bootstrap-faucet",
     connection=bootstrap_node.connection,
@@ -113,12 +98,23 @@ faucet = svmkit.faucet.Faucet(
     flags={
         "per_request_cap": 1000,
     },
-    opts=pulumi.ResourceOptions(depends_on=([genesis])))
+    opts=pulumi.ResourceOptions(depends_on=[genesis]))
 
-bootstrap_validator = bootstrap_node.configure_validator(
-    bootstrap_flags, environment=sol_env, startup_policy={
-        "wait_for_rpc_health": True},
-    depends_on=[faucet])
+bootstrap_validator = Validator(
+    "bootstrap",
+    node=bootstrap_node,
+    layout=bootstrap_layout,
+    entry_point=[],
+    expected_genesis_hash=genesis.genesis_hash,
+    known_validators=[],
+    rpc_faucet_address=rpc_faucet_address,
+    environment=sol_env,
+    full_rpc_api=True,
+    enable_extended_tx_metadata_storage=True,
+    enable_rpc_transaction_history=True,
+    wait_for_rpc_health=True,
+    opts=pulumi.ResourceOptions(depends_on=[faucet])
+)
 
 explorer = svmkit.explorer.Explorer(
     "bootstrap-explorer",
@@ -132,27 +128,35 @@ explorer = svmkit.explorer.Explorer(
         "hostname": "0.0.0.0",
         "port": 3000,
     },
-    opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator])))
+    opts=pulumi.ResourceOptions(depends_on=[bootstrap_validator]))
 
-nodes = [Node(f"node{n}") for n in range(total_nodes - 1)]
+consensus_layouts = validator_layouts[1:]
+
+nodes = [Node(f"node-{i}", instance_type=m.instance_type)
+         for i, m in enumerate(consensus_layouts)]
 all_nodes = [bootstrap_node] + nodes
 
-for node in nodes:
+for i, node in enumerate(nodes):
     other_nodes = [x for x in all_nodes if x != node]
+
     entry_point = [x.instance.private_ip.apply(
         lambda v: f"{v}:{GOSSIP_PORT}") for x in other_nodes]
+    known_validators = [x.validator_key.public_key for x in other_nodes]
+    expected_genesis_hash = genesis.genesis_hash
 
-    flags = base_flags.copy()
-    flags.update({
-        "entry_point": entry_point,
-        "known_validator": [x.validator_key.public_key for x in other_nodes],
-        "expected_genesis_hash": genesis.genesis_hash,
-        "full_rpc_api": node == bootstrap_node,
-        "gossip_host": node.instance.private_ip,
-    })
+    layout = consensus_layouts[i]
 
-    validator = node.configure_validator(flags, environment=sol_env, startup_policy=svmkit.agave.StartupPolicyArgs(),
-                                         depends_on=[bootstrap_validator])
+    validator = Validator(
+        node.name,
+        node=node,
+        layout=layout,
+        entry_point=entry_point,
+        expected_genesis_hash=expected_genesis_hash,
+        known_validators=known_validators,
+        rpc_faucet_address=rpc_faucet_address,
+        environment=sol_env,
+        opts=pulumi.ResourceOptions(depends_on=[bootstrap_validator])
+    )
 
     transfer = svmkit.account.Transfer(node.name + "-transfer",
                                        connection=bootstrap_node.connection,
@@ -171,7 +175,7 @@ for node in nodes:
                                                   "vote_account": node.vote_account_key.json,
                                                   "auth_withdrawer": treasury_key.json,
                                               },
-                                              opts=pulumi.ResourceOptions(depends_on=([transfer])))
+                                              opts=pulumi.ResourceOptions(depends_on=[transfer]))
 
     stake_account_key = svmkit.KeyPair(node.name + "-stakeAccount-key")
     svmkit.account.StakeAccount(node.name + "-stakeAccount",
@@ -184,7 +188,7 @@ for node in nodes:
                                     "vote_account": node.vote_account_key.json,
                                 },
                                 amount=10,
-                                opts=pulumi.ResourceOptions(depends_on=([vote_account])))
+                                opts=pulumi.ResourceOptions(depends_on=[vote_account]))
 
 watchtower_notifications: svmkit.watchtower.NotificationConfigArgsDict = {}
 
@@ -225,7 +229,7 @@ watchtower = svmkit.watchtower.Watchtower(
         "validator_identity": [node.validator_key.public_key for node in all_nodes],
     },
     notifications=watchtower_notifications,
-    opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator]))
+    opts=pulumi.ResourceOptions(depends_on=[bootstrap_validator])
 )
 
 tuner_variant_name = tuner_config.get("variant") or "generic"
