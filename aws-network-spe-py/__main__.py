@@ -48,6 +48,7 @@ genesis = svmkit.genesis.Solana(
         "faucet_pubkey": faucet_key.public_key,
         "bootstrap_validator_stake_lamports": 10000000000,  # 10 SOL
         "enable_warmup_epochs": True,
+        "slots_per_epoch": 8192,
     },
     primordial=[
         {

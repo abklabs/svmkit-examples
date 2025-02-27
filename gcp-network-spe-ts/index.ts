@@ -62,6 +62,7 @@ const genesis = new svmkit.genesis.Solana(
       faucetPubkey: faucetKey.publicKey,
       bootstrapValidatorStakeLamports: 10000000000, // 10 SOL
       enableWarmupEpochs: true,
+      slotsPerEpoch: 8192,
     },
     primordial: [
       {
