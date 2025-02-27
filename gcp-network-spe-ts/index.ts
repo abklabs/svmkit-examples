@@ -20,8 +20,8 @@ const runnerConfig = {};
 
 // Tuner setup
 const tunerVariant =
-    tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
-    svmkit.tuner.TunerVariant.Generic;
+  tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
+  svmkit.tuner.TunerVariant.Generic;
 
 // Retrieve the default tuner parameters for that variant
 const genericTunerParamsOutput = svmkit.tuner.getDefaultTunerParamsOutput({
@@ -151,15 +151,15 @@ nodes.forEach((node) => {
   );
 
   const tuner = new svmkit.tuner.Tuner(
-      node.name + "-tuner",
-      {
-        connection: node.connection,
-        params: tunerParams,
-      },
-      {
-        dependsOn: [node.instance],
-      }
-    );
+    node.name + "-tuner",
+    {
+      connection: node.connection,
+      params: tunerParams,
+    },
+    {
+      dependsOn: [node.instance],
+    }
+  );
 
   const flags: svmkit.types.input.agave.FlagsArgs = {
     ...baseFlags,
