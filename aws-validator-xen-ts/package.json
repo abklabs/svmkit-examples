@@ -13,6 +13,6 @@
     "@pulumi/awsx": "^2.0.2",
     "@pulumi/pulumi": "^3.113.0",
     "@pulumi/tls": "^5.0.9",
-    "@svmkit/pulumi-svmkit": "^0.34.0"
+    "@svmkit/pulumi-svmkit": "^0.36.0"
   }
 }
