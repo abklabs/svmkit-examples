@@ -81,7 +81,7 @@ rpc_faucet_address = bootstrap_node.instance.private_ip.apply(
     lambda ip: f"{ip}:{FAUCET_PORT}"
 )
 
-base_flags = svmkit.agave.FlagsArgsDict({
+base_flags = svmkit.agave.AgaveFlagsArgsDict({
     "only_known_rpc": False,
     "rpc_port": RPC_PORT,
     "dynamic_port_range": "8002-8020",

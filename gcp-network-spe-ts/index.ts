@@ -96,7 +96,7 @@ const rpcFaucetAddress = bootstrapNode.privateIP.apply(
   (ip) => `${ip}:${faucetPort}`
 );
 
-const baseFlags: svmkit.types.input.agave.FlagsArgs = {
+const baseFlags: svmkit.types.input.agave.AgaveFlagsArgs = {
   onlyKnownRPC: false,
   rpcPort,
   dynamicPortRange: "8002-8020",
@@ -113,7 +113,7 @@ const baseFlags: svmkit.types.input.agave.FlagsArgs = {
   rpcFaucetAddress,
 };
 
-const bootstrapFlags: svmkit.types.input.agave.FlagsArgs = {
+const bootstrapFlags: svmkit.types.input.agave.AgaveFlagsArgs = {
   ...baseFlags,
   fullRpcAPI: true,
   noVoting: false,
@@ -166,7 +166,7 @@ nodes.forEach((node) => {
     }
   );
 
-  const flags: svmkit.types.input.agave.FlagsArgs = {
+  const flags: svmkit.types.input.agave.AgaveFlagsArgs = {
     ...baseFlags,
     entryPoint,
     knownValidator: otherNodes.map((x) => x.validatorKey.publicKey),
