@@ -6,6 +6,7 @@ from typing import cast
 
 
 from spe import Node, AGAVE_VERSION
+from paths import base_paths, genesis_paths, faucet_paths, explorer_paths, watchtower_paths, tuner_paths, agave_paths
 
 GOSSIP_PORT = 8001
 RPC_PORT = 8899
@@ -39,6 +40,7 @@ stake_account_key = svmkit.KeyPair("stake-account-key")
 genesis = svmkit.genesis.Solana(
     "genesis",
     connection=bootstrap_node.connection,
+    paths=genesis_paths,
     version=AGAVE_VERSION,
     flags={
         "bootstrap_validators": [
@@ -113,6 +115,7 @@ bootstrap_flags.update({
 faucet = svmkit.faucet.Faucet(
     "bootstrap-faucet",
     connection=bootstrap_node.connection,
+    paths=faucet_paths,
     keypair=faucet_key.json,
     flags={
         "per_request_cap": 1000,
@@ -122,11 +125,12 @@ faucet = svmkit.faucet.Faucet(
 bootstrap_validator = bootstrap_node.configure_validator(
     bootstrap_flags, environment=sol_env, startup_policy={
         "wait_for_rpc_health": True},
-    depends_on=[faucet])
+    paths=agave_paths, depends_on=[faucet])
 
 explorer = svmkit.explorer.Explorer(
     "bootstrap-explorer",
     connection=bootstrap_node.connection,
+    paths=explorer_paths,
     environment=sol_env,
     name="Demo",
     symbol="DMO",
@@ -156,7 +160,7 @@ for node in nodes:
     })
 
     validator = node.configure_validator(flags, environment=sol_env, startup_policy=svmkit.agave.StartupPolicyArgs(),
-                                         depends_on=[bootstrap_validator])
+                                         paths=agave_paths, depends_on=[bootstrap_validator])
 
     transfer = svmkit.account.Transfer(node.name + "-transfer",
                                        connection=bootstrap_node.connection,
@@ -224,6 +228,7 @@ if twilio_account_sid and twilio_auth_token and twilio_to_number and twilio_from
 watchtower = svmkit.watchtower.Watchtower(
     'bootstrap-watchtower',
     connection=bootstrap_node.connection,
+    paths=watchtower_paths,
     environment=sol_env,
     flags={
         "validator_identity": [node.validator_key.public_key for node in all_nodes],
@@ -252,6 +257,7 @@ for node in all_nodes:
     tuner = svmkit.tuner.Tuner(
         node.name + "-tuner",
         connection=node.connection,
+        paths=tuner_paths,
         params=params,
         opts=pulumi.ResourceOptions(depends_on=([node.instance]))
     )

@@ -1,6 +1,8 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as svmkit from "@svmkit/pulumi-svmkit";
 
+import { basePaths, firedancerPaths } from "./paths";
+
 const solanaConfig = new pulumi.Config("solana");
 const remote = new pulumi.Config("remote");
 
@@ -27,6 +29,7 @@ new svmkit.validator.Firedancer(
   "fd",
   {
     connection,
+    paths: firedancerPaths,
     keyPairs: {
       identity: validatorKey,
       voteAccount: voteAccountKey,
@@ -60,3 +63,7 @@ export const nodes_name = ["instance"];
 export const nodes_public_ip = [connection.host];
 export const nodes_user = [connection.user];
 export const nodes_private_key = [connection.privateKey];
+export const paths = {
+  base: basePaths,
+  firedancer: firedancerPaths,
+};

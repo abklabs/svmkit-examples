@@ -116,11 +116,13 @@ swapon -a
         flags: Union['svmkit.agave.AgaveFlagsArgs', 'svmkit.agave.AgaveFlagsArgsDict'],
         environment: Union['svmkit.solana.EnvironmentArgs', 'svmkit.solana.EnvironmentArgsDict'],
         startup_policy: Union['svmkit.agave.StartupPolicyArgs', 'svmkit.agave.StartupPolicyArgsDict'],
+        paths: pulumi.Input[Union['svmkit.agave.AgavePathsArgs', 'svmkit.agave.AgavePathsArgsDict']],
         depends_on=[]
     ):
         return svmkit.validator.Agave(
             f"{self.name}-validator",
             environment=environment,
+            paths=paths,
             connection=self.connection,
             version=AGAVE_VERSION,
             startup_policy=startup_policy,

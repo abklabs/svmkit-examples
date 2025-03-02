@@ -2,6 +2,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as svmkit from "@svmkit/pulumi-svmkit";
 import { Node, agaveVersion } from "./spe";
 
+import { basePaths, genesisPaths, faucetPaths, tunerPaths, agavePaths } from "./paths";
+
 const nodeConfig = new pulumi.Config("node");
 const totalNodes = nodeConfig.getNumber("count") ?? 3;
 const tunerConfig = new pulumi.Config("tuner");
@@ -42,6 +44,7 @@ const tuner = new svmkit.tuner.Tuner(
   "tuner",
   {
     connection: bootstrapNode.connection,
+    paths: tunerPaths,
     params: tunerParams,
   },
   {
@@ -53,6 +56,7 @@ const genesis = new svmkit.genesis.Solana(
   "genesis",
   {
     connection: bootstrapNode.connection,
+    paths: genesisPaths,
     version: agaveVersion,
     flags: {
       ledgerPath: "/home/sol/ledger",
@@ -126,6 +130,7 @@ const faucet = new svmkit.faucet.Faucet(
   "bootstrap-faucet",
   {
     connection: bootstrapNode.connection,
+    paths: faucetPaths,
     keypair: faucetKey.json,
     flags: {
       perRequestCap: 1000,
@@ -159,6 +164,7 @@ nodes.forEach((node) => {
     node.name + "-tuner",
     {
       connection: node.connection,
+      paths: tunerPaths,
       params: tunerParams,
     },
     {
@@ -247,4 +253,11 @@ export const speInfo = {
   otherValidators: nodes.map((node) => ({
     voteAccountKey: node.voteAccountKey,
   })),
+};
+export const paths = {
+  base: basePaths,
+  genesis: genesisPaths,
+  faucet: faucetPaths,
+  tuner: tunerPaths,
+  agave: agavePaths,
 };
