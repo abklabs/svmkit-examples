@@ -3,7 +3,7 @@ import * as aws from "@pulumi/aws";
 import * as tls from "@pulumi/tls";
 
 const nodeConfig = new pulumi.Config("node");
-const instanceType = nodeConfig.get("instanceType") ?? "t3.2xlarge";
+const instanceType = nodeConfig.get("instanceType") ?? "r6id.8xlarge";
 const instanceArch = nodeConfig.get("instanceArch") ?? "x86_64";
 
 // Setup a local SSH private key, stored inside Pulumi.
