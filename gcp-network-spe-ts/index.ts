@@ -56,9 +56,13 @@ const genesis = new svmkit.genesis.Solana(
     version: agaveVersion,
     flags: {
       ledgerPath: "/home/sol/ledger",
-      identityPubkey: bootstrapNode.validatorKey.publicKey,
-      votePubkey: bootstrapNode.voteAccountKey.publicKey,
-      stakePubkey: stakeAccountKey.publicKey,
+      bootstrapValidators: [
+          {
+              identityPubkey: bootstrapNode.validatorKey.publicKey,
+              votePubkey: bootstrapNode.voteAccountKey.publicKey,
+              stakePubkey: stakeAccountKey.publicKey
+          }
+      ],
       faucetPubkey: faucetKey.publicKey,
       bootstrapValidatorStakeLamports: 10000000000, // 10 SOL
       enableWarmupEpochs: true,

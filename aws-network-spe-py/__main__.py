@@ -41,10 +41,14 @@ genesis = svmkit.genesis.Solana(
     connection=bootstrap_node.connection,
     version=AGAVE_VERSION,
     flags={
+        "bootstrap_validators": [
+            {
+                "identity_pubkey": bootstrap_node.validator_key.public_key,
+                "vote_pubkey": bootstrap_node.vote_account_key.public_key,
+                "stake_pubkey": stake_account_key.public_key,
+            }
+        ],
         "ledger_path": "/home/sol/ledger",
-        "identity_pubkey": bootstrap_node.validator_key.public_key,
-        "vote_pubkey": bootstrap_node.vote_account_key.public_key,
-        "stake_pubkey": stake_account_key.public_key,
         "faucet_pubkey": faucet_key.public_key,
         "bootstrap_validator_stake_lamports": 10000000000,  # 10 SOL
         "enable_warmup_epochs": True,
