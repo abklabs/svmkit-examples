@@ -2,6 +2,11 @@
 
 This example deploys a single X1 testnet validator on AWS. It is a non-voting, functional demonstration and is not intended for production use. For the additional instructions needed to setup a voting validator, please refer to the official [X1 documentation](https://docs.x1.xyz/validating/create-a-validator-node).
 
+## Demo Video
+
+[![YouTube Video](https://img.youtube.com/vi/QMZE24w71uE/0.jpg)](https://www.youtube.com/watch?v=QMZE24w71uE)
+
+
 ## Pulumi Configuration Options
 
 | Name              | Description                                        | Default Value |
