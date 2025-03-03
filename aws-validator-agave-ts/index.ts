@@ -61,7 +61,7 @@ new svmkit.validator.Agave(
   "validator",
   {
     connection,
-    version: "2.0.15-1",
+    version: "2.1.13-1",
     environment: {
       rpcURL: networkInfo.rpcURL[0],
     },
