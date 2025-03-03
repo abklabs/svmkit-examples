@@ -2,6 +2,10 @@
 
 This example brings up a single Frankendancer validator on any remote machine with SSH access.
 
+## Demo Video
+[![Watch the video](https://img.youtube.com/vi/dMkJeig4Hh8/0.jpg)](https://www.youtube.com/watch?v=dMkJeig4Hh8)
+
+
 ## Pulumi Configuration Options
 
 | Name              | Description                                                        | Required | Default Value |
