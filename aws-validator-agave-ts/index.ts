@@ -7,6 +7,8 @@ const tunerConfig = new pulumi.Config("tuner");
 // AWS-specific resources are created inside.
 import { sshKey, instance } from "./aws";
 
+import { basePaths, tunerPaths, agavePaths } from "./paths";
+
 // Lookup information about the Solana network.
 const networkName =
   solanaConfig.get<svmkit.solana.NetworkName>("network") ??
@@ -49,6 +51,7 @@ const tuner = new svmkit.tuner.Tuner(
   "tuner",
   {
     connection,
+    paths: tunerPaths,
     params: tunerParams,
   },
   {
@@ -61,6 +64,7 @@ new svmkit.validator.Agave(
   "validator",
   {
     connection,
+    paths: agavePaths,
     version: "2.0.15-1",
     environment: {
       rpcURL: networkInfo.rpcURL[0],
@@ -99,3 +103,8 @@ export const nodes_name = ["instance"];
 export const nodes_public_ip = [instance.publicIp];
 export const nodes_private_key = [sshKey.privateKeyOpenssh];
 export const tuner_params = tunerParams;
+export const paths = {
+  base: basePaths,
+  tuner: tunerPaths,
+  agave: agavePaths,
+};

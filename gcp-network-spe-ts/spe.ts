@@ -2,6 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 import * as tls from "@pulumi/tls";
 import * as svmkit from "@svmkit/pulumi-svmkit";
+import { agavePaths } from "./paths";
 
 export const agaveVersion = "1.18.26-1";
 
@@ -117,7 +118,7 @@ export class Node {
   }
 
   configureValidator(
-    flags: svmkit.types.input.agave.FlagsArgs,
+    flags: svmkit.types.input.agave.AgaveFlagsArgs,
     environment: svmkit.types.input.solana.EnvironmentArgs,
     startupPolicy: svmkit.types.input.agave.StartupPolicyArgs,
     dependsOn: pulumi.Input<pulumi.Resource>[],
@@ -129,6 +130,7 @@ export class Node {
         environment,
         runnerConfig,
         connection: this.connection,
+        paths: agavePaths,
         version: agaveVersion,
         startupPolicy,
         shutdownPolicy: {

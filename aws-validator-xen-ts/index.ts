@@ -6,6 +6,8 @@ const tunerConfig = new pulumi.Config("tuner");
 // AWS-specific resources are created inside.
 import { sshKey, instance } from "./aws";
 
+import { basePaths, tunerPaths, agavePaths } from "./paths";
+
 // Create some keys for this validator to use.
 const validatorKey = new svmkit.KeyPair("validator-key");
 const voteAccountKey = new svmkit.KeyPair("vote-account-key");
@@ -41,6 +43,7 @@ const tuner = new svmkit.tuner.Tuner(
   "tuner",
   {
     connection,
+    paths: tunerPaths,
     params: tunerParams,
   },
   {
@@ -53,6 +56,7 @@ new svmkit.validator.Agave(
   "validator",
   {
     connection,
+    paths: agavePaths,
     variant: "tachyon",
     environment: {
       rpcURL: "https://rpc.testnet.x1.xyz",
@@ -104,3 +108,8 @@ export const nodes_name = ["instance"];
 export const nodes_public_ip = [instance.publicIp];
 export const nodes_private_key = [sshKey.privateKeyOpenssh];
 export const tuner_params = tunerParams;
+export const paths = {
+  base: basePaths,
+  tuner: tunerPaths,
+  agave: agavePaths,
+};
