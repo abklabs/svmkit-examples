@@ -11,12 +11,36 @@ Genesis is performed, a snapshot is distributed, and gossip is set up on private
 
 ## Pulumi Configuration Options
 
-| Name              | Description                                                       | Default Value |
-| :---------------- | :---------------------------------------------------------------- | :------------ |
-| node:count        | The number of nodes to launch, including the bootstrap node.      | 3             |
-| node:instanceType | The AWS instance type to use for all of the nodes.                | c6i.xlarge    |
-| node:instanceArch | The AWS instance architecture type to use for the AMI lookup.     | x86_64        |
-| node:volumeIOPS   | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
+| Name              | Description                                                                                              | Default Value |
+| :---------------- | :------------------------------------------------------------------------------------------------------- | :------------ |
+| node:count        | The number of nodes to launch, including the bootstrap node.                                             | 3             |
+| node:instanceArch | The AWS instance architecture type to use for the AMI lookup.                                            | x86_64        |
+| node:volumeIOPS   | The number of IOPS to provide to the ledger and accounts volumes.                                        | 5000          |
+| node:layout       | Define validator topology with kind, version, and instance type. Defaults to Agave 2.1.13-1, c6i.xlarge. | []            |
+
+### Node Layout
+
+```
+# Pulumi.{stack}.yaml
+config:
+  node:layout:
+    - kind: agave
+      version: 2.0.22-1
+    - kind: agave
+      version: 2.1.13-1
+      instance_type: c6i.2xlarge
+    - kind: firedancer
+    - kind: firedancer
+```
+
+When `node:layout` is set `node:count` is ignored.
+
+The version and instance type can be specified in the layout, but will default to these values if not provided.
+
+| Kind       | Version       | Instance Type |
+| :--------- | :------------ | :------------ |
+| agave      | 2.1.13-1      | c6i.xlarge    |
+| firedancer | 0.305.20111-2 | r7a.8xlarge   |
 
 ## Running the Example
 
@@ -132,26 +156,29 @@ This script mints a token and allocates a portion of the supply to a recipient. 
 
 In the example, the deployed validators and explorer are running remotely, so you’ll need to forward the relevant ports to your local machine if you wish to interact with the RPC API or view the Explorer in your browser. The Solana JSON RPC API typically listens on port 8899 and the Explorer on port 3000.
 
-
 Forward the ports to your local machine:
 
 ```
 ./ssh-to-host 0 -L 8899:localhost:8899 -L 3000:localhost:3000
 ```
+
 Test the RPC API by running the following command:
+
 ```
 curl http://localhost:8899 -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0","id": 1,"method": "getHealth"}'
 ```
+
 Additionally you can set your local Solana config to the same port to interact with the cluster:
+
 ```
 solana set --url http://localhost:8899
 
 solana block
 ```
+
 View the explorer for the SPE in your browser at `http://localhost:3000` . Note that the explorer
 frontend requires access to the node as well, so you need to make sure you've forwarded the
 validator's RPC port to your local machine as well.
-
 
 7. (Optional) Tear down the example
 
