@@ -3,7 +3,9 @@ import * as gcp from "@pulumi/gcp";
 import * as tls from "@pulumi/tls";
 import * as svmkit from "@svmkit/pulumi-svmkit";
 
-export const agaveVersion = "1.18.26-1";
+const validatorConfig = new pulumi.Config("validator");
+
+export const agaveVersion = validatorConfig.get("version") ?? "1.18.26-1";
 
 const nodeConfig = new pulumi.Config("node");
 

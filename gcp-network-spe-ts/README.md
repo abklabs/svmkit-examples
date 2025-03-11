@@ -7,12 +7,16 @@ inside the VPC.
 
 ## Pulumi Configuration Options
 
-| Name             | Description                                                       | Default Value |
-| :----------------| :-----------------------------------------------------------------| :-------------|
-| node:count       | The number of nodes to launch, including the bootstrap node.      | 3             |
-| node:machineType | The instance type to use for all of the nodes.                    | n1-standard-2 |
-| node:osImage     | The operating system image to use for the nodes.                  | debian-12     |
-| node:diskSize    | The size of the volume to use for OS, accounts, and ledger.       | 64 GB         |
+| Name              | Description                                                               | Required | Default Value |
+| :---------------- | :------------------------------------------------------------------------ | :------- | :------------ |
+| validator:version | The version of the validator APT package to install.                      | no       | 1.18.26-1     |
+| node:count        | The number of nodes to launch, including the bootstrap node.              | no       | 3             |
+| node:machineType  | The instance type to use for all of the nodes.                            | no       | n1-standard-2 |
+| node:osImage      | The operating system image to use for the nodes.                          | no       | debian-12     |
+| node:diskSize     | The size of the volume to use for OS, accounts, and ledger.               | no       | 64 GB         |
+| gcp:project       | The GCP project to create all resources under.                            | no       | _(system)_    |
+| gcp:region        | The GCP region to create all resources in.                                | yes      |               |
+| gcp:zone          | The **fully-qualified** GCP availability zone to create all resources in. | yes      |               |
 
 NOTE: These configuration settings are not for a production usecase.  They're sized to be allowed in
 free-tier GCP accounts, and demonstrate functional behavior.

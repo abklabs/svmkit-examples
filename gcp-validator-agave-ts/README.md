@@ -9,10 +9,14 @@ use case.  You may have performance problems with the default
 
 ## Pulumi Configuration Options
 
-| Name              | Description                                                       | Default Value |
-| :---------------- | :---------------------------------------------------------------- | :------------ |
-| solana:network    | The known Solana cluster to connect to.                           | testnet       |
-| node:instanceType | The GCP instance type to use for all of the nodes.                | c4-standard-8 |
+| Name              | Description                                                               | Required | Default Value |
+| :---------------- | :------------------------------------------------------------------------ | :------- | :------------ |
+| solana:network    | The known Solana cluster to connect to.                                   | no       | testnet       |
+| validator:version | The version of the validator APT package to install.                      | no       | 2.0.15-1      |
+| node:instanceType | The GCP instance type to use for all of the nodes.                        | no       | c4-standard-8 |
+| gcp:project       | The GCP project to create all resources under.                            | no       | _(system)_    |
+| gcp:region        | The GCP region to create all resources in.                                | yes      |               |
+| gcp:zone          | The **fully-qualified** GCP availability zone to create all resources in. | yes      |               |
 
 ## Running the Example
 

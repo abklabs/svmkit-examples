@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as svmkit from "@svmkit/pulumi-svmkit";
 
+const validatorConfig = new pulumi.Config("validator");
 const solanaConfig = new pulumi.Config("solana");
 const tunerConfig = new pulumi.Config("tuner");
 
@@ -12,6 +13,7 @@ const networkName =
   solanaConfig.get<svmkit.solana.NetworkName>("network") ??
   svmkit.solana.NetworkName.Testnet;
 const networkInfo = svmkit.networkinfo.getNetworkInfoOutput({ networkName });
+const agaveVersion = validatorConfig.get("version") ?? "2.0.15-1";
 
 // Create some keys for this validator to use.
 const validatorKey = new svmkit.KeyPair("validator-key");
@@ -65,7 +67,7 @@ new svmkit.validator.Agave(
   "validator",
   {
     connection,
-    version: "2.0.15-1",
+    version: agaveVersion,
     environment: {
       rpcURL: networkInfo.rpcURL[0],
     },
