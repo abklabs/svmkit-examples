@@ -33,7 +33,7 @@ To simulate an outage stop any of the validators.
 $ sudo systemctl stop svmkit-agave-validator.service
 ```
 
-The stopped validator is marked as unknown. The remaining 2 validators will not reach consensus and voting halts. Note that this guide assumes equally distributed stake. If you have just deployed the cluster, please wait until all stake is activated. This will take several hours and is dependent on the epochs_per_slot setting.
+The stopped validator is marked as unknown. The remaining 2 validators will not reach consensus and voting halts. Note that this guide assumes equally distributed stake. If you have just deployed the cluster, please wait until all stake is activated. This will take several hours and is dependent on the `slots_per_epoch` configured at genesis.
 
 ```
 $ solana validators
