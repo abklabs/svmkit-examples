@@ -33,7 +33,7 @@ To simulate an outage stop any of the validators.
 $ sudo systemctl stop svmkit-agave-validator.service
 ```
 
-The stopped validator is marked as unknown. The remaining 2 validators will not reach consensus and voting halts. Note that after stopping a validator, it may take an hour or more before the changes are reflected in the cluster status.
+The stopped validator is marked as unknown. The remaining 2 validators will not reach consensus and voting halts. Note that this guide assumes equally distributed stake. If you have just deployed the cluster, please wait until all stake is activated. This will take several hours and is dependent on the epochs_per_slot setting.
 
 ```
 $ solana validators
@@ -64,12 +64,14 @@ $ sudo apt-get install svmkit-agave-ledger-tool
 3. Check the latest optimistic slot on all validators
 
 ```
-$ sudo -i -u sol
-sol$ agave-ledger-tool -l ledger latest-optimistic-slots
+$ sudo -u sol agave-ledger-tool -l ledger latest-optimistic-slots
+```
 
-# Example output:
-#                Slot                                         Hash                        Timestamp    Vote Only?
-#              157666 65DDoDsUFu5tf4N3HuxEhpqMiNeq4qqombE4VjLjdgE8    2025-03-06T12:55:04.579+00:00          true
+Output will look like:
+
+```
+                Slot                                         Hash                        Timestamp    Vote Only?
+              157666 65DDoDsUFu5tf4N3HuxEhpqMiNeq4qqombE4VjLjdgE8    2025-03-06T12:55:04.579+00:00          true
 ```
 
 If there are slight differences in the slot numbers between validators (off by 1 or 2), use a slot value that all validators have in common. If the difference is significant, you may need to use a slot from a previous epoch.
@@ -79,18 +81,21 @@ If there are slight differences in the slot numbers between validators (off by 1
 Try using the common slot first:
 
 ```
-sol$ agave-ledger-tool create-snapshot [COMMON_SLOT] --hard-fork [COMMON_SLOT]
+$ sudo -u sol agave-ledger-tool create-snapshot [COMMON_SLOT] --hard-fork [COMMON_SLOT]
 ```
 
 If you encounter an error like "The epoch accounts hash cannot be awaited when Invalid!", try using a slot from a previous epoch. For example:
 
 ```
-sol$ agave-ledger-tool create-snapshot 157600 --hard-fork 157600
+$ sudo -u sol agave-ledger-tool create-snapshot 157600 --hard-fork 157600
+```
 
-# Successful output should look like:
-# [2025-03-06T16:13:30.066226548Z INFO  solana_metrics::metrics] datapoint: archive-snapshot-package slot=157600i archive_format="TarZstd" duration_ms=53i full-snapshot-archive-size=393107i
-# Successfully created snapshot for slot 157600, hash 2kh5hvfnFSHkprX5dgHX8qBggBJjEHb5Y5LKdPnRxvvo: /home/sol/ledger/snapshot-157600-Fh11y82UnfnV3nkGYcJqcuauY8NsCwDmQYr27dNPATkn.tar.zst
-# Shred version: 34346
+Successful output should look like:
+
+```
+[2025-03-06T16:13:30.066226548Z INFO  solana_metrics::metrics] datapoint: archive-snapshot-package slot=157600i archive_format="TarZstd" duration_ms=53i full-snapshot-archive-size=393107i
+Successfully created snapshot for slot 157600, hash 2kh5hvfnFSHkprX5dgHX8qBggBJjEHb5Y5LKdPnRxvvo: /home/sol/ledger/snapshot-157600-Fh11y82UnfnV3nkGYcJqcuauY8NsCwDmQYr27dNPATkn.tar.zst
+Shred version: 34346
 ```
 
 Note the bank hash value (in the example above, it's `2kh5hvfnFSHkprX5dgHX8qBggBJjEHb5Y5LKdPnRxvvo`) that appears after "Successfully created snapshot for slot".
@@ -100,7 +105,7 @@ Note the bank hash value (in the example above, it's `2kh5hvfnFSHkprX5dgHX8qBggB
 Edit the run-validator script on each validator:
 
 ```
-sol$ vim run-validator
+$ sudo -u sol vim run-validator
 ```
 
 Add the following parameters to the `agave-validator` command:
@@ -110,6 +115,7 @@ agave-validator \
   --wait-for-supermajority [SLOT] \
   --expected-bank-hash [BANK_HASH] \
   --hard-fork [SLOT] \
+  --expected-shred-version [SHRED_VERSION] \
   --no-snapshot-fetch \
   [other existing parameters]
 ```
@@ -120,21 +126,22 @@ agave-validator \
   --wait-for-supermajority 157600 \
   --expected-bank-hash 2kh5hvfnFSHkprX5dgHX8qBggBJjEHb5Y5LKdPnRxvvo \
   --hard-fork 157600 \
+  --expected-shred-version 34346 \
   --no-snapshot-fetch \
   [other existing parameters]
 ```
 
-Note: Do not use the `--shred-version` parameter as it is deprecated.
+Note: Use `--expected-shred-version` instead of `--shred-version` as the latter is not a valid parameter. The original documentation had a typo.
 
 6. Restart validators in sequence
 
-Start with the bootstrap validator, then restart other validators:
+Start with the bootstrap validator first:
 
 ```
 $ sudo systemctl restart svmkit-agave-validator.service
 ```
 
-Wait for the bootstrap validator to stabilize before starting the next validator.
+Wait for the bootstrap validator to stabilize before starting the other validators. This is important because the bootstrap validator only depends on its local ledger while other validators may require connections to working entrypoints.
 
 7. Confirm block production is restored
 
@@ -142,16 +149,20 @@ Check that all validators are now recognized with the correct version:
 
 ```
 $ solana validators
-
-# Expected output:
-# Identity                                      Vote Account                            Commission  Last Vote        Root Slot     Skip Rate  Credits  Version            Active Stake
-# 8MgGF4yRhB5SRpyvgsJorgzVYoB5mJqZkVT7Pp8kkQq8  8mQZiAM5MUntnZGib83QUxCh4dybMLkCaErGbH7NXHnZ  100%     157637 (  0)     157606 (  0)   0.00%    32368  1.18.26         9.999999344 SOL (33.33%)
-# Cmfqr43vcjW7qgRdJhgF6utTZFTjzKPJaucc8SdPoQ8t  HRJUsDx8Mda6tdkfWBqrVPg71jUr3RE4kX9cFbvTRYT7  100%     157637 (  0)     157606 (  0)   0.00%    32368  1.18.26         9.999999344 SOL (33.33%)
-# FeBH2q4qNmRCzNWVv82xeABERD9cd8u3qmEhmWLtSYQW  4Rz6Kty9qQJ1xYgCuXuQd6xa89rdMb7LzCgwUbcwzSaa  100%     157637 (  0)     157606 (  0)   0.00%    32368  1.18.26         9.999999344 SOL (33.33%)
-#
-# Stake By Version:
-# 1.18.26 -    3 current validators (100.00%)
 ```
+
+Expected output:
+```
+Identity                                      Vote Account                            Commission  Last Vote        Root Slot     Skip Rate  Credits  Version            Active Stake
+8MgGF4yRhB5SRpyvgsJorgzVYoB5mJqZkVT7Pp8kkQq8  8mQZiAM5MUntnZGib83QUxCh4dybMLkCaErGbH7NXHnZ  100%     157637 (  0)     157606 (  0)   0.00%    32368  1.18.26         9.999999344 SOL (33.33%)
+Cmfqr43vcjW7qgRdJhgF6utTZFTjzKPJaucc8SdPoQ8t  HRJUsDx8Mda6tdkfWBqrVPg71jUr3RE4kX9cFbvTRYT7  100%     157637 (  0)     157606 (  0)   0.00%    32368  1.18.26         9.999999344 SOL (33.33%)
+FeBH2q4qNmRCzNWVv82xeABERD9cd8u3qmEhmWLtSYQW  4Rz6Kty9qQJ1xYgCuXuQd6xa89rdMb7LzCgwUbcwzSaa  100%     157637 (  0)     157606 (  0)   0.00%    32368  1.18.26         9.999999344 SOL (33.33%)
+
+Stake By Version:
+1.18.26 -    3 current validators (100.00%)
+```
+
+All validators should show the same version (in this example, 1.18.26). The version displayed will depend on your specific deployment, but the important part is that all validators show a consistent version with no "unknown" entries, and all have active stake.
 
 Once supermajority of active stake agrees on the fork, voting will resume without additional intervention.
 
