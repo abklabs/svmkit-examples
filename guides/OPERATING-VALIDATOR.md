@@ -25,6 +25,7 @@ const stakeAccountKey = new svmkit.KeyPair("stake-account-key");
 // Export public keys for funding
 export const treasuryPublicKey = treasuryKey.publicKey;
 export const stakeAccountPublicKey = stakeAccountKey.publicKey;
+export const validatorPublicKey = validatorKey.publicKey;
 ```
 
 Deploy this initial change to generate the keypairs:
