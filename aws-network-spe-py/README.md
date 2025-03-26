@@ -18,6 +18,9 @@ Genesis is performed, a snapshot is distributed, and gossip is set up on private
 | node:instanceArch | The AWS instance architecture type to use for the AMI lookup.     | x86_64        |
 | node:volumeIOPS   | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
 
+Note: All EC2 instances must have a public IPv4 addresses.  This is a limitation of the example,
+not of AWS or svmkit.
+
 ## Running the Example
 
 0. Have `pulumi` installed, logged in to wherever you're storing state, and configured to work with AWS.

@@ -59,6 +59,7 @@ class Node:
                 "iops": iops,
             },
             vpc_security_group_ids=[external_sg.id, internal_sg.id],
+            associate_public_ip_address=True,
             ebs_block_devices=[
                 {
                     "device_name": "/dev/sdf",
