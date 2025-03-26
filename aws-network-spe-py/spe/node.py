@@ -5,7 +5,7 @@ import pulumi_aws as aws
 import pulumi_tls as tls
 import pulumi_svmkit as svmkit
 
-from .network import external_sg, internal_sg
+from .network import external_sg, internal_sg, subnet_id
 
 AGAVE_VERSION = "1.18.26-1"
 
@@ -59,6 +59,7 @@ class Node:
                 "iops": iops,
             },
             vpc_security_group_ids=[external_sg.id, internal_sg.id],
+            subnet_id=subnet_id,
             associate_public_ip_address=True,
             ebs_block_devices=[
                 {

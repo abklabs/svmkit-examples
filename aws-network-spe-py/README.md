@@ -17,6 +17,7 @@ Genesis is performed, a snapshot is distributed, and gossip is set up on private
 | node:instanceType | The AWS instance type to use for all of the nodes.                | c6i.xlarge    |
 | node:instanceArch | The AWS instance architecture type to use for the AMI lookup.     | x86_64        |
 | node:volumeIOPS   | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
+| network:vpcId     | The AWS VPC id to deploy the example into.                        | Default VPC   |
 
 Note: All EC2 instances must have a public IPv4 addresses.  This is a limitation of the example,
 not of AWS or svmkit.
