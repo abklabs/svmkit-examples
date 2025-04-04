@@ -9,6 +9,36 @@ Genesis is performed, a snapshot is distributed, and gossip is set up on private
 
 [![YouTube Video](https://img.youtube.com/vi/8rgUikRios4/0.jpg)](https://www.youtube.com/embed/8rgUikRios4?si=lqUuZfgD_9fImpG0)
 
+## Performance Benchmarks
+
+The default configuration of this Solana validator cluster can achieve the following transaction processing performance:
+
+```
+[2025-04-04T18:42:43.913253413Z INFO  solana_bench_tps::bench]  Node address        |       Max TPS | Total Transactions
+[2025-04-04T18:42:43.913256071Z INFO  solana_bench_tps::bench] ---------------------+---------------+--------------------
+[2025-04-04T18:42:43.913258431Z INFO  solana_bench_tps::bench] http://localhost:8899 |       7006.67 | 210480 
+    Average max TPS: 7006.67, 0 nodes had 0 TPS
+    Highest TPS: 7006.67 sampling period 1s max transactions: 210480 clients: 1 drop rate: 0.00
+[2025-04-04T18:42:43.913305787Z INFO  solana_bench_tps::bench] 	Average TPS: 3406.448
+```
+
+This benchmark was conducted using the following command:
+
+```bash
+solana-bench-tps \
+  --client-node-id /home/sol/validator-keypair.json \
+  --use-tpu-client \
+  --tx-count 3500 \
+  --duration 60 \
+  --url "http://localhost:8899" \
+  --num-lamports-per-account 10000
+```
+
+System utilization during benchmark:
+- CPU Utilization: Average 56.19%
+- Memory Utilization: ~4.3GB
+- Network Traffic: ~1100Kbps inbound, ~2500Kbps outbound
+
 ## Pulumi Configuration Options
 
 | Name              | Description                                                       | Default Value |
