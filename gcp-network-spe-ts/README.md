@@ -11,7 +11,7 @@ inside the VPC.
 | :---------------- | :------------------------------------------------------------------------ | :------- | :------------ |
 | validator:version | The version of the validator APT package to install.                      | no       | 1.18.26-1     |
 | node:count        | The number of nodes to launch, including the bootstrap node.              | no       | 3             |
-| node:machineType  | The instance type to use for all of the nodes.                            | no       | n1-standard-2 |
+| node:machineType  | The instance type to use for all of the nodes.                            | no       | n1-standard-4 |
 | node:osImage      | The operating system image to use for the nodes.                          | no       | debian-12     |
 | node:diskSize     | The size of the volume to use for OS, accounts, and ledger.               | no       | 64 GB         |
 | gcp:project       | The GCP project to create all resources under.                            | no       | _(system)_    |

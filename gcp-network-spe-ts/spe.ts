@@ -69,7 +69,7 @@ export class Node {
     this.validatorKey = new svmkit.KeyPair(_("validator-key"));
     this.voteAccountKey = new svmkit.KeyPair(_("vote-account-key"));
 
-    const machineType = nodeConfig.get("machineType") || "n1-standard-2";
+    const machineType = nodeConfig.get("machineType") || "n1-standard-4";
     const osImage = nodeConfig.get("osImage") || "debian-12";
     const diskSize = nodeConfig.getNumber("diskSize") || 64;
 
