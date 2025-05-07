@@ -67,6 +67,11 @@ const genesis = new svmkit.genesis.Solana(
       bootstrapValidatorStakeLamports: 10000000000, // 10 SOL
       enableWarmupEpochs: true,
       slotsPerEpoch: 8192,
+      clusterType: "development",
+      faucetLamports: 1000,
+      targetLamportsPerSignature: 0,
+      inflation: "none",
+      lamportsPerByteYear: 1,
     },
     primordial: [
       {

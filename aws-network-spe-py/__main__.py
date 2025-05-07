@@ -53,6 +53,11 @@ genesis = svmkit.genesis.Solana(
         "bootstrap_validator_stake_lamports": 10000000000,  # 10 SOL
         "enable_warmup_epochs": True,
         "slots_per_epoch": 8192,
+        "cluster_type": "development",
+        "faucet_lamports": 1000,
+        "target_lamports_per_signature": 0,
+        "inflation": "none",
+        "lamports_per_byte_year": 1
     },
     primordial=[
         {
