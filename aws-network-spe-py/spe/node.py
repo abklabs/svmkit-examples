@@ -113,6 +113,12 @@ swapon -a
             "private_key": self.ssh_key.private_key_openssh,
         })
 
+        self.machine = svmkit.machine.Machine(
+            f"{self.name}-machine",
+            connection=self.connection,
+            opts=pulumi.ResourceOptions(depends_on=[self.instance])
+        )
+
     def configure_validator(self, flags: Union['svmkit.agave.FlagsArgs', 'svmkit.agave.FlagsArgsDict'], environment: Union['svmkit.solana.EnvironmentArgs', 'svmkit.solana.EnvironmentArgsDict'], startup_policy: Union['svmkit.agave.StartupPolicyArgs', 'svmkit.agave.StartupPolicyArgsDict'], depends_on=[]):
         return svmkit.validator.Agave(
             f"{self.name}-validator",
@@ -136,5 +142,5 @@ swapon -a
                 "details": "An AWS network-based SPE validator node.",
             },
             opts=pulumi.ResourceOptions(
-                depends_on=([self.instance] + depends_on))
+                depends_on=([self.machine] + depends_on))
         )

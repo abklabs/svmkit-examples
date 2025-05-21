@@ -22,6 +22,14 @@ const connection = {
   privateKey: remote.requireSecret("privateKey"),
 };
 
+// Configure the instance for SVMKit
+const machine = new svmkit.machine.Machine(
+  "machine",
+  {
+    connection,
+  }
+);
+
 // Instantiate a new Firedancer instance on the machine.
 new svmkit.validator.Firedancer(
   "fd",
@@ -52,6 +60,9 @@ new svmkit.validator.Firedancer(
         private: true,
       },
     },
+  },
+  {
+    dependsOn: [machine],
   },
 );
 

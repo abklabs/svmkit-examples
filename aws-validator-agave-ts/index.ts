@@ -26,6 +26,17 @@ const connection = {
   privateKey: sshKey.privateKeyOpenssh,
 };
 
+// Configure the instance for SVMKit
+const machine = new svmkit.machine.Machine(
+  "machine",
+  {
+    connection,
+  },
+  {
+    dependsOn: [instance],
+  },
+);
+
 // Tuner setup
 const tunerVariant =
     tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
@@ -45,7 +56,6 @@ const tunerParams = genericTunerParamsOutput.apply((p) => ({
   fs: p.fs,
 }));
 
-
 // Create the Tuner resource on the EC2 instance
 const tuner = new svmkit.tuner.Tuner(
   "tuner",
@@ -54,8 +64,8 @@ const tuner = new svmkit.tuner.Tuner(
     params: tunerParams,
   },
   {
-    dependsOn: [instance],
-  }
+    dependsOn: [machine],
+  },
 );
 
 // Instantiate a new Agave instance on the machine.
@@ -92,7 +102,7 @@ new svmkit.validator.Agave(
     },
   },
   {
-    dependsOn: [instance],
+    dependsOn: [machine],
   },
 );
 

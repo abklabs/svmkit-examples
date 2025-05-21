@@ -74,7 +74,7 @@ genesis = svmkit.genesis.Solana(
         },
     ],
     opts=pulumi.ResourceOptions(
-        depends_on=[bootstrap_node.instance])
+        depends_on=[bootstrap_node.machine])
 )
 
 sol_env = svmkit.solana.EnvironmentArgs(
@@ -258,7 +258,7 @@ for node in all_nodes:
         node.name + "-tuner",
         connection=node.connection,
         params=params,
-        opts=pulumi.ResourceOptions(depends_on=([node.instance]))
+        opts=pulumi.ResourceOptions(depends_on=([node.machine]))
     )
 
 pulumi.export("nodes_name", [x.name for x in all_nodes])
