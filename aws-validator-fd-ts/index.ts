@@ -25,6 +25,17 @@ const connection = {
   privateKey: sshKey.privateKeyOpenssh,
 };
 
+// Configure the instance for SVMKit
+const machine = new svmkit.machine.Machine(
+  "machine",
+  {
+    connection,
+  },
+  {
+    dependsOn: [instance],
+  },
+);
+
 // Tuner setup
 const tunerVariant =
     tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
@@ -52,8 +63,8 @@ const tuner = new svmkit.tuner.Tuner(
     params: tunerParams,
   },
   {
-    dependsOn: [instance],
-  }
+    dependsOn: [machine],
+  },
 );
 
 // Instantiate a new Firedancer instance on the machine.
@@ -88,7 +99,7 @@ new svmkit.validator.Firedancer(
     },
   },
   {
-    dependsOn: [instance],
+    dependsOn: [machine],
   },
 );
 

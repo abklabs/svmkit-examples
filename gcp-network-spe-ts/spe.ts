@@ -60,6 +60,7 @@ export class Node {
   publicIP: pulumi.Output<string>;
   privateIP: pulumi.Output<string>;
   connection: svmkit.types.input.ssh.ConnectionArgs;
+  machine: svmkit.machine.Machine;
   constructor(name: string) {
     this.name = name;
 
@@ -116,6 +117,16 @@ export class Node {
       user: "admin",
       privateKey: this.sshKey.privateKeyOpenssh,
     };
+
+    this.machine = new svmkit.machine.Machine(
+      _("machine"),
+      {
+        connection: this.connection,
+      },
+      {
+        dependsOn: [this.instance],
+      },
+    );
   }
 
   configureValidator(
@@ -150,7 +161,7 @@ export class Node {
         },
       },
       {
-        dependsOn: [this.instance, ...dependsOn],
+        dependsOn: [this.machine, ...dependsOn],
       },
     );
   }

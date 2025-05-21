@@ -45,7 +45,7 @@ const tuner = new svmkit.tuner.Tuner(
     params: tunerParams,
   },
   {
-    dependsOn: [bootstrapNode.instance],
+    dependsOn: [bootstrapNode.machine],
   },
 );
 
@@ -89,7 +89,7 @@ const genesis = new svmkit.genesis.Solana(
     ],
   },
   {
-    dependsOn: [bootstrapNode.instance],
+    dependsOn: [bootstrapNode.machine],
   },
 );
 
@@ -167,7 +167,7 @@ nodes.forEach((node) => {
       params: tunerParams,
     },
     {
-      dependsOn: [node.instance],
+      dependsOn: [node.machine],
     },
   );
 
