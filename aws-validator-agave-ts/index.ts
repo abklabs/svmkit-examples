@@ -39,8 +39,8 @@ const machine = new svmkit.machine.Machine(
 
 // Tuner setup
 const tunerVariant =
-    tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
-    svmkit.tuner.TunerVariant.Generic;
+  tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
+  svmkit.tuner.TunerVariant.Generic;
 
 // Retrieve the default tuner parameters for that variant
 const genericTunerParamsOutput = svmkit.tuner.getDefaultTunerParamsOutput({
