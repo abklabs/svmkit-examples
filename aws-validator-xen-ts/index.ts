@@ -30,8 +30,8 @@ const machine = new svmkit.machine.Machine(
 
 // Tuner setup
 const tunerVariant =
-    tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
-    svmkit.tuner.TunerVariant.Generic;
+  tunerConfig.get<svmkit.tuner.TunerVariant>("variant") ??
+  svmkit.tuner.TunerVariant.Generic;
 
 // Retrieve the default tuner parameters for that variant
 const genericTunerParamsOutput = svmkit.tuner.getDefaultTunerParamsOutput({
@@ -56,7 +56,7 @@ const tuner = new svmkit.tuner.Tuner(
   },
   {
     dependsOn: [machine],
-  }
+  },
 );
 
 // Instantiate a new Xen instance on the machine.
@@ -107,7 +107,7 @@ new svmkit.validator.Agave(
   },
   {
     dependsOn: [machine],
-  }
+  },
 );
 
 // Expose information required to SSH to the validator host.

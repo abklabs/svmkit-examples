@@ -30,7 +30,7 @@ const ami = pulumi.output(
     ],
     owners: ["136693071363"], // Debian
     mostRecent: true,
-  })
+  }),
 ).id;
 
 const securityGroup = new aws.ec2.SecurityGroup("security-group", {

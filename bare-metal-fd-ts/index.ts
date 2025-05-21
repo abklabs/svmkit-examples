@@ -23,12 +23,9 @@ const connection = {
 };
 
 // Configure the instance for SVMKit
-const machine = new svmkit.machine.Machine(
-  "machine",
-  {
-    connection,
-  }
-);
+const machine = new svmkit.machine.Machine("machine", {
+  connection,
+});
 
 // Instantiate a new Firedancer instance on the machine.
 new svmkit.validator.Firedancer(
