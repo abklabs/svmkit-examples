@@ -7,9 +7,8 @@ import pulumi_svmkit as svmkit
 
 from .network import external_sg, internal_sg, subnet_id
 
-AGAVE_VERSION = "2.2.14-1"
-
 node_config = pulumi.Config("node")
+validator_config = pulumi.Config("validator")
 
 ami = aws.ec2.get_ami(
     filters=[
@@ -41,6 +40,7 @@ class Node:
         self.validator_key = svmkit.KeyPair(_("validator-key"))
         self.vote_account_key = svmkit.KeyPair(_("vote-account-key"))
 
+        agave_version = validator_config.get('version') or '2.2.14-1'
         instance_type = node_config.get('instanceType') or "c6i.xlarge"
         iops = node_config.get_int('volumeIOPS') or 5000
         root_volume_size = node_config.get_int('rootVolumeSize') or 20
@@ -124,7 +124,7 @@ swapon -a
             f"{self.name}-validator",
             environment=environment,
             connection=self.connection,
-            version=AGAVE_VERSION,
+            version=agave_version,
             startup_policy=startup_policy,
             shutdown_policy={
                 "force": True,
