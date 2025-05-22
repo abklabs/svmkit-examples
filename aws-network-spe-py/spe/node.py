@@ -123,6 +123,11 @@ swapon -a
         return svmkit.validator.Agave(
             f"{self.name}-validator",
             environment=environment,
+            runner_config=svmkit.runner.ConfigArgs(
+                package_config=svmkit.deb.PackageConfigArgs(
+                    additional=['svmkit-spl-token-cli'],
+                ),
+            ),
             connection=self.connection,
             version=AGAVE_VERSION,
             startup_policy=startup_policy,
