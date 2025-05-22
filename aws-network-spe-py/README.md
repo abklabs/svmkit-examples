@@ -41,14 +41,16 @@ System utilization during benchmark:
 
 ## Pulumi Configuration Options
 
-| Name              | Description                                                       | Default Value |
-| :---------------- | :---------------------------------------------------------------- | :------------ |
-| node:count        | The number of nodes to launch, including the bootstrap node.      | 3             |
-| node:instanceType | The AWS instance type to use for all of the nodes.                | c6i.xlarge    |
-| node:instanceArch | The AWS instance architecture type to use for the AMI lookup.     | x86_64        |
-| node:volumeIOPS   | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
-| network:vpcId     | The AWS VPC id to deploy the example into.                        | Default VPC   |
-| validator:version | The version of the validator APT package to install.              | 2.2.14-1      |
+| Name                | Description                                                       | Default Value |
+| :------------------ | :---------------------------------------------------------------- | :------------ |
+| node:count          | The number of nodes to launch, including the bootstrap node.      | 3             |
+| node:instanceType   | The AWS instance type to use for all of the nodes.                | c6i.xlarge    |
+| node:instanceArch   | The AWS instance architecture type to use for the AMI lookup.     | x86_64        |
+| node:volumeIOPS     | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
+| node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes.         | 32            |
+| node:swapSize       | The number of gigabytes of swap space to allocate.                | 8             |
+| network:vpcId       | The AWS VPC id to deploy the example into.                        | Default VPC   |
+| validator:version   | The version of the validator APT package to install.              | 2.2.14-1      |
 
 Note: All EC2 instances must have a public IPv4 addresses.  This is a limitation of the example,
 not of AWS or svmkit.

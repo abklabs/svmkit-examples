@@ -13,7 +13,7 @@ inside the VPC.
 | node:count        | The number of nodes to launch, including the bootstrap node.              | no       | 3             |
 | node:machineType  | The instance type to use for all of the nodes.                            | no       | n1-standard-4 |
 | node:osImage      | The operating system image to use for the nodes.                          | no       | debian-12     |
-| node:diskSize     | The size of the volume to use for OS, accounts, and ledger.               | no       | 64 GB         |
+| node:diskSize     | The size of the volume to use for OS, accounts, and ledger, in gigabytes. | no       | 64            |
 | gcp:project       | The GCP project to create all resources under.                            | no       | _(system)_    |
 | gcp:region        | The GCP region to create all resources in.                                | yes      |               |
 | gcp:zone          | The **fully-qualified** GCP availability zone to create all resources in. | yes      |               |
