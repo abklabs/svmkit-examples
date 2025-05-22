@@ -5,7 +5,7 @@ import * as svmkit from "@svmkit/pulumi-svmkit";
 
 const validatorConfig = new pulumi.Config("validator");
 
-export const agaveVersion = validatorConfig.get("version") ?? "1.18.26-1";
+export const agaveVersion = validatorConfig.get("version") ?? "2.2.14-1";
 
 const nodeConfig = new pulumi.Config("node");
 

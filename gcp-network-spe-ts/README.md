@@ -9,7 +9,7 @@ inside the VPC.
 
 | Name              | Description                                                               | Required | Default Value |
 | :---------------- | :------------------------------------------------------------------------ | :------- | :------------ |
-| validator:version | The version of the validator APT package to install.                      | no       | 1.18.26-1     |
+| validator:version | The version of the validator APT package to install.                      | no       | 2.2.14-1      |
 | node:count        | The number of nodes to launch, including the bootstrap node.              | no       | 3             |
 | node:machineType  | The instance type to use for all of the nodes.                            | no       | n1-standard-4 |
 | node:osImage      | The operating system image to use for the nodes.                          | no       | debian-12     |

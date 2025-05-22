@@ -12,7 +12,7 @@ use case.  You may have performance problems with the default
 | Name              | Description                                                               | Required | Default Value |
 | :---------------- | :------------------------------------------------------------------------ | :------- | :------------ |
 | solana:network    | The known Solana cluster to connect to.                                   | no       | testnet       |
-| validator:version | The version of the validator APT package to install.                      | no       | 2.1.13-1      |
+| validator:version | The version of the validator APT package to install.                      | no       | 2.2.14-1      |
 | node:instanceType | The AWS instance type to use for all of the nodes.                        | no       | t3.2xlarge    |
 | node:instanceArch | The AWS architecture type to use for AMI lookup.                          | no       | x86_64        |
 

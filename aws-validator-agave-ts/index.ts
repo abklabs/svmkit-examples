@@ -13,7 +13,7 @@ const networkName =
   solanaConfig.get<svmkit.solana.NetworkName>("network") ??
   svmkit.solana.NetworkName.Testnet;
 const networkInfo = svmkit.networkinfo.getNetworkInfoOutput({ networkName });
-const agaveVersion = validatorConfig.get("version") ?? "2.1.13-1";
+const agaveVersion = validatorConfig.get("version") ?? "2.2.14-1";
 
 // Create some keys for this validator to use.
 const validatorKey = new svmkit.KeyPair("validator-key");
