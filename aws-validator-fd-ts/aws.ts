@@ -6,6 +6,8 @@ const nodeConfig = new pulumi.Config("node");
 const instanceType = nodeConfig.get("instanceType") ?? "r7a.8xlarge";
 const instanceArch = nodeConfig.get("instanceArch") ?? "x86_64";
 
+const rootVolumeSize = nodeConfig.getNumber("rootVolumeSize") ?? 32;
+
 // Setup a local SSH private key, stored inside Pulumi.
 export const sshKey = new tls.PrivateKey("ssh-key", {
   algorithm: "ED25519",
@@ -76,6 +78,10 @@ export const instance = new aws.ec2.Instance("instance", {
   instanceType,
   keyName: keyPair.keyName,
   vpcSecurityGroupIds: [securityGroup.id],
+  rootBlockDevice: {
+    volumeSize: rootVolumeSize,
+    volumeType: "gp3",
+  },
   ebsBlockDevices: [
     {
       deviceName: "/dev/sdf",

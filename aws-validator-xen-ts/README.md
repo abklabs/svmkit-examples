@@ -9,10 +9,11 @@ This example deploys a single X1 testnet validator on AWS. It is a non-voting, f
 
 ## Pulumi Configuration Options
 
-| Name              | Description                                        | Default Value |
-| :---------------- | :------------------------------------------------- | :------------ |
-| node:instanceType | The AWS instance type to use for all of the nodes. | t3.2xlarge    |
-| node:instanceArch | The AWS architecture type to use for AMI lookup.   | x86_64        |
+| Name                | Description                                               | Default Value |
+| :------------------ | :-------------------------------------------------------- | :------------ |
+| node:instanceType   | The AWS instance type to use for all of the nodes.        | t3.2xlarge    |
+| node:instanceArch   | The AWS architecture type to use for AMI lookup.          | x86_64        |
+| node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes. | 32            |
 
 ## Running the Example
 

@@ -14,6 +14,7 @@ use case.  You may have performance problems with the default
 | solana:network    | The known Solana cluster to connect to.                                   | no       | testnet       |
 | validator:version | The version of the validator APT package to install.                      | no       | 2.2.14-1      |
 | node:instanceType | The GCP instance type to use for all of the nodes.                        | no       | c4-standard-8 |
+| node:diskSize     | The size of the volume to use for OS, accounts, and ledger, in gigabytes. | no       | 256           |
 | gcp:project       | The GCP project to create all resources under.                            | no       | _(system)_    |
 | gcp:region        | The GCP region to create all resources in.                                | yes      |               |
 | gcp:zone          | The **fully-qualified** GCP availability zone to create all resources in. | yes      |               |

@@ -43,8 +43,8 @@ class Node:
         agave_version = validator_config.get('version') or '2.2.14-1'
         instance_type = node_config.get('instanceType') or "c6i.xlarge"
         iops = node_config.get_int('volumeIOPS') or 5000
-        root_volume_size = node_config.get_int('rootVolumeSize') or 20
-        swap_size = node_config.get_int('swapSize') or 8192
+        swap_size = node_config.get_int('swapSize') or 8
+        root_volume_size = (node_config.get_int('rootVolumeSize') or 32) + swap_size
 
         stack_name = pulumi.get_stack()
 
@@ -92,7 +92,7 @@ cat <<EOF >> /etc/fstab
 EOF
 
 # Setup swap space
-fallocate -l {swap_size}M /swapfile
+fallocate -l {swap_size}GiB /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 

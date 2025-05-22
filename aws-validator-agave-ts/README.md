@@ -9,12 +9,13 @@ use case.  You may have performance problems with the default
 
 ## Pulumi Configuration Options
 
-| Name              | Description                                                               | Required | Default Value |
-| :---------------- | :------------------------------------------------------------------------ | :------- | :------------ |
-| solana:network    | The known Solana cluster to connect to.                                   | no       | testnet       |
-| validator:version | The version of the validator APT package to install.                      | no       | 2.2.14-1      |
-| node:instanceType | The AWS instance type to use for all of the nodes.                        | no       | t3.2xlarge    |
-| node:instanceArch | The AWS architecture type to use for AMI lookup.                          | no       | x86_64        |
+| Name                | Description                                               | Required | Default Value |
+| :------------------ | :-------------------------------------------------------- | :------- | :------------ |
+| solana:network      | The known Solana cluster to connect to.                   | no       | testnet       |
+| validator:version   | The version of the validator APT package to install.      | no       | 2.2.14-1      |
+| node:instanceType   | The AWS instance type to use for all of the nodes.        | no       | t3.2xlarge    |
+| node:instanceArch   | The AWS architecture type to use for AMI lookup.          | no       | x86_64        |
+| node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes. | no       | 32            |
 
 ## Running the Example
 

@@ -5,6 +5,7 @@ import * as tls from "@pulumi/tls";
 const nodeConfig = new pulumi.Config("node");
 const machineType = nodeConfig.get("machineType") || "c4-standard-8";
 const osImage = nodeConfig.get("osImage") || "debian-12";
+const diskSize = nodeConfig.getNumber("diskSize") ?? 256;
 
 export const sshKey = new tls.PrivateKey("ssh-key", {
   algorithm: "ED25519",
@@ -43,7 +44,7 @@ export const instance = new gcp.compute.Instance(
     bootDisk: {
       initializeParams: {
         image: osImage,
-        size: 256,
+        size: diskSize,
       },
     },
     networkInterfaces: [
