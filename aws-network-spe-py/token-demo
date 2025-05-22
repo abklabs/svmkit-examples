@@ -1,4 +1,5 @@
 #!/usr/bin/env ../bin/opsh
+# shellcheck shell=bash
 
 # Define default wallet files and transaction amounts
 PAYER_WALLET="payer.json"
@@ -72,8 +73,8 @@ exec::solana() {
 }
 
 # Create payer and receiver wallets if they don't exist
-solana-keygen new --outfile $PAYER_WALLET --no-passphrase --force >/dev/null 2>&1
-solana-keygen new --outfile $RECEIVER_WALLET --no-passphrase --force >/dev/null 2>&1
+solana-keygen new --outfile "$PAYER_WALLET" --no-passphrase --force >/dev/null 2>&1
+solana-keygen new --outfile "$RECEIVER_WALLET" --no-passphrase --force >/dev/null 2>&1
 
 # Add any files that should be accessible to spl-token here
 remote_files=(
@@ -94,48 +95,50 @@ exec::spl-token() {
 }
 
 # Retrieve and log public keys for payer and receiver
-payer_pubkey=$(solana-keygen pubkey $PAYER_WALLET)
-receiver_pubkey=$(solana-keygen pubkey $RECEIVER_WALLET)
+payer_pubkey=$(solana-keygen pubkey "$PAYER_WALLET")
+receiver_pubkey=$(solana-keygen pubkey "$RECEIVER_WALLET")
 log::info "Payer wallet created with public key: $payer_pubkey"
 log::info "Receiver wallet created with public key: $receiver_pubkey"
 
 # Transfer funds from treasury to payer
-exec::solana airdrop $TRANSFER_AMOUNT $payer_pubkey >/dev/null 2>&1
-payer_balance=$(exec::solana balance $payer_pubkey)
+exec::solana airdrop "$TRANSFER_AMOUNT" "$payer_pubkey" >/dev/null 2>&1
+payer_balance=$(exec::solana balance "$payer_pubkey")
 log::info "Airdropped $payer_balance from the faucet to the payer wallet."
 
 # Create a new token mint and set payer as the mint authority
-mint=$(exec::spl-token create-token --mint-authority $payer_pubkey --fee-payer $PAYER_WALLET --output json-compact | jq -r '.commandOutput.address')
+mint=$(exec::spl-token create-token --mint-authority "$payer_pubkey" --fee-payer "$PAYER_WALLET" --output json-compact | jq -r '.commandOutput.address')
 
 # Create associated token accounts for payer and receiver
-payer_ata_signature=$(exec::spl-token create-account $mint --owner $payer_pubkey --fee-payer $PAYER_WALLET --output json-compact | jq -r '.signature')
-receiver_ata_signature=$(exec::spl-token create-account $mint --owner $receiver_pubkey --fee-payer $PAYER_WALLET --output json-compact | jq -r '.signature')
+payer_ata_signature=$(exec::spl-token create-account "$mint" --owner "$payer_pubkey" --fee-payer "$PAYER_WALLET" --output json-compact | jq -r '.signature')
+receiver_ata_signature=$(exec::spl-token create-account "$mint" --owner "$receiver_pubkey" --fee-payer "$PAYER_WALLET" --output json-compact | jq -r '.signature')
 log::info "Created payer associated token account with transaction: $payer_ata_signature"
 log::info "Created receiver associated token account with transaction: $receiver_ata_signature"
 
 # Retrieve and log associated token account addresses
-payer_ata_address=$(exec::spl-token address --token $mint --owner $payer_pubkey --verbose --output json-compact | jq -r '.associatedTokenAddress')
-receiver_ata_address=$(exec::spl-token address --token $mint --owner $receiver_pubkey --verbose --output json-compact | jq -r '.associatedTokenAddress')
+payer_ata_address=$(exec::spl-token address --token "$mint" --owner "$payer_pubkey" --verbose --output json-compact | jq -r '.associatedTokenAddress')
+receiver_ata_address=$(exec::spl-token address --token "$mint" --owner "$receiver_pubkey" --verbose --output json-compact | jq -r '.associatedTokenAddress')
 log::info "Payer associated token account address: $payer_ata_address"
 log::info "Receiver associated token account address: $receiver_ata_address"
 
 # Mint tokens to payer's associated token account
-mint_to_payer_signature=$(exec::spl-token mint --fee-payer $PAYER_WALLET --mint-authority $PAYER_WALLET --output json-compact $mint $MINT_AMOUNT -- $payer_ata_address | jq -r '.signature')
+mint_to_payer_signature=$(exec::spl-token mint --fee-payer "$PAYER_WALLET" --mint-authority "$PAYER_WALLET" --output json-compact "$mint" "$MINT_AMOUNT" -- "$payer_ata_address" | jq -r '.signature')
 log::info "Minted $MINT_AMOUNT tokens to payer with transaction: $mint_to_payer_signature"
 
 # Check and log the balance of the payer's wallet
 log::info "Checking balance of payer wallet"
 log::info "Payer Public Key: $payer_pubkey"
 log::info "Mint Address: $mint"
-balance=$(exec::spl-token balance --owner $payer_pubkey $mint)
+balance=$(exec::spl-token balance --owner "$payer_pubkey" "$mint")
 log::info "Balance: $balance"
 
 # Transfer tokens from payer to receiver
-payer_to_receiver_signature=$(exec::spl-token transfer --fee-payer $PAYER_WALLET --owner $PAYER_WALLET --output json-compact $mint $TOKEN_TRANSFER_AMOUNT $receiver_ata_address | jq -r '.signature')
+payer_to_receiver_signature=$(exec::spl-token transfer --fee-payer "$PAYER_WALLET" --owner "$PAYER_WALLET" --output json-compact "$mint" "$TOKEN_TRANSFER_AMOUNT" "$receiver_ata_address" | jq -r '.signature')
 log::info "Transfered $TOKEN_TRANSFER_AMOUNT tokens from payer to receiver with transaction: $payer_to_receiver_signature"
 
 # Check and log balances of payer and receiver after transfer
-after_payer_balance=$(exec::spl-token balance --owner $payer_pubkey $mint)
+after_payer_balance=$(exec::spl-token balance --owner "$payer_pubkey" "$mint")
 log::info "Balance of payer: $after_payer_balance"
-after_receiver_balance=$(exec::spl-token balance --owner $receiver_pubkey $mint)
+after_receiver_balance=$(exec::spl-token balance --owner "$receiver_pubkey" "$mint")
 log::info "Balance of receiver: $after_receiver_balance"
+
+# vim:set ft=sh:
