@@ -468,10 +468,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-4.6.0.tgz#3c7c9c46e678feefe7a2e5bb609d3dbd665ffb3f"
   integrity sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==
 
-"@svmkit/pulumi-svmkit@^0.18.0":
-  version "0.18.2"
-  resolved "https://registry.yarnpkg.com/@svmkit/pulumi-svmkit/-/pulumi-svmkit-0.18.2.tgz#5f0b997df4358f9f0d621148d7ed7070bbd3bc90"
-  integrity sha512-OvBu/fi7tEPEzInV7q3uOOZ6Z0GnP6GZ4KDb4vLU9k+uJLpjUU622N1WEeTUwzNpEdFF2BgcGSyHZK93xBv8qg==
+"@svmkit/pulumi-svmkit@^0.42.0":
+  version "0.42.0"
+  resolved "https://registry.yarnpkg.com/@svmkit/pulumi-svmkit/-/pulumi-svmkit-0.42.0.tgz#d24f30d323b7dabaf3302be975625170a73ec44b"
+  integrity sha512-dtSl0kDP1CsCEHmcWjctCgj10AmIHICRysti0HCXHkN7sVifDBB93W/C9Gt6fc3nTt80LjsgUUEVfRdcJd9yZw==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
 
