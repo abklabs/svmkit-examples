@@ -49,6 +49,8 @@ System utilization during benchmark:
 | node:volumeIOPS     | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
 | node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes.         | 32            |
 | node:swapSize       | The number of gigabytes of swap space to allocate.                | 8             |
+| node:instanceAmi    | The AMI to use for all of the nodes.                              | _(debian-12)_ |
+| node:user           | The user to log into all of the nodes as.                         | admin         |
 | network:vpcId       | The AWS VPC id to deploy the example into.                        | Default VPC   |
 | validator:version   | The version of the validator APT package to install.              | 2.2.14-1      |
 

@@ -16,6 +16,8 @@ use case.  You may have performance problems with the default
 | node:instanceType   | The AWS instance type to use for all of the nodes.        | no       | t3.2xlarge    |
 | node:instanceArch   | The AWS architecture type to use for AMI lookup.          | no       | x86_64        |
 | node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes. | no       | 32            |
+| node:instanceAmi    | The AMI to use for all of the nodes.                      | no       | _(debian-12)_ |
+| node:user           | The user to log into all of the nodes as.                 | no       | admin         |
 
 ## Running the Example
 

@@ -14,6 +14,8 @@ This example deploys a single X1 testnet validator on AWS. It is a non-voting, f
 | node:instanceType   | The AWS instance type to use for all of the nodes.        | t3.2xlarge    |
 | node:instanceArch   | The AWS architecture type to use for AMI lookup.          | x86_64        |
 | node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes. | 32            |
+| node:instanceAmi    | The AMI to use for all of the nodes.                      | _(debian-12)_ |
+| node:user           | The user to log into all of the nodes as.                 | admin         |
 
 ## Running the Example
 

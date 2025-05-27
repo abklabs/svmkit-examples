@@ -17,6 +17,7 @@ inside the VPC.
 | gcp:project       | The GCP project to create all resources under.                            | no       | _(system)_    |
 | gcp:region        | The GCP region to create all resources in.                                | yes      |               |
 | gcp:zone          | The **fully-qualified** GCP availability zone to create all resources in. | yes      |               |
+| node:user         | The user to log into all of the nodes as.                                 | no       | admin         |
 
 NOTE: These configuration settings are not for a production usecase.  They're sized to be allowed in
 free-tier GCP accounts, and demonstrate functional behavior.

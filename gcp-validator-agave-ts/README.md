@@ -18,6 +18,7 @@ use case.  You may have performance problems with the default
 | gcp:project       | The GCP project to create all resources under.                            | no       | _(system)_    |
 | gcp:region        | The GCP region to create all resources in.                                | yes      |               |
 | gcp:zone          | The **fully-qualified** GCP availability zone to create all resources in. | yes      |               |
+| node:user         | The user to log into all of the nodes as.                                 | no       | admin         |
 
 ## Running the Example
 
