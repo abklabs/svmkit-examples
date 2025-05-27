@@ -5,6 +5,7 @@ import * as tls from "@pulumi/tls";
 const nodeConfig = new pulumi.Config("node");
 const instanceType = nodeConfig.get("instanceType") ?? "r7a.8xlarge";
 const instanceArch = nodeConfig.get("instanceArch") ?? "x86_64";
+const instanceAmi = nodeConfig.get("instanceAmi");
 export const instanceUser = nodeConfig.get("user") ?? "admin";
 
 const rootVolumeSize = nodeConfig.getNumber("rootVolumeSize") ?? 32;
@@ -19,7 +20,7 @@ const keyPair = new aws.ec2.KeyPair("keypair", {
 });
 
 // Get AMI information on the latest Debian image inside AWS.
-const ami = pulumi.output(
+const ami = instanceAmi ?? pulumi.output(
   aws.ec2.getAmi({
     filters: [
       {

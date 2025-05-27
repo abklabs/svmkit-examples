@@ -12,13 +12,14 @@ validator_config = pulumi.Config("validator")
 
 agave_version = validator_config.get('version') or '2.2.14-1'
 instance_type = node_config.get('instanceType') or "c6i.xlarge"
+instance_ami = node_config.get('instanceAmi')
 user = node_config.get('user') or 'admin'
 
 iops = node_config.get_int('volumeIOPS') or 5000
 swap_size = node_config.get_int('swapSize') or 8
 root_volume_size = (node_config.get_int('rootVolumeSize') or 32) + swap_size
 
-ami = aws.ec2.get_ami(
+ami = instance_ami or aws.ec2.get_ami(
     filters=[
         {
             "name": "name",
