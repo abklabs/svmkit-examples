@@ -5,7 +5,7 @@ import pulumi_svmkit as svmkit
 from typing import cast
 
 
-from spe import Node, AGAVE_VERSION
+from spe import Node, agave_version
 
 GOSSIP_PORT = 8001
 RPC_PORT = 8899
@@ -39,7 +39,7 @@ stake_account_key = svmkit.KeyPair("stake-account-key")
 genesis = svmkit.genesis.Solana(
     "genesis",
     connection=bootstrap_node.connection,
-    version=AGAVE_VERSION,
+    version=agave_version,
     flags={
         "bootstrap_validators": [
             {
