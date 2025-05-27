@@ -12,6 +12,8 @@ validator_config = pulumi.Config("validator")
 
 agave_version = validator_config.get('version') or '2.2.14-1'
 instance_type = node_config.get('instanceType') or "c6i.xlarge"
+user = node_config.get('user') or 'admin'
+
 iops = node_config.get_int('volumeIOPS') or 5000
 swap_size = node_config.get_int('swapSize') or 8
 root_volume_size = (node_config.get_int('rootVolumeSize') or 32) + swap_size
@@ -109,7 +111,7 @@ swapon -a
 
         self.connection = svmkit.ssh.ConnectionArgsDict({
             "host": self.instance.public_dns,
-            "user": "admin",
+            "user": user,
             "private_key": self.ssh_key.private_key_openssh,
         })
 

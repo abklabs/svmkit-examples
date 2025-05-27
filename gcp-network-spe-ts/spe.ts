@@ -9,6 +9,8 @@ export const agaveVersion = validatorConfig.get("version") ?? "2.2.14-1";
 
 const nodeConfig = new pulumi.Config("node");
 
+export const user = nodeConfig.get("user") ?? "admin";
+
 const network = new gcp.compute.Network("network", {
   autoCreateSubnetworks: false,
 });
@@ -98,7 +100,7 @@ export class Node {
         tags: [],
         metadata: {
           "enable-oslogin": "false",
-          "ssh-keys": this.sshKey.publicKeyOpenssh.apply((k) => `admin:${k}`),
+          "ssh-keys": this.sshKey.publicKeyOpenssh.apply((k) => `${user}:${k}`),
         },
       },
       { dependsOn: firewalls },
@@ -114,7 +116,7 @@ export class Node {
 
     this.connection = {
       host: this.publicIP,
-      user: "admin",
+      user,
       privateKey: this.sshKey.privateKeyOpenssh,
     };
 

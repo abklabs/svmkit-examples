@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as svmkit from "@svmkit/pulumi-svmkit";
-import { Node, agaveVersion } from "./spe";
+import { Node, agaveVersion, user } from "./spe";
 
 const nodeConfig = new pulumi.Config("node");
 const totalNodes = nodeConfig.getNumber("count") ?? 3;

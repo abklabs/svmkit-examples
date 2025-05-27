@@ -4,7 +4,7 @@ import * as svmkit from "@svmkit/pulumi-svmkit";
 const tunerConfig = new pulumi.Config("tuner");
 
 // AWS-specific resources are created inside.
-import { sshKey, instance } from "./aws";
+import { sshKey, instance, instanceUser } from "./aws";
 
 // Create some keys for this validator to use.
 const validatorKey = new svmkit.KeyPair("validator-key");
@@ -13,7 +13,7 @@ const voteAccountKey = new svmkit.KeyPair("vote-account-key");
 // Point pulumi-svmkit at the AWS EC2 instance's SSH connection.
 const connection = {
   host: instance.publicDns,
-  user: "admin",
+  user: instanceUser,
   privateKey: sshKey.privateKeyOpenssh,
 };
 

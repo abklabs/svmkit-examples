@@ -5,7 +5,7 @@ import pulumi_svmkit as svmkit
 from typing import cast
 
 
-from spe import Node, agave_version
+from spe import Node, agave_version, user
 
 GOSSIP_PORT = 8001
 RPC_PORT = 8899

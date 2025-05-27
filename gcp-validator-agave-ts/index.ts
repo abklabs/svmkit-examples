@@ -6,7 +6,7 @@ const solanaConfig = new pulumi.Config("solana");
 const tunerConfig = new pulumi.Config("tuner");
 
 // AWS-specific resources are created inside.
-import { sshKey, instance } from "./gcp";
+import { sshKey, instance, user } from "./gcp";
 
 // Lookup information about the Solana network.
 const networkName =
@@ -26,7 +26,7 @@ const instanceIP = instance.networkInterfaces.apply((interfaces) => {
 // Point pulumi-svmkit at the AWS EC2 instance's SSH connection.
 const connection = {
   host: instanceIP,
-  user: "admin",
+  user,
   privateKey: sshKey.privateKeyOpenssh,
   dialErrorLimit: 50,
 };

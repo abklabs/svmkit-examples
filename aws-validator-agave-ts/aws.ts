@@ -5,6 +5,7 @@ import * as tls from "@pulumi/tls";
 const nodeConfig = new pulumi.Config("node");
 const instanceType = nodeConfig.get("instanceType") ?? "r6id.8xlarge";
 const instanceArch = nodeConfig.get("instanceArch") ?? "x86_64";
+export const instanceUser = nodeConfig.get("user") ?? "admin";
 
 const rootVolumeSize = nodeConfig.getNumber("rootVolumeSize") ?? 32;
 

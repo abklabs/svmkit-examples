@@ -7,6 +7,8 @@ const machineType = nodeConfig.get("machineType") ?? "c4-standard-8";
 const osImage = nodeConfig.get("osImage") ?? "debian-12";
 const diskSize = nodeConfig.getNumber("diskSize") ?? 256;
 
+export const user = nodeConfig.get("user") ?? "admin";
+
 export const sshKey = new tls.PrivateKey("ssh-key", {
   algorithm: "ED25519",
 });
@@ -61,7 +63,7 @@ export const instance = new gcp.compute.Instance(
     tags: [],
     metadata: {
       "enable-oslogin": "false",
-      "ssh-keys": sshKey.publicKeyOpenssh.apply((k) => `admin:${k}`),
+      "ssh-keys": sshKey.publicKeyOpenssh.apply((k) => `${user}:${k}`),
     },
   },
   { dependsOn: firewall },
