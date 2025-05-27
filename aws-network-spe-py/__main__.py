@@ -261,10 +261,11 @@ for node in all_nodes:
         opts=pulumi.ResourceOptions(depends_on=([node.machine]))
     )
 
-pulumi.export("nodes_name", [x.name for x in all_nodes])
-pulumi.export("nodes_public_ip", [x.instance.public_ip for x in all_nodes])
-pulumi.export("nodes_private_key", [
-              x.ssh_key.private_key_openssh for x in all_nodes])
+pulumi.export("nodes",
+              [{
+                  "name": x.name,
+                  "connection": x.connection,
+              } for x in all_nodes])
 
 pulumi.export("speInfo",
               {

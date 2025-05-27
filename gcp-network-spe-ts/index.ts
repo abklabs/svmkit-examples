@@ -151,10 +151,10 @@ const bootstrapValidator = bootstrapNode.configureValidator(
   runnerConfig,
 );
 
-const nodes = [...Array(totalNodes - 1)].map((_, i) => new Node(`node${i}`));
-const allNodes = [bootstrapNode, ...nodes];
+const nonBootstrapNodes = [...Array(totalNodes - 1)].map((_, i) => new Node(`node${i}`));
+const allNodes = [bootstrapNode, ...nonBootstrapNodes];
 
-nodes.forEach((node) => {
+nonBootstrapNodes.forEach((node) => {
   const otherNodes = allNodes.filter((x) => x != node);
   const entryPoint = otherNodes.map((node) =>
     node.privateIP.apply((v) => `${v}:${gossipPort}`),
@@ -239,17 +239,18 @@ nodes.forEach((node) => {
   );
 });
 
-export const nodes_name = allNodes.map((x) => x.name);
-export const nodes_public_ip = allNodes.map((x) => x.publicIP);
-export const nodes_private_key = allNodes.map(
-  (x) => x.sshKey.privateKeyOpenssh,
-);
+export const nodes = allNodes.map((x) => {
+  return {
+    name: x.name,
+    connection: x.connection,
+  };
+});
 export const speInfo = {
   treasuryKey: treasuryKey,
   bootstrap: {
     connection: bootstrapNode.connection,
   },
-  otherValidators: nodes.map((node) => ({
+  otherValidators: nonBootstrapNodes.map((node) => ({
     voteAccountKey: node.voteAccountKey,
   })),
 };

@@ -64,7 +64,9 @@ new svmkit.validator.Firedancer(
 );
 
 // Expose information required to SSH to the validator host.
-export const nodes_name = ["instance"];
-export const nodes_public_ip = [connection.host];
-export const nodes_user = [connection.user];
-export const nodes_private_key = [connection.privateKey];
+export const nodes = [
+  {
+    name: "instance",
+    connection,
+  },
+];
