@@ -52,8 +52,13 @@ touch "$PRIVKEY"
 chmod 600 "$PRIVKEY"
 
 pulumi stack output --show-secrets nodes_private_key | jq -r ".[$hostindex]" - >"$PRIVKEY"
-USER=$(pulumi stack output nodes_user | jq -r ".[$hostindex]" -)
 HOSTNAME=$(pulumi stack output nodes_public_ip | jq -r ".[$hostindex]" -)
+
+if USERS=$(pulumi stack output nodes_user 2>/dev/null); then
+  USER=$(jq -r ".[$hostindex]" - <<<"$USERS")
+else
+  USER="admin"
+fi
 
 ssh -o StrictHostKeyChecking=off -o UserKnownHostsFile=/dev/null -i "$PRIVKEY" "$USER@$HOSTNAME" "$@"
 
