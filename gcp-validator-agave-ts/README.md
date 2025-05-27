@@ -75,14 +75,8 @@ View in Browser (Ctrl+O): https://app.pulumi.com/someuser/gcp-validator-agave-ts
  +   └─ svmkit:validator:Agave  validator                        created (36s)
 
 Outputs:
-    nodes_name       : [
-        [0]: "instance"
-    ]
-    nodes_private_key: [
-        [0]: [secret]
-    ]
-    nodes_public_ip  : [
-        [0]: "35.222.86.32"
+    nodes: [
+        ...
     ]
 
 Resources:

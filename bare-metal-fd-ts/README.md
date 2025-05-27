@@ -70,17 +70,8 @@ View in Browser (Ctrl+O): https://app.pulumi.com/someaccount/bare-metal-fd-ts/ne
  +   └─ svmkit:validator:Firedancer  fd                                 create     
 
 Outputs:
-    nodes_name       : [
-        [0]: "instance"
-    ]
-    nodes_private_key: [
-        [0]: [secret]
-    ]
-    nodes_public_ip  : [
-        [0]: "my-host.example"
-    ]
-    nodes_user       : [
-        [0]: "my-user"
+    nodes: [
+        ...
     ]
     validatorKey     : output<string>
     voteAccountKey   : output<string>
