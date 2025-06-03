@@ -16,6 +16,7 @@ node_config = pulumi.Config("node")
 total_nodes = node_config.get_int("count") or 3
 
 tuner_config = pulumi.Config("tuner")
+firewall_config = pulumi.Config("firewall")
 
 # Watchtower Notification Config
 watchtower_config = pulumi.Config("watchtower")
@@ -243,7 +244,8 @@ tuner_variant = svmkit.tuner.TunerVariant(tuner_variant_name)
 generic_tuner_params_output = svmkit.tuner.get_default_tuner_params_output(
     variant=tuner_variant)
 
-params = generic_tuner_params_output.apply(lambda p: cast(svmkit.tuner.TunerParamsArgsDict, {
+
+tuner_params = generic_tuner_params_output.apply(lambda p: cast(svmkit.tuner.TunerParamsArgsDict, {
     "cpu_governor": p.cpu_governor,
     "kernel": p.kernel,
     "net": p.net,
@@ -251,14 +253,47 @@ params = generic_tuner_params_output.apply(lambda p: cast(svmkit.tuner.TunerPara
     "fs": p.fs,
 }))
 
-pulumi.export("tuner_params", params)
+pulumi.export("tuner_params", tuner_params)
+
+firewall_variant_name = firewall_config.get("variant") or "generic"
+firewall_variant = svmkit.firewall.FirewallVariant(firewall_variant_name)
+
+generic_firewall_params_output = svmkit.firewall.get_default_firewall_params_output(
+    variant=firewall_variant)
+
+firewall_params = generic_firewall_params_output.apply(lambda f: cast(svmkit.firewall.FirewallParamsArgsDict, {
+    "allow_ports": list(dict.fromkeys(
+        list(f.allow_ports or []) +
+        [
+            "dns",
+            "ssh",
+            "8000:8020/tcp",
+            "8000:8020/udp",
+            "8900/tcp",
+            str(GOSSIP_PORT),
+            str(RPC_PORT),
+            str(FAUCET_PORT)
+        ]
+    ))
+})
+)
+
+pulumi.export("firewall_params", firewall_params)
 
 for node in all_nodes:
     tuner = svmkit.tuner.Tuner(
         node.name + "-tuner",
         connection=node.connection,
-        params=params,
+        params=tuner_params,
         opts=pulumi.ResourceOptions(depends_on=([node.machine]))
+    )
+
+    firewall = svmkit.firewall.Firewall(
+        node.name + "-firewall",
+        connection=node.connection,
+        params=firewall_params,
+        opts=pulumi.ResourceOptions(depends_on=([node.machine]))
+
     )
 
 pulumi.export("nodes",

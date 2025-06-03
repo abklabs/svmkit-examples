@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as svmkit from "@svmkit/pulumi-svmkit";
 
+const firewallConfig = new pulumi.Config("firewall");
 const solanaConfig = new pulumi.Config("solana");
 const tunerConfig = new pulumi.Config("tuner");
 
@@ -33,6 +34,40 @@ const machine = new svmkit.machine.Machine(
   },
   {
     dependsOn: [instance],
+  },
+);
+
+// Firewall setup
+const firewallVariant =
+  firewallConfig.get<svmkit.firewall.FirewallVariant>("variant") ??
+  svmkit.firewall.FirewallVariant.Generic;
+
+// Retrieve the default firewall parameters for that variant
+const genericFirewallParamsOutput =
+  svmkit.firewall.getDefaultFirewallParamsOutput({
+    variant: firewallVariant,
+  });
+
+// "Apply" those params so we can pass them to the Firewall constructor
+const firewallParams = genericFirewallParamsOutput.apply((f) => ({
+  allowPorts: [
+    ...(f.allowPorts ?? []),
+    "8000:8020/tcp",
+    "8000:8020/udp",
+    "8899",
+    "8900/tcp",
+  ],
+}));
+
+// Create the Firewall resource on the EC2 instance
+const firewall = new svmkit.firewall.Firewall(
+  "firewall",
+  {
+    connection,
+    params: firewallParams,
+  },
+  {
+    dependsOn: [machine],
   },
 );
 
