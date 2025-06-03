@@ -4,6 +4,7 @@ import { Node, agaveVersion, user } from "./spe";
 
 const nodeConfig = new pulumi.Config("node");
 const totalNodes = nodeConfig.getNumber("count") ?? 3;
+const firewallConfig = new pulumi.Config("firewall");
 const tunerConfig = new pulumi.Config("tuner");
 
 const gossipPort = 8001;
@@ -17,6 +18,41 @@ const stakeAccountKey = new svmkit.KeyPair("stake-account-key");
 const bootstrapNode = new Node("bootstrap-node");
 
 const runnerConfig = {};
+
+// Firewall setup
+const firewallVariant =
+    firewallConfig.get<svmkit.firewall.FirewallVariant>("variant") ??
+    svmkit.firewall.FirewallVariant.Generic;
+
+// Retrieve the default firewall parameters for that variant
+const genericFirewallParamsOutput = svmkit.firewall.getDefaultFirewallParamsOutput({
+  variant: firewallVariant,
+});
+
+// "Apply" those params so we can pass them to the Firewall constructor
+const firewallParams = genericFirewallParamsOutput.apply((f) => ({
+    "allowPorts": [
+        ...(f.allowPorts ??  []),
+        "8000:8020/tcp",
+        "8000:8020/udp",
+        "8900/tcp",
+	gossipPort.toString(),
+	rpcPort.toString(),
+	faucetPort.toString(),
+    ],
+ }));
+
+// Create the Firewall resource on the EC2 instance
+const firewall = new svmkit.firewall.Firewall(
+  "firewall",
+  {
+    connection: bootstrapNode.connection,
+    params: firewallParams,
+  },
+  {
+    dependsOn: [bootstrapNode.machine],
+  },
+);
 
 // Tuner setup
 const tunerVariant =
