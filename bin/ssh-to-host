@@ -2,29 +2,29 @@
 # shellcheck shell=bash
 
 check_pulumi_yaml() {
-    local dir
-    dir="$(pwd)"
+	local dir
+	dir="$(pwd)"
 
-    while [[ ! -f "$dir/Pulumi.yaml" && "$dir" != "/" ]]; do
-        dir="$(dirname "$dir")"
-    done
+	while [[ ! -f "$dir/Pulumi.yaml" && "$dir" != "/" ]]; do
+		dir="$(dirname "$dir")"
+	done
 
-    [[ -f "$dir/Pulumi.yaml" ]]
+	[[ -f "$dir/Pulumi.yaml" ]]
 }
 
 if ! check_pulumi_yaml; then
-    log::fatal "No Pulumi.yaml file found in the current directory or any of its parents."
+	log::fatal "No Pulumi.yaml file found in the current directory or any of its parents."
 fi
 
 list_nodes() {
-    pulumi stack output --show-secrets nodes | jq -r '.[].name' | nl -v 0
-    exit "$1"
+	pulumi stack output --show-secrets nodes | jq -r '.[].name' | nl -v 0
+	exit "$1"
 }
 
 if [[ "$#" -eq 0 ]]; then
-    log::info "Usage: $0 <node-index> [command]"
-    log::info "Available nodes:"
-    list_nodes 0
+	log::info "Usage: $0 <node-index> [command]"
+	log::info "Available nodes:"
+	list_nodes 0
 fi
 
 hostindex=$1
@@ -33,15 +33,15 @@ shift
 NODE_COUNT=$(pulumi stack output --show-secrets nodes | jq -r 'length')
 
 if ! [[ "$hostindex" =~ ^[0-9]+$ ]] || [ "$hostindex" -ge "$NODE_COUNT" ]; then
-    log::error "Invalid node index '$hostindex'."
-    log::info "Available nodes:"
-    list_nodes 1
+	log::error "Invalid node index '$hostindex'."
+	log::info "Available nodes:"
+	list_nodes 1
 fi
 
 PRIVKEY="$(temp::file)"
 
 cleanup() {
-    rm -f "$PRIVKEY"
+	rm -f "$PRIVKEY"
 }
 
 trap cleanup EXIT
