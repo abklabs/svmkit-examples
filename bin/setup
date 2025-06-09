@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+setup::mac() {
+	brew install prettier autopep8 shfmt shellcheck
+}
+
+setup::linux() {
+	sudo apt-get update
+	sudo DEBIAN_FRONTEND=noninteractive apt-get install -qy shfmt shellcheck npm python3-autopep8
+	sudo npm install -g prettier
+}
+
+if [ "$(uname)" = "Darwin" ]; then
+	setup::mac
+else
+	setup::linux
+fi
