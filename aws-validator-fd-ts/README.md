@@ -4,14 +4,14 @@ This example brings up a single Frakendancer validator on AWS.
 
 ## Pulumi Configuration Options
 
-| Name                | Description                                                       | Default Value |
-| :------------------ | :---------------------------------------------------------------- | :------------ |
-| solana:network      | The known Solana cluster to connect to.                           | testnet       |
-| node:instanceType   | The AWS instance type to use for all of the nodes.                | r7a.8xlarge   |
-| node:instanceArch   | The AWS architecture type to use for AMI lookup.                  | x86_64        |
-| node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes.         | 32            |
-| node:instanceAmi    | The AMI to use for all of the nodes.                              | _(debian-12)_ |
-| node:user           | The user to log into all of the nodes as.                         | admin         |
+| Name                | Description                                               | Default Value |
+| :------------------ | :-------------------------------------------------------- | :------------ |
+| solana:network      | The known Solana cluster to connect to.                   | testnet       |
+| node:instanceType   | The AWS instance type to use for all of the nodes.        | r7a.8xlarge   |
+| node:instanceArch   | The AWS architecture type to use for AMI lookup.          | x86_64        |
+| node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes. | 32            |
+| node:instanceAmi    | The AMI to use for all of the nodes.                      | _(debian-12)_ |
+| node:user           | The user to log into all of the nodes as.                 | admin         |
 
 ## Running the Example
 

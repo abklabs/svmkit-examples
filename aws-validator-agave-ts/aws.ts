@@ -20,22 +20,24 @@ const keyPair = new aws.ec2.KeyPair("keypair", {
 });
 
 // Get AMI information on the latest Debian image inside AWS.
-const ami = instanceAmi ?? pulumi.output(
-  aws.ec2.getAmi({
-    filters: [
-      {
-        name: "name",
-        values: ["debian-12-*"],
-      },
-      {
-        name: "architecture",
-        values: [instanceArch],
-      },
-    ],
-    owners: ["136693071363"], // Debian
-    mostRecent: true,
-  }),
-).id;
+const ami =
+  instanceAmi ??
+  pulumi.output(
+    aws.ec2.getAmi({
+      filters: [
+        {
+          name: "name",
+          values: ["debian-12-*"],
+        },
+        {
+          name: "architecture",
+          values: [instanceArch],
+        },
+      ],
+      owners: ["136693071363"], // Debian
+      mostRecent: true,
+    }),
+  ).id;
 
 const securityGroup = new aws.ec2.SecurityGroup("security-group", {
   description: "Allow SSH and specific inbound traffic",

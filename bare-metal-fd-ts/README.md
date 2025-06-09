@@ -3,13 +3,13 @@
 This example brings up a single Frankendancer validator on any remote machine with SSH access.
 
 ## Demo Video
-[![Watch the video](https://img.youtube.com/vi/dMkJeig4Hh8/0.jpg)](https://www.youtube.com/watch?v=dMkJeig4Hh8)
 
+[![Watch the video](https://img.youtube.com/vi/dMkJeig4Hh8/0.jpg)](https://www.youtube.com/watch?v=dMkJeig4Hh8)
 
 ## Pulumi Configuration Options
 
 | Name              | Description                                                        | Required | Default Value |
-| :---------------- | :----------------------------------------------------------------  | :------- | :------------ |
+| :---------------- | :----------------------------------------------------------------- | :------- | :------------ |
 | solana:network    | The known Solana cluster to connect to.                            | no       | testnet       |
 | remote:host       | The hostname of the remote machine.                                | yes      |               |
 | remote:user       | The login user of the remote machine.                              | yes      |               |
@@ -62,12 +62,12 @@ Previewing update (testing)
 
 View in Browser (Ctrl+O): https://app.pulumi.com/someaccount/bare-metal-fd-ts/new-validator/previews/3f1f47c9-006a-4d2e-afcc-9f4b8be067d7
 
-     Type                            Name                               Plan       
- +   pulumi:pulumi:Stack             bare-metal-agave-ts-new-validator  create     
- +   ├─ svmkit:index:KeyPair         validator-key                      create     
- +   ├─ svmkit:index:KeyPair         vote-account-key                   create     
- +   ├─ svmkit:index:KeyPair         withdrawer-key                     create     
- +   └─ svmkit:validator:Firedancer  fd                                 create     
+     Type                            Name                               Plan
+ +   pulumi:pulumi:Stack             bare-metal-agave-ts-new-validator  create
+ +   ├─ svmkit:index:KeyPair         validator-key                      create
+ +   ├─ svmkit:index:KeyPair         vote-account-key                   create
+ +   ├─ svmkit:index:KeyPair         withdrawer-key                     create
+ +   └─ svmkit:validator:Firedancer  fd                                 create
 
 Outputs:
     nodes: [

@@ -1,7 +1,7 @@
 # Solana Permissioned Environment Inside a GCP VPC using TypeScript
 
 This example brings up a cluster of Solana validators, all using
-private addresses, inside a Google Compute VPC.  Genesis is performed,
+private addresses, inside a Google Compute VPC. Genesis is performed,
 a snapshot is distributed, and gossip is set up on private addresses
 inside the VPC.
 
@@ -19,7 +19,7 @@ inside the VPC.
 | gcp:zone          | The **fully-qualified** GCP availability zone to create all resources in. | yes      |               |
 | node:user         | The user to log into all of the nodes as.                                 | no       | admin         |
 
-NOTE: These configuration settings are not for a production usecase.  They're sized to be allowed in
+NOTE: These configuration settings are not for a production usecase. They're sized to be allowed in
 free-tier GCP accounts, and demonstrate functional behavior.
 
 ## Running the Example

@@ -1,8 +1,8 @@
 # Solana Validator running on GCP
 
-This example brings up a single Solana validator on GCP.  This is a
+This example brings up a single Solana validator on GCP. This is a
 non-voting functional example, and shouldn't used for any production
-use case.  You may have performance problems with the default
+use case. You may have performance problems with the default
 `node:instanceType`.
 
 [![Watch the video](https://img.youtube.com/vi/jHvUuGpmU9o/0.jpg)](https://youtu.be/jHvUuGpmU9o)

@@ -6,7 +6,6 @@ This example deploys a single X1 testnet validator on AWS. It is a non-voting, f
 
 [![YouTube Video](https://img.youtube.com/vi/QMZE24w71uE/0.jpg)](https://www.youtube.com/watch?v=QMZE24w71uE)
 
-
 ## Pulumi Configuration Options
 
 | Name                | Description                                               | Default Value |
