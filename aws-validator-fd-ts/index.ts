@@ -56,6 +56,7 @@ const firewallParams = genericFirewallParamsOutput.apply((f) => ({
     "8000:8020/udp",
     "8899",
     "8900/tcp",
+    "8900:8915/udp",
   ],
 }));
 
