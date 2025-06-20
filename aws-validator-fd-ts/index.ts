@@ -131,6 +131,9 @@ new svmkit.validator.Firedancer(
         port: 8899,
         private: true,
       },
+      log: {
+        path: "-",
+      },
     },
   },
   {
