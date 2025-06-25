@@ -10,6 +10,7 @@ const tunerConfig = new pulumi.Config("tuner");
 const gossipPort = 8001;
 const rpcPort = 8899;
 const faucetPort = 9900;
+const explorerPort = 3000;
 
 const faucetKey = new svmkit.KeyPair("faucet-key");
 const treasuryKey = new svmkit.KeyPair("treasury-key");
@@ -40,6 +41,7 @@ const firewallParams = genericFirewallParamsOutput.apply((f) => ({
     gossipPort.toString(),
     rpcPort.toString(),
     faucetPort.toString(),
+    explorerPort.toString(),    
   ],
 }));
 
