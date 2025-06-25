@@ -10,6 +10,7 @@ from spe import Node, agave_version, user
 GOSSIP_PORT = 8001
 RPC_PORT = 8899
 FAUCET_PORT = 9900
+EXPLORER_PORT = 3000
 
 node_config = pulumi.Config("node")
 
@@ -140,7 +141,7 @@ explorer = svmkit.explorer.Explorer(
     rpcurl="http://localhost:8899",
     flags={
         "hostname": "0.0.0.0",
-        "port": 3000,
+        "port": EXPLORER_PORT,
     },
     opts=pulumi.ResourceOptions(depends_on=([bootstrap_validator])))
 
@@ -272,7 +273,8 @@ firewall_params = generic_firewall_params_output.apply(lambda f: cast(svmkit.fir
             "8900/tcp",
             str(GOSSIP_PORT),
             str(RPC_PORT),
-            str(FAUCET_PORT)
+            str(FAUCET_PORT),
+            str(EXPLORER_PORT)
         ]
     ))
 })
