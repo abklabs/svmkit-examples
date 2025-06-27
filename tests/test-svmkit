@@ -14,6 +14,7 @@ lib::import test-harness
 : "${GOOGLE_PROJECT:=svmkit}"
 : "${GOOGLE_REGION:=us-central1}"
 : "${GOOGLE_ZONE:=${GOOGLE_REGION}-a}"
+: "${DEBUG:=false}"
 
 export GOOGLE_PROJECT GOOGLE_REGION GOOGLE_ZONE
 
