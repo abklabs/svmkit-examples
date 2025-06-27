@@ -1,4 +1,4 @@
-scrnv:
+env:
   SVMKIT_DIR:            "$PWD/svmkit"
   PULUMI_SVMKIT_DIR:     "$PWD/pulumi-svmkit"
   SVMKIT_EXAMPLES_DIR:   "$PWD/svmkit-examples"
