@@ -1,3 +1,7 @@
+x-default-agents: &default-agents
+  agents:
+    queue: "default"
+
 env:
   SVMKIT_DIR:            "$PWD/svmkit"
   PULUMI_SVMKIT_DIR:     "$PWD/pulumi-svmkit"
@@ -10,6 +14,7 @@ env:
 steps:
   - key: setup
     label: ":rocket: Setup test-svmkit"
+    <<: *default-agents
     commands:
       - git clone https://github.com/abklabs/svmkit     ./svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
@@ -23,6 +28,7 @@ steps:
       
   - label: ":heavy_check_mark: Test aws-network-spe-py"
     depends_on: ["setup"]
+    <<: *default-agents
     plugins:
       - artifacts:
           download:
@@ -35,6 +41,7 @@ steps:
 
   - label: ":heavy_check_mark: Test aws-validator-fd-ts"
     depends_on: ["setup"]
+    <<: *default-agents
     plugins:
       - artifacts:
           download:
@@ -47,6 +54,7 @@ steps:
 
   - label: ":heavy_check_mark: Test aws-validator-agave-ts"
     depends_on: ["setup"]
+    <<: *default-agents
     plugins:
       - artifacts:
           download:
