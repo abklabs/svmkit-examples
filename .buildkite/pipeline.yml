@@ -16,11 +16,14 @@ steps:
     label: ":rocket: Setup test-svmkit"
     <<: *default-agents
     commands:
+      - pwd
+      - ls -l
       - git clone https://github.com/abklabs/svmkit     ./svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
       - git clone https://github.com/dantedelucia/buildkite-svmkit-examples.git ./svmkit-examples
       - chmod +x ./tests/test-svmkit
       - ./tests/test-svmkit --setup-only
+      - ls pulumi-svmkit/sdk/
       - tar -zcf pulumi-sdk.tgz pulumi-svmkit/sdk
       
     artifact_paths:
