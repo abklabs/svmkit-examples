@@ -5,7 +5,7 @@ x-default-agents: &default-agents
 env:
   SVMKIT_DIR:            "$PWD/svmkit"
   PULUMI_SVMKIT_DIR:     "$PWD/pulumi-svmkit"
-  SVMKIT_EXAMPLES_DIR:   "$PWD/svmkit-examples"
+  SVMKIT_EXAMPLES_DIR:   .
   PULUMI_ACCESS_TOKEN:   "${PULUMI_ACCESS_TOKEN}"
   AWS_ACCESS_KEY_ID:     "${AWS_ACCESS_KEY_ID}"
   AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
@@ -20,8 +20,8 @@ steps:
       - pwd
       - ls -l
       - git clone https://github.com/abklabs/svmkit     ./svmkit
+      - ls -l 
       - git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
-      - git clone https://github.com/dantedelucia/buildkite-svmkit-examples.git ./svmkit-examples
       - chmod +x ./tests/test-svmkit
       - ./tests/test-svmkit --setup-only
       - ls pulumi-svmkit/sdk/
