@@ -15,6 +15,7 @@ steps:
   - key: setup
     label: ":rocket: Setup test-svmkit"
     <<: *default-agents
+    cwd: workspace
     commands:
       - pwd
       - ls -l
