@@ -1,6 +1,6 @@
 x-default-agents: &default-agents
   agents:
-    queue: "dante"
+    queue: "default"
 
 env:
   SVMKIT_DIR:            "$PWD/svmkit"
