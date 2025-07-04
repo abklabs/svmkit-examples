@@ -20,7 +20,7 @@ steps:
       - ls -l
       - git clone https://github.com/abklabs/svmkit     ./svmkit
       - ls -l 
-      - git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkitg
+      - git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
       - chmod +x ./tests/test-svmkit
       - ./tests/test-svmkit --setup-only
       - ls pulumi-svmkit/sdk/
