@@ -42,6 +42,7 @@ steps:
       - git clone https://github.com/abklabs/svmkit     ./svmkit
       - git clone https://github.com/dantedelucia/buildkite-svmkit-examples.git ./svmkit-examples
       - tar zxf pulumi-sdk.tgz
+      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
       - ./tests/test-svmkit test-aws-network-spe-py
 
   - label: ":heavy_check_mark: Test aws-validator-fd-ts"
@@ -55,6 +56,7 @@ steps:
       - git clone https://github.com/abklabs/svmkit     ./svmkit          
       - git clone https://github.com/dantedelucia/buildkite-svmkit-examples.git ./svmkit-examples
       - tar zxf pulumi-sdk.tgz      
+      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
       - ./tests/test-svmkit test-aws-validator-fd-ts
 
   - label: ":heavy_check_mark: Test aws-validator-agave-ts"
@@ -67,5 +69,6 @@ steps:
     commands:
       - git clone https://github.com/abklabs/svmkit     ./svmkit          
       - git clone https://github.com/dantedelucia/buildkite-svmkit-examples.git ./svmkit-examples
-      - tar zxf pulumi-sdk.tgz      
+      - tar zxf pulumi-sdk.tgz 
+      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
       - ./tests/test-svmkit test-aws-validator-agave-ts
