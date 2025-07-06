@@ -61,7 +61,6 @@ example::setup::ts() {
 	yarn link --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin
 	
 	yarn link "@svmkit/pulumi-svmkit"
-	pulumi::run config set node:count "$NODE_COUNT"
     )
     
 }
