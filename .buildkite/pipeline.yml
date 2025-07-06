@@ -8,7 +8,7 @@ env:
   SVMKIT_EXAMPLES_DIR:   .
   PULUMI_ACCESS_TOKEN:   "${PULUMI_ACCESS_TOKEN}"
   AWS_DEFAULT_REGION:    "us-west-2"
-  DEBUG: "true"
+  DEBUG: true"
 steps:
   - key: setup
     label: ":rocket: Setup test-svmkit"
@@ -37,7 +37,9 @@ steps:
       - git clone https://github.com/abklabs/svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit
       - tar zxf pulumi-sdk.tgz
-      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
+      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
+      - export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
+      - export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)       
       - ./tests/test-svmkit test-aws-network-spe-py
 
   - label: ":heavy_check_mark: Test aws-validator-fd-ts"
@@ -51,7 +53,10 @@ steps:
       - git clone https://github.com/abklabs/svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit
       - tar zxf pulumi-sdk.tgz      
-      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
+      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
+      - export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
+      - export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)
+      
       - ./tests/test-svmkit test-aws-validator-fd-ts
 
   - label: ":heavy_check_mark: Test aws-validator-agave-ts"
@@ -65,5 +70,8 @@ steps:
       - git clone https://github.com/abklabs/svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit
       - tar zxf pulumi-sdk.tgz 
-      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
+      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
+      - export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
+      - export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)
+      
       - ./tests/test-svmkit test-aws-validator-agave-ts
