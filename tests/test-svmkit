@@ -197,7 +197,7 @@ example::test() {
 	   setup="${config[setup]}"
 	   "$setup"
 	fi
-	
+	pulumi::run stack select $stack_name
 	pulumi::run config set node:count "$NODE_COUNT"
 	pulumi::run preview
 
