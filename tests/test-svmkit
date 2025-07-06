@@ -168,23 +168,23 @@ example::test() {
 	local example="${config[example]}"
 	local stack_name="test-$example"
 
-	# redirect output to file but display any INFO lines to console.
-	if "$DEBUG" == ""; then
-	    exec > >(tee "$example.log" | awk '
-	      {
-	       # Strip ANSI escape codes for pattern matching
-		line = $0
+	# # redirect output to file but display any INFO lines to console.
+	# if "$DEBUG" == ""; then
+	#     exec > >(tee "$example.log" | awk '
+	#       {
+	#        # Strip ANSI escape codes for pattern matching
+	# 	line = $0
 
-		gsub(/\x1b\[[0-9;]*m/, "", line)
-		 # Skip lines starting with + or -
-		if (line ~ /^[[:space:]]*[+-]/) next
+	# 	gsub(/\x1b\[[0-9;]*m/, "", line)
+	# 	 # Skip lines starting with + or -
+	# 	if (line ~ /^[[:space:]]*[+-]/) next
 
-		 # Print original (colorized) line if it matches INFO or WARN
-		if (line ~ /INFO|WARN|ERROR/) print
-	      }
-	    ') 2>&1
- 	    log::info "Logging $example output to '$example.log'"
-	fi
+	# 	 # Print original (colorized) line if it matches INFO or WARN
+	# 	if (line ~ /INFO|WARN|ERROR/) print
+	#       }
+	#     ') 2>&1
+ 	#     log::info "Logging $example output to '$example.log'"
+	# fi
 	log::info "Starting test for $example"
 	
 	cd "$SVMKIT_EXAMPLES_DIR/$example"
@@ -228,7 +228,7 @@ example::test() {
 	if [[ -v config[cleanup] ]]; then
 	    log::info "cleaning up"
 	    cleanup="${config[cleanup]}"
-	    "$cleanup"
+    "$cleanup"
 	fi
 	log::info "PASS ${FUNCNAME[1]}"
 	return 0
