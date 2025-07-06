@@ -57,6 +57,9 @@ step::030::build-pulumi-svmkit() {
 example::setup::ts() {
     (
 	rm -rf node_modules && pulumi::run install
+	yarn unlink --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin || :
+	yarn link --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin
+	
 	yarn link "@svmkit/pulumi-svmkit"
 	pulumi::run config set node:count "$NODE_COUNT"
     )
