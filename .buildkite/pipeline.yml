@@ -7,10 +7,8 @@ env:
   PULUMI_SVMKIT_DIR:     "./pulumi-svmkit"
   SVMKIT_EXAMPLES_DIR:   .
   PULUMI_ACCESS_TOKEN:   "${PULUMI_ACCESS_TOKEN}"
-  AWS_ACCESS_KEY_ID:     "${AWS_ACCESS_KEY_ID}"
-  AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
   AWS_DEFAULT_REGION:    "us-west-2"
-  
+  DEBUG: "true"
 steps:
   - key: setup
     label: ":rocket: Setup test-svmkit"
@@ -39,7 +37,6 @@ steps:
       - git clone https://github.com/abklabs/svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit
       - tar zxf pulumi-sdk.tgz
-      - ls -lR pulumi-svmkit
       - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
       - ./tests/test-svmkit test-aws-network-spe-py
 
