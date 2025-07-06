@@ -39,7 +39,7 @@ steps:
       - git clone https://github.com/abklabs/svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit
       - tar zxf pulumi-sdk.tgz
-      - ls -lR pulumi-sdk
+      - ls -lR pulumi-svmkit
       - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)    
       - ./tests/test-svmkit test-aws-network-spe-py
 
