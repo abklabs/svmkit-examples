@@ -1,7 +1,7 @@
 #!/usr/bin/env opsh
 # -*- mode: sh; sh-shell: bash -*-
 # shellcheck shell=bash disable=SC2164
-
+set -x 
 opsh::version::require v0.7.0
 
 lib::import step-runner command
