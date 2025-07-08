@@ -66,11 +66,12 @@ step::030::build-pulumi-svmkit() {
 example::setup::ts() {
     (
 	rm -rf node_modules && pulumi::run install
+	# yarn install
 	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
 	    yarn unlink --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin || :
 	    yarn link --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin
+	    yarn link "@svmkit/pulumi-svmkit"
 	fi
-	yarn link "@svmkit/pulumi-svmkit"
     )
     
 }
