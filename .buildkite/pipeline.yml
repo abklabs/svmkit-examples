@@ -11,22 +11,21 @@ env:
   DEBUG: true"
 steps:
   - key: setup
-    label: ":rocket: Setup test-svmkit"
+    label: ":rocket: Build svmkit and pulumi-svmkit"
     <<: *default-agents
     commands:
-      - pwd
       - git clone https://github.com/abklabs/svmkit     ./svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
       - chmod +x ./tests/test-svmkit
       - echo Running test-svmkit --setup-only
       - ./tests/test-svmkit --setup-only
-      - ls pulumi-svmkit/sdk/
       - tar -zcf pulumi-sdk.tgz pulumi-svmkit/sdk
-      
+      - tar -C svmkit -zcf pulumi-resource-svmkit.tgz pulumi-resource-svmkit
     artifact_paths:
       - pulumi-sdk.tgz
+      - pulumi-resource-svmkit.tgz
       
-  - label: ":heavy_check_mark: Test aws-network-spe-py"
+  - Label: ":heavy_check_mark: Test aws-network-spe-py"
     depends_on: ["setup"]
     <<: *default-agents
     plugins:
@@ -49,10 +48,18 @@ steps:
       - artifacts:
           download:
              - pulumi-sdk.tgz
+    command: |
+      if "$RELEASE" != "" ]; then
+        buildkite-agent artifact download pulumi-sdk.tgz
+        buildkite-agent artifact download pulumi-resource-svmkit.tgz
+        tar zxf pulumi-sdk.tgz
+        tar zxf pulumi-resource-svmkit.tgz
+        export PATH="$PWD/bin:$PATH"
+      fi
+      
     commands:
       - git clone https://github.com/abklabs/svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit
-      - tar zxf pulumi-sdk.tgz      
       - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
       - export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
       - export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)
