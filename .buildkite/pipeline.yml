@@ -3,8 +3,8 @@ x-default-agents: &default-agents
     queue: "default"
 
 env:
-  SVMKIT_DIR:            "./svmkit"
-  PULUMI_SVMKIT_DIR:     "./pulumi-svmkit"
+#  SVMKIT_DIR:            "./svmkit"
+#  PULUMI_SVMKIT_DIR:     "./pulumi-svmkit"
   SVMKIT_EXAMPLES_DIR:   .
   PULUMI_ACCESS_TOKEN:   "${PULUMI_ACCESS_TOKEN}"
   AWS_DEFAULT_REGION:    "us-west-2"
