@@ -25,7 +25,7 @@ steps:
       - pulumi-sdk.tgz
       - pulumi-resource-svmkit.tgz
       
-  - Label: ":heavy_check_mark: Test aws-network-spe-py"
+  - label: ":heavy_check_mark: Test aws-network-spe-py"
     depends_on: ["setup"]
     <<: *default-agents
     plugins:
