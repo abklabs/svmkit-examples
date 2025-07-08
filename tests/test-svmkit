@@ -1,7 +1,6 @@
 #!/usr/bin/env opsh
 # -*- mode: sh; sh-shell: bash -*-
 # shellcheck shell=bash disable=SC2164
-
 opsh::version::require v0.7.0
 
 lib::import step-runner command
@@ -33,36 +32,44 @@ check-set-dir() {
 }
 
 pulumi::run() {
-    PATH=$PULUMI_SVMKIT_DIR/bin:$PATH pulumi --color="$PULUMI_COLOR" "$@"
+    if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+	PATH=$PULUMI_SVMKIT_DIR/bin:$PATH pulumi --color="$PULUMI_COLOR" "$@"
+    else
+	pulumi --color="$PULUMI_COLOR" "$@"
+    fi
 }
 
-# if command::exists pulumi-resource-svmkit; then
-#     log::fatal "a local pulumi-resource-svmkit provider is in your PATH, and that's bad"
-# fi
-
-for i in SVMKIT_DIR PULUMI_SVMKIT_DIR SVMKIT_EXAMPLES_DIR; do
+#for i in SVMKIT_DIR PULUMI_SVMKIT_DIR SVMKIT_EXAMPLES_DIR; do
+for i in SVMKIT_EXAMPLES_DIR; do
     check-set-dir $i
     log::info $i=${!i}
 done
 
 step::010::setup-svmkit() {
-    (cd "$SVMKIT_DIR") #  && make check)
+    if [ "$SVMKIT_DIR" != "" ]; then
+	(cd "$SVMKIT_DIR") #  && make check)
+    fi
 }
 
 step::020::setup-pulumi-svmkit() {
-    (cd "$PULUMI_SVMKIT_DIR/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$SVMKIT_DIR/pkg")
+    if [ "$PULUMI_SVMKIT_DIR" != "" ]; then
+	(cd "$PULUMI_SVMKIT_DIR/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$SVMKIT_DIR/pkg")
+    fi
 }
 
 step::030::build-pulumi-svmkit() {
-    (cd "$PULUMI_SVMKIT_DIR" && make )
+    if [ "$PULUMI_SVMKIT_DIR" != "" ]; then    
+	(cd "$PULUMI_SVMKIT_DIR" && make )
+    fi
 }
 
 example::setup::ts() {
     (
 	rm -rf node_modules && pulumi::run install
-	yarn unlink --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin || :
-	yarn link --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin
-	
+	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+	    yarn unlink --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin || :
+	    yarn link --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin
+	fi
 	yarn link "@svmkit/pulumi-svmkit"
     )
     
@@ -77,7 +84,9 @@ example::cleanup::ts() {
 example::setup::py() {
     (
         rm -rf venv && pulumi::run install
-        ./venv/bin/pip install "$PULUMI_SVMKIT_DIR"/sdk/python/bin/dist/pulumi_svmkit-*.tar.gz
+	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+            ./venv/bin/pip install "$PULUMI_SVMKIT_DIR"/sdk/python/bin/dist/pulumi_svmkit-*.tar.gz
+	fi
     )
     
 }
@@ -199,7 +208,6 @@ example::test() {
 	   setup="${config[setup]}"
 	   "$setup"
 	fi
-	
 	pulumi::run config set node:count "$NODE_COUNT"
 	pulumi::run preview
 
