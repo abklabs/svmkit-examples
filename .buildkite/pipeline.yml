@@ -16,6 +16,15 @@ steps:
     if: build.env("RELEASE") != "true"
     <<: *default-agents
     commands:
+      - git clone https://github.com/abklabs/svmkit
+      - git clone https://github.com/abklabs/pulumi-svmkit
+      - tar zxf pulumi-sdk.tgz
+      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
+      - export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
+      - export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)       
+      - ./tests/test-svmkit test-aws-network-spe-py
+
+    commands:
       - git clone https://github.com/abklabs/svmkit     ./svmkit
       - git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
       - chmod +x ./tests/test-svmkit
@@ -26,17 +35,27 @@ steps:
       - pulumi-sdk.tgz
       - pulumi-resource-svmkit.tgz
       
+
   - label: ":heavy_check_mark: Test aws-network-spe-py"
     depends_on: ["setup"]
     <<: *default-agents
-    commands:
-      - git clone https://github.com/abklabs/svmkit
-      - git clone https://github.com/abklabs/pulumi-svmkit
-      - tar zxf pulumi-sdk.tgz
-      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
-      - export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
-      - export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)       
-      - ./tests/test-svmkit test-aws-network-spe-py
+    command: |
+      set -x
+      if [ "$RELEASE" != "true" ]; then
+        buildkite-agent artifact download pulumi-sdk.tgz
+        buildkite-agent artifact download pulumi-resource-svmkit.tgz
+        tar zxf pulumi-sdk.tgz
+        tar zxf pulumi-resource-svmkit.tgz
+        export PATH="$PWD/pulumi-svmkit/bin:$PATH"
+      fi
+      # keep test-svmkit happy just in case
+      mkdir -p svmkit 
+      mkdir -p pulumi-svmkit
+      
+      export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
+      export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
+      export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)
+      ./tests/test-svmkit test-aws-network-spe-py
 
   - label: ":heavy_check_mark: Test aws-validator-fd-ts"
     depends_on: ["setup"]
@@ -63,16 +82,21 @@ steps:
   - label: ":heavy_check_mark: Test aws-validator-agave-ts"
     depends_on: ["setup"]
     <<: *default-agents
-    plugins:
-      - artifacts:
-          download:
-             - pulumi-sdk.tgz
-    commands:
-      - git clone https://github.com/abklabs/svmkit
-      - git clone https://github.com/abklabs/pulumi-svmkit
-      - tar zxf pulumi-sdk.tgz 
-      - export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
-      - export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
-      - export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)
+p    command: |
+      set -x
+      if [ "$RELEASE" != "true" ]; then
+        buildkite-agent artifact download pulumi-sdk.tgz
+        buildkite-agent artifact download pulumi-resource-svmkit.tgz
+        tar zxf pulumi-sdk.tgz
+        tar zxf pulumi-resource-svmkit.tgz
+        export PATH="$PWD/pulumi-svmkit/bin:$PATH"
+      fi
+      # keep test-svmkit happy just in case
+      mkdir -p svmkit 
+      mkdir -p pulumi-svmkit
       
-      - ./tests/test-svmkit test-aws-validator-agave-ts
+      export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
+      export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID) 
+      export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)
+      
+      ./tests/test-svmkit test-aws-validator-agave-ts
