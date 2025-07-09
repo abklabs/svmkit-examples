@@ -237,7 +237,7 @@ example::test() {
 	pulumi::run up  --yes
 	section::end
 	# 
-	log::info "Running tests"
+	section::begin "Running tests"
 	tmp=$(mktemp)
 	testing::run  2>&1 | tee "$tmp"
 	if grep -q '^ERROR: ' "$tmp"; then
@@ -247,7 +247,7 @@ example::test() {
 	    log::info  "✅ All tests passed"
 	fi
 	rm "$tmp"	
-	
+	section::end
 	# Bring the stack down
 	section::begin "Bring down stack '$stack_name'"
 	pulumi::run down --yes 
