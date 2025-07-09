@@ -174,6 +174,25 @@ example::test::journal_logging() {
     fi
 }
 
+section::begin() {
+  local header="$*"
+  if [[ -n "${BUILDKITE:-}" ]]; then
+    # Start collapsed section in Buildkite
+    echo "--- $header"
+  else
+    # Fallback for local runs
+    log::info "$header"
+  fi
+}
+
+section::end() {
+  local header="$*"
+  if [[ -n "${BUILDKITE:-}" ]]; then
+    # Start collapsed section in Buildkite
+    echo "^^^ +++"
+  fi
+}
+
 example::test() {
     (
 	local -n config=$1  # name reference (bash 4.3+)
@@ -200,7 +219,7 @@ example::test() {
 	log::info "Starting test for $example"
 	
 	cd "$SVMKIT_EXAMPLES_DIR/$example"
-	log::info "--- Creating stack '$stack_name'"
+        section::begin "Creating stack '$stack_name'"
 	pulumi::run stack init $stack_name  || {
 	    log::warn "Stack '$stack_name' already exists"
 	}
@@ -211,12 +230,12 @@ example::test() {
 	fi
 	pulumi::run config set node:count "$NODE_COUNT"
 	pulumi::run preview
-	log::info "^^^ +++"
+	section::end
 
 	# Bring the stack up
-	log::info "--- Bringing up stack '$stack_name'"
+	section::begin "Bringing up stack '$stack_name'"
 	pulumi::run up  --yes
-	log::info "^^^ +++"
+	section::end
 	# 
 	log::info "Running tests"
 	tmp=$(mktemp)
@@ -230,9 +249,9 @@ example::test() {
 	rm "$tmp"	
 	
 	# Bring the stack down
-	log::info "--- Bring down stack '$stack_name'"
+	section::begin "Bring down stack '$stack_name'"
 	pulumi::run down --yes 
-	log::info "^^^ +++"
+	section::end
 
 	log::info "Removing stack '$stack_name'"	
 	pulumi::run stack rm --yes $stack_name
