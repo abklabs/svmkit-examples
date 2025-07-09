@@ -82,7 +82,7 @@ steps:
   - label: ":heavy_check_mark: Test aws-validator-agave-ts"
     depends_on: ["setup"]
     <<: *default-agents
-p    command: |
+    command: |
       set -x
       if [ "$RELEASE" != "true" ]; then
         buildkite-agent artifact download pulumi-sdk.tgz
