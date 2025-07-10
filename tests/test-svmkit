@@ -66,17 +66,28 @@ step::030::build-pulumi-svmkit() {
 example::setup::ts() {
     (
 	rm -rf node_modules && pulumi::run install
-	# yarn install
 	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	    yarn unlink --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin || :
-	    yarn link --cwd $PULUMI_SVMKIT_DIR/sdk/nodejs/bin
+            local pkg_dir="$PULUMI_SVMKIT_DIR/sdk/nodejs/bin"
+	    
+	    # Unlink in project and global scope (ignore errors)
+	    yarn unlink "@svmkit/pulumi-svmkit"	|| :
+	    yarn unlink --cwd "$pkg_dir" || :
+
+	    # Link global package
+            NODE_OPTIONS="--trace-deprecation"  yarn link --cwd "$pkg_dir"
+	    
+	    # Link it in this project
 	    yarn link "@svmkit/pulumi-svmkit"
+
+	    # Refresh dependencies
+	    yarn install # reset state
+
 	fi
     )
     
 }
 
-example::cleanup::ts() {
+Example::cleanup::ts() {
     (
         rm -rf node_modules
     )
@@ -240,7 +251,7 @@ example::test() {
 	section::begin "Running tests"
 	tmp=$(mktemp)
 	testing::run  2>&1 | tee "$tmp"
-	if grep -q '^ERROR: ' "$tmp"; then
+	if grep -q 'ERROR: ' "$tmp"; then
 	    log::error "❌ Some tests failed"
 	    exit 1
 	else
