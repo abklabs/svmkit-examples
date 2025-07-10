@@ -19,15 +19,12 @@ x-test-template: &test-template
     fi
 
     mkdir -p svmkit pulumi-svmkit
+    . ./cloud-creds.sh
+    
+    export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
 
     ./tests/test-svmkit "$$TEST_NAME"
 
-x-aws-test-template: &aws-test-template
-    export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
-    export AWS_ACCESS_KEY_ID=$(buildkite-agent secret get AWS_ACCESS_KEY_ID)
-    export AWS_SECRET_ACCESS_KEY=$(buildkite-agent secret get AWS_SECRET_ACCESS_KEY)
-    <<*test-template
-   
 env:
 #  SVMKIT_DIR:            "./svmkit"
 #  PULUMI_SVMKIT_DIR:     "./pulumi-svmkit"
@@ -64,15 +61,18 @@ steps:
 
   - label: ":heavy_check_mark: Test aws-network-spe-py"
     env:
+      CLOUD: aws
       TEST_NAME: "test-aws-network-spe-py"
-    <<: *aws-test-template
+    <<: *test-template
 
   - label: ":heavy_check_mark: Test aws-validator-fd-ts"
     env:
+      CLOUD: aws
       TEST_NAME: "test-aws-validator-fd-ts"
-    <<: *aws-test-template
+    <<: *test-template
 
   - label: ":heavy_check_mark: Test aws-validator-agave-ts"
     env:
+      CLOUD: aws
       TEST_NAME: "test-aws-validator-agave-ts"
-    <<: *aws-test-template
+    <<: *test-template
