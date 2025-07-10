@@ -19,7 +19,7 @@ x-test-template: &test-template
     fi
 
     mkdir -p svmkit pulumi-svmkit
-    . ./cloud-creds.sh
+    . .buildkite/cloud-creds.sh
     
     export PULUMI_ACCESS_TOKEN=$(buildkite-agent secret get PULUMI_ACCESS_TOKEN)
 
