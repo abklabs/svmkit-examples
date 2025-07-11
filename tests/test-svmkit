@@ -18,7 +18,14 @@ lib::import test-harness
 :  "${AWS_REGION:=us-west-2}"
 
 export AWS_REGION
-export GOOGLE_PROJECT GOOGLE_REGION GOOGLE_ZONE 
+export GOOGLE_PROJECT GOOGLE_REGION GOOGLE_ZONE
+if [ ! -z "${SVMKIT_DIR+x}" ]; then
+    export ABS_SVMKIT_DIR="$(cd "$SVMKIT_DIR" && pwd)"
+fi
+
+if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+    export ABS_PULUMI_SVMKIT_DIR="$(cd "$PULUMI_SVMKIT_DIR" && pwd)"
+fi
 
 check-set-dir() {
     local var=$1
@@ -33,7 +40,7 @@ check-set-dir() {
 
 pulumi::run() {
     if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	PATH=$PULUMI_SVMKIT_DIR/bin:$PATH pulumi --color="$PULUMI_COLOR" "$@"
+	PATH=$ABS_PULUMI_SVMKIT_DIR/bin:$PATH pulumi --color="$PULUMI_COLOR" "$@"
     else
 	pulumi --color="$PULUMI_COLOR" "$@"
     fi
@@ -53,25 +60,22 @@ step::010::setup-svmkit() {
 
 step::020::setup-pulumi-svmkit() {
     if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	abs_pulumi_svmkit_dir="$(cd "$PULUMI_SVMKIT_DIR" && pwd)"
-	abs_svmkit_dir="$(cd "$SVMKIT_DIR" && pwd)"
-	(cd "$abs_pulumi_svmkit_dir/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$abs_svmkit_dir/pkg")
-	PATH=$abs_pulumi_svmkit_dir/bin:$PATH
+	(cd "$ABS_PULUMI_SVMKIT_DIR/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$ABS_SVMKIT_DIR/pkg")
     fi
 }
 
 step::030::build-pulumi-svmkit() {
     if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	echo $PATH
 	(cd "$PULUMI_SVMKIT_DIR" && make )
     fi
 }
 
 example::setup::ts() {
     (
+	set -x
 	rm -rf node_modules && pulumi::run install
 	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-            local pkg_dir="$PULUMI_SVMKIT_DIR/sdk/nodejs/bin"
+            local pkg_dir="$ABS_PULUMI_SVMKIT_DIR/sdk/nodejs/bin"
 	    
 	    # Unlink in project and global scope (ignore errors)
 	    yarn unlink "@svmkit/pulumi-svmkit"	|| :
@@ -241,6 +245,7 @@ example::test() {
         section::begin "Creating stack '$stack_name'"
 	pulumi::run stack init $stack_name  || {
 	    log::warn "Stack '$stack_name' already exists"
+	    pulumi::run stack select $stack_name
 	}
 	
 	if [[ -v config[setup] ]]; then

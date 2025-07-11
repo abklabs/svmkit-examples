@@ -9,12 +9,13 @@ x-test-template: &test-template
     PULUMI_ACCESS_TOKEN: "${PULUMI_ACCESS_TOKEN}"
     AWS_DEFAULT_REGION: "us-west-2"
   command: |
+    set -x 
     if [[ -n "${SVMKIT_DIR:-}" || -n "${PULUMI_SVMKIT_DIR:-}" ]]; then
       echo "Downloading Pulumi SDK and provider plugin artifacts"
-      buildkite-agent artifact download pulumi-sdk.tgz
-      buildkite-agent artifact download pulumi-resource-svmkit.tgz
-      tar zxf pulumi-sdk.tgz
-      tar zxf pulumi-resource-svmkit.tgz
+      buildkite-agent artifact search "*" 
+      buildkite-agent artifact search "pulumi-artifacts.tgz"
+      buildkite-agent artifact download pulumi-artifacts.tgz .
+      tar zxf pulumi-artifacts.tgz
       export PATH="$PWD/pulumi-svmkit/bin:$PATH"
     fi
 
@@ -42,11 +43,10 @@ steps:
       chmod +x ./tests/test-svmkit
       echo Running test-svmkit --setup-only
       ./tests/test-svmkit --setup-only
-      tar -zcf pulumi-sdk.tgz pulumi-svmkit/sdk pulumi-svmkit/bin
+      tar -zcf pulumi-artifacts.tgz pulumi-svmkit/sdk pulumi-svmkit/bin
 
     artifact_paths:
-      - pulumi-sdk.tgz
-      - pulumi-resource-svmkit.tgz
+      - pulumi-artifacts.tgz
 
   - label: ":heavy_check_mark: Test aws-network-spe-py"
     env:
