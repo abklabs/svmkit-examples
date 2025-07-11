@@ -66,13 +66,12 @@ step::020::setup-pulumi-svmkit() {
 
 step::030::build-pulumi-svmkit() {
     if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	(cd "$PULUMI_SVMKIT_DIR" && make )
+	(cd "$ABS_PULUMI_SVMKIT_DIR" && make )
     fi
 }
 
 example::setup::ts() {
     (
-	set -x
 	rm -rf node_modules && pulumi::run install
 	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
             local pkg_dir="$ABS_PULUMI_SVMKIT_DIR/sdk/nodejs/bin"
@@ -86,9 +85,9 @@ example::setup::ts() {
 	    
 	    # Link it in this project
 	    yarn link "@svmkit/pulumi-svmkit"
-
+	    
 	    # Reinstall dependencies 
-	    yarn install -force
+#	    yarn install -force
 	else
 	    echo "Using published @svmkit/pulumi-svmkit package"	
 	    # Clean up local links if they exist
@@ -109,7 +108,7 @@ example::setup::py() {
     (
         rm -rf venv && pulumi::run install
 	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-            ./venv/bin/pip install "$PULUMI_SVMKIT_DIR"/sdk/python/bin/dist/pulumi_svmkit-*.tar.gz
+            ./venv/bin/pip install "$ABS_PULUMI_SVMKIT_DIR"/sdk/python/bin/dist/pulumi_svmkit-*.tar.gz
 	fi
     )
     
