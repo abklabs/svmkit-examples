@@ -9,11 +9,8 @@ x-test-template: &test-template
     PULUMI_ACCESS_TOKEN: "${PULUMI_ACCESS_TOKEN}"
     AWS_DEFAULT_REGION: "us-west-2"
   command: |
-    set -x 
     if [[ -n "${SVMKIT_DIR:-}" || -n "${PULUMI_SVMKIT_DIR:-}" ]]; then
       echo "Downloading Pulumi SDK and provider plugin artifacts"
-      buildkite-agent artifact search "*" 
-      buildkite-agent artifact search "pulumi-artifacts.tgz"
       buildkite-agent artifact download pulumi-artifacts.tgz .
       tar zxf pulumi-artifacts.tgz
       export PATH="$PWD/pulumi-svmkit/bin:$PATH"
