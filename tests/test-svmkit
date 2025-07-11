@@ -46,19 +46,23 @@ for i in SVMKIT_EXAMPLES_DIR; do
 done
 
 step::010::setup-svmkit() {
-    if [ "$SVMKIT_DIR" != "" ]; then
-	(cd "$SVMKIT_DIR") #  && make check)
+    if [ ! -z "${SVMKIT_DIR+x}" ]; then
+	(cd $SVMKIT_DIR && make test)
     fi
 }
 
 step::020::setup-pulumi-svmkit() {
-    if [ "$PULUMI_SVMKIT_DIR" != "" ]; then
-	(cd "$PULUMI_SVMKIT_DIR/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$SVMKIT_DIR/pkg")
+    if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+	abs_pulumi_svmkit_dir="$(cd "$PULUMI_SVMKIT_DIR" && pwd)"
+	abs_svmkit_dir="$(cd "$SVMKIT_DIR" && pwd)"
+	(cd "$abs_pulumi_svmkit_dir/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$abs_svmkit_dir/pkg")
+	PATH=$abs_pulumi_svmkit_dir/bin:$PATH
     fi
 }
 
 step::030::build-pulumi-svmkit() {
-    if [ "$PULUMI_SVMKIT_DIR" != "" ]; then    
+    if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+	echo $PATH
 	(cd "$PULUMI_SVMKIT_DIR" && make )
     fi
 }
@@ -74,15 +78,19 @@ example::setup::ts() {
 	    yarn unlink --cwd "$pkg_dir" || :
 
 	    # Link global package
-            yarn link --cwd "$pkg_dir" "@svmkit/pulumi-svmkit"
+            yarn link --cwd "$pkg_dir"
 	    
 	    # Link it in this project
 	    yarn link "@svmkit/pulumi-svmkit"
 
-	    # Refresh dependencies
-	    yarn install # reset state
-
-	fi
+	    # Reinstall dependencies 
+	    yarn install -force
+	else
+	    echo "Using published @svmkit/pulumi-svmkit package"	
+	    # Clean up local links if they exist
+	    yarn unlink "@svmkit/pulumi-svmkit" || true
+	    yarn install
+    	fi
     )
     
 }
