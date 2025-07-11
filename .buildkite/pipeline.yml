@@ -4,7 +4,7 @@ x-default-agents: &default-agents
 
 x-test-template: &test-template
   <<: *default-agents
-  depends_on: ["setup"]
+  depends_on: ["build"]
   env:
     PULUMI_ACCESS_TOKEN: "${PULUMI_ACCESS_TOKEN}"
     AWS_DEFAULT_REGION: "us-west-2"
@@ -42,6 +42,10 @@ steps:
       git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
       chmod +x ./tests/test-svmkit
       echo Running test-svmkit --setup-only
+      echo Enviroment Vars
+      printenv | grep SVMKIT
+      echo "directory"
+      ls
       ./tests/test-svmkit --setup-only
       tar -zcf pulumi-sdk.tgz pulumi-svmkit/sdk pulumi-svmkit/bin
 
