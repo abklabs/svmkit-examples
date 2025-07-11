@@ -74,7 +74,7 @@ example::setup::ts() {
 	    yarn unlink --cwd "$pkg_dir" || :
 
 	    # Link global package
-            NODE_OPTIONS="--trace-deprecation"  yarn link --cwd "$pkg_dir"
+            yarn link --cwd "$pkg_dir" "@svmkit/pulumi-svmkit"
 	    
 	    # Link it in this project
 	    yarn link "@svmkit/pulumi-svmkit"
@@ -270,10 +270,10 @@ example::test() {
 	# Run any cleanup if defined. 
 	if [[ -v config[cleanup] ]]; then
 	    log::info "cleaning up"
-	    cleanup="${config[cleanup]}"
-    "$cleanup"
+	    eval "${config[cleanup]}"
+
 	fi
-	log::info "PASS ${FUNCNAME[1]}"
+	Log::info "PASS ${FUNCNAME[1]}"
 	return 0
     )
 }
