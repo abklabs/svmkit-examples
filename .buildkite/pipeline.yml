@@ -9,8 +9,7 @@ x-test-template: &test-template
     PULUMI_ACCESS_TOKEN: "${PULUMI_ACCESS_TOKEN}"
     AWS_DEFAULT_REGION: "us-west-2"
   command: |
-    set -x
-    if [ build.env("SVMKIT_DIR") != "" || build.env("PULUMI_SVMKIT_DIR") != ""]; then
+    if [[ -n "${SVMKIT_DIR:-}" || -n "${PULUMI_SVMKIT_DIR:-}" ]]; then
       echo "Downloading Pulumi SDK and provider plugin artifacts"
       buildkite-agent artifact download pulumi-sdk.tgz
       buildkite-agent artifact download pulumi-resource-svmkit.tgz
@@ -42,10 +41,6 @@ steps:
       git clone https://github.com/abklabs/pulumi-svmkit ./pulumi-svmkit
       chmod +x ./tests/test-svmkit
       echo Running test-svmkit --setup-only
-      echo Enviroment Vars
-      printenv | grep SVMKIT
-      echo "directory"
-      ls
       ./tests/test-svmkit --setup-only
       tar -zcf pulumi-sdk.tgz pulumi-svmkit/sdk pulumi-svmkit/bin
 
