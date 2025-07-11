@@ -75,23 +75,25 @@ example::setup::ts() {
 	rm -rf node_modules && pulumi::run install
 	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
             local pkg_dir="$ABS_PULUMI_SVMKIT_DIR/sdk/nodejs/bin"
-	    
-	    # Unlink in project and global scope (ignore errors)
-	    yarn unlink "@svmkit/pulumi-svmkit"	|| :
-	    yarn unlink --cwd "$pkg_dir" || :
 
-	    # Link global package
+	    # Trying to make this so it'll do the right thing if run
+            # with local svmkit package or from repo.
+	    # # Unlink in project and global scope (ignore errors)
+	    # yarn unlink "@svmkit/pulumi-svmkit"	|| :
+	    # yarn unlink --cwd "$pkg_dir" || :
+
+	    # # Link global package
             yarn link --cwd "$pkg_dir"
 	    
 	    # Link it in this project
 	    yarn link "@svmkit/pulumi-svmkit"
 	    
 	    # Reinstall dependencies 
-#	    yarn install -force
+	    # yarn install -force
 	else
 	    echo "Using published @svmkit/pulumi-svmkit package"	
 	    # Clean up local links if they exist
-	    yarn unlink "@svmkit/pulumi-svmkit" || true
+	    yarn unlink "@svmkit/pulumi-svmkit" || :
 	    yarn install
     	fi
     )
