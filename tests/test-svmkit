@@ -271,7 +271,6 @@ example::test() {
 	if [[ -v config[cleanup] ]]; then
 	    log::info "cleaning up"
 	    eval "${config[cleanup]}"
-
 	fi
 	Log::info "PASS ${FUNCNAME[1]}"
 	return 0
