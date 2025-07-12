@@ -5,6 +5,6 @@
 # never accumulate stale workspaces on your agents.
 
 if [[ -n "$BUILDKITE_BUILD_CHECKOUT_PATH" && -d "$BUILDKITE_BUILD_CHECKOUT_PATH" ]]; then
-  echo "🔨 Cleaning up checkout at $BUILDKITE_BUILD_CHECKOUT_PATH"
-  rm -rf "$BUILDKITE_BUILD_CHECKOUT_PATH"
+	echo "🔨 Cleaning up checkout at $BUILDKITE_BUILD_CHECKOUT_PATH"
+	rm -rf "$BUILDKITE_BUILD_CHECKOUT_PATH"
 fi
