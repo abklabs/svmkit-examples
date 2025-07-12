@@ -15,384 +15,380 @@ lib::import test-harness
 : "${GOOGLE_ZONE:=${GOOGLE_REGION}-a}"
 : "${DEBUG:=false}"
 
-:  "${AWS_REGION:=us-west-2}"
+: "${AWS_REGION:=us-west-2}"
 
 export AWS_REGION
 export GOOGLE_PROJECT GOOGLE_REGION GOOGLE_ZONE
 if [ ! -z "${SVMKIT_DIR+x}" ]; then
-    export ABS_SVMKIT_DIR="$(cd "$SVMKIT_DIR" && pwd)"
+	export ABS_SVMKIT_DIR="$(cd "$SVMKIT_DIR" && pwd)"
 fi
 
 if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-    export ABS_PULUMI_SVMKIT_DIR="$(cd "$PULUMI_SVMKIT_DIR" && pwd)"
+	export ABS_PULUMI_SVMKIT_DIR="$(cd "$PULUMI_SVMKIT_DIR" && pwd)"
 fi
 
 check-set-dir() {
-    local var=$1
-    shift
+	local var=$1
+	shift
 
-    [[ -v $var ]] || log::fatal "$var must be set"
+	[[ -v $var ]] || log::fatal "$var must be set"
 
-    declare -n ref="$var"
-    ref="$(realpath "${ref}")"
-    [[ -d $ref ]] || log::fatal "$var must be a directory"
+	declare -n ref="$var"
+	ref="$(realpath "${ref}")"
+	[[ -d $ref ]] || log::fatal "$var must be a directory"
 }
 
 pulumi::run() {
-    if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	PATH=$ABS_PULUMI_SVMKIT_DIR/bin:$PATH pulumi --color="$PULUMI_COLOR" "$@"
-    else
-	pulumi --color="$PULUMI_COLOR" "$@"
-    fi
+	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+		PATH=$ABS_PULUMI_SVMKIT_DIR/bin:$PATH pulumi --color="$PULUMI_COLOR" "$@"
+	else
+		pulumi --color="$PULUMI_COLOR" "$@"
+	fi
 }
 
 #for i in SVMKIT_DIR PULUMI_SVMKIT_DIR SVMKIT_EXAMPLES_DIR; do
 for i in SVMKIT_EXAMPLES_DIR; do
-    check-set-dir $i
-    log::info $i=${!i}
+	check-set-dir $i
+	log::info $i=${!i}
 done
 
 step::010::setup-svmkit() {
-    if [ ! -z "${SVMKIT_DIR+x}" ]; then
-	(cd $SVMKIT_DIR && make test)
-    fi
+	if [ ! -z "${SVMKIT_DIR+x}" ]; then
+		(cd $SVMKIT_DIR && make test)
+	fi
 }
 
 step::020::setup-pulumi-svmkit() {
-    if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	(cd "$ABS_PULUMI_SVMKIT_DIR/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$ABS_SVMKIT_DIR/pkg")
-    fi
+	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+		(cd "$ABS_PULUMI_SVMKIT_DIR/provider" && go mod edit -replace github.com/abklabs/svmkit/pkg="$ABS_SVMKIT_DIR/pkg")
+	fi
 }
 
 step::030::build-pulumi-svmkit() {
-    if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-	(cd "$ABS_PULUMI_SVMKIT_DIR" && make )
-    fi
+	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+		(cd "$ABS_PULUMI_SVMKIT_DIR" && make)
+	fi
 }
 
 example::setup::ts() {
-    (
-	rm -rf node_modules && pulumi::run install
-	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-            local pkg_dir="$ABS_PULUMI_SVMKIT_DIR/sdk/nodejs/bin"
+	(
+		rm -rf node_modules && pulumi::run install
+		if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+			local pkg_dir="$ABS_PULUMI_SVMKIT_DIR/sdk/nodejs/bin"
 
-	    # Trying to make this so it'll do the right thing if run
-            # with local svmkit package or from repo.
-	    # # Unlink in project and global scope (ignore errors)
-	    # yarn unlink "@svmkit/pulumi-svmkit"	|| :
-	    # yarn unlink --cwd "$pkg_dir" || :
+			# Trying to make this so it'll do the right thing if run
+			# with local svmkit package or from repo.
+			# # Unlink in project and global scope (ignore errors)
+			# yarn unlink "@svmkit/pulumi-svmkit"	|| :
+			# yarn unlink --cwd "$pkg_dir" || :
 
-	    # # Link global package
-            yarn link --cwd "$pkg_dir"
-	    
-	    # Link it in this project
-	    yarn link "@svmkit/pulumi-svmkit"
-	    
-	    # Reinstall dependencies 
-	    # yarn install -force
-	else
-	    echo "Using published @svmkit/pulumi-svmkit package"	
-	    # Clean up local links if they exist
-	    yarn unlink "@svmkit/pulumi-svmkit" || :
-	    yarn install
-    	fi
-    )
-    
+			# # Link global package
+			yarn link --cwd "$pkg_dir"
+
+			# Link it in this project
+			yarn link "@svmkit/pulumi-svmkit"
+
+			# Reinstall dependencies
+			# yarn install -force
+		else
+			echo "Using published @svmkit/pulumi-svmkit package"
+			# Clean up local links if they exist
+			yarn unlink "@svmkit/pulumi-svmkit" || :
+			yarn install
+		fi
+	)
+
 }
 
 example::cleanup::ts() {
-    (
-        rm -rf node_modules
-    )
+	(
+		rm -rf node_modules
+	)
 }
 
 example::setup::py() {
-    (
-        rm -rf venv && pulumi::run install
-	if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
-            ./venv/bin/pip install "$ABS_PULUMI_SVMKIT_DIR"/sdk/python/bin/dist/pulumi_svmkit-*.tar.gz
-	fi
-    )
-    
+	(
+		rm -rf venv && pulumi::run install
+		if [ ! -z "${PULUMI_SVMKIT_DIR+x}" ]; then
+			./venv/bin/pip install "$ABS_PULUMI_SVMKIT_DIR"/sdk/python/bin/dist/pulumi_svmkit-*.tar.gz
+		fi
+	)
+
 }
 
 example::cleanup::py() {
-    (
-        rm -rf venv
+	(
+		rm -rf venv
 
-    )
+	)
 }
 
 example::test::temp() {
-        log::info "✅ Temp TEST"
-    return 0
+	log::info "✅ Temp TEST"
+	return 0
 }
 example::test::ufw_status_allows_expected_ports() {
-    local output
-    
-    output=$(./ssh-to-host 0 -o BatchMode=yes -n "sudo ufw status") || {
-        echo "❌ Command failed"
-        return 1
-    }
-    
-    expected_lines=(
-        "22/tcp                     ALLOW       Anywhere"
-        "53                         ALLOW       Anywhere"
-        "8000:8020/tcp              ALLOW       Anywhere"
-        "8000:8020/udp              ALLOW       Anywhere"
-        "8899                       ALLOW       Anywhere"
-        "8900/tcp                   ALLOW       Anywhere"
-        "22/tcp (v6)                ALLOW       Anywhere (v6)"
-        "53 (v6)                    ALLOW       Anywhere (v6)"
-        "8000:8020/tcp (v6)         ALLOW       Anywhere (v6)"
-        "8000:8020/udp (v6)         ALLOW       Anywhere (v6)"
-        "8899 (v6)                  ALLOW       Anywhere (v6)"
-        "8900/tcp (v6)              ALLOW       Anywhere (v6)"
-    )
+	local output
 
+	output=$(./ssh-to-host 0 -o BatchMode=yes -n "sudo ufw status") || {
+		echo "❌ Command failed"
+		return 1
+	}
 
-    local missing=0
-    for line in "${expected_lines[@]}"; do
-        if ! grep -Fq "$line" <<< "$output"; then
-            log::error "❌ Missing expected rule: '$line'"
-            missing=1
-        fi
-    done
+	expected_lines=(
+		"22/tcp                     ALLOW       Anywhere"
+		"53                         ALLOW       Anywhere"
+		"8000:8020/tcp              ALLOW       Anywhere"
+		"8000:8020/udp              ALLOW       Anywhere"
+		"8899                       ALLOW       Anywhere"
+		"8900/tcp                   ALLOW       Anywhere"
+		"22/tcp (v6)                ALLOW       Anywhere (v6)"
+		"53 (v6)                    ALLOW       Anywhere (v6)"
+		"8000:8020/tcp (v6)         ALLOW       Anywhere (v6)"
+		"8000:8020/udp (v6)         ALLOW       Anywhere (v6)"
+		"8899 (v6)                  ALLOW       Anywhere (v6)"
+		"8900/tcp (v6)              ALLOW       Anywhere (v6)"
+	)
 
-    if [[ $missing -eq 0 ]]; then
-        log::info "✅ All expected UFW rules are present."
-        return 0
-    else
-        log::error "❌ Some expected UFW rules are missing."
-        return 1
-    fi
+	local missing=0
+	for line in "${expected_lines[@]}"; do
+		if ! grep -Fq "$line" <<<"$output"; then
+			log::error "❌ Missing expected rule: '$line'"
+			missing=1
+		fi
+	done
+
+	if [[ $missing -eq 0 ]]; then
+		log::info "✅ All expected UFW rules are present."
+		return 0
+	else
+		log::error "❌ Some expected UFW rules are missing."
+		return 1
+	fi
 }
 
 example::test::journal_logging() {
-    local output
-    # grab the journal entries for the service
-    output=$(./ssh-to-host 0 "journalctl -eu svmkit-*-validator.service") || {
-        log::error "❌ ${FUNCNAME[0]}: journalctl command failed"
-        return 1
-    }
+	local output
+	# grab the journal entries for the service
+	output=$(./ssh-to-host 0 "journalctl -eu svmkit-*-validator.service") || {
+		log::error "❌ ${FUNCNAME[0]}: journalctl command failed"
+		return 1
+	}
 
-    local missing=0
-    
-    # # check for the “Started …” line
-    # if ! grep -q "Started svmkit-.*validator.service" <<<"$Output"; then
-    #     log::error "❌ ${FUNCNAME[0]}: Missing ‘Started svmkit-.*.service’ entry"
-    #     missing=1
-    # fi
+	local missing=0
 
-    # check for any lines containing INFO
-    if ! grep -Eq 'INFO ' <<<"$output"; then
-        log::error "❌ ${FUNCNAME[0]}: No 'INFO' line found for svmkit-*-validator.service"
-        missing=1
-    fi
-    
-    if [[ $missing -eq 0 ]]; then
-        log::info "✅ Journalctl contains an 'INFO' line for svmkit-*-validator.service"
-        return 0
-    else
-        return 1
-    fi
+	# # check for the “Started …” line
+	# if ! grep -q "Started svmkit-.*validator.service" <<<"$Output"; then
+	#     log::error "❌ ${FUNCNAME[0]}: Missing ‘Started svmkit-.*.service’ entry"
+	#     missing=1
+	# fi
+
+	# check for any lines containing INFO
+	if ! grep -Eq 'INFO ' <<<"$output"; then
+		log::error "❌ ${FUNCNAME[0]}: No 'INFO' line found for svmkit-*-validator.service"
+		missing=1
+	fi
+
+	if [[ $missing -eq 0 ]]; then
+		log::info "✅ Journalctl contains an 'INFO' line for svmkit-*-validator.service"
+		return 0
+	else
+		return 1
+	fi
 }
 
 section::begin() {
-  local header="$*"
-  if [[ -n "${BUILDKITE:-}" ]]; then
-    # Start collapsed section in Buildkite
-    echo "--- $header"
-  else
-    # Fallback for local runs
-    log::info "$header"
-  fi
+	local header="$*"
+	if [[ -n "${BUILDKITE:-}" ]]; then
+		# Start collapsed section in Buildkite
+		echo "--- $header"
+	else
+		# Fallback for local runs
+		log::info "$header"
+	fi
 }
 
 section::end() {
-  local header="$*"
-  if [[ -n "${BUILDKITE:-}" ]]; then
-    # Start collapsed section in Buildkite
-    echo "^^^ +++"
-  fi
+	local header="$*"
+	if [[ -n "${BUILDKITE:-}" ]]; then
+		# Start collapsed section in Buildkite
+		echo "^^^ +++"
+	fi
 }
 
 example::test() {
-    (
-	local -n config=$1  # name reference (bash 4.3+)
-	local example="${config[example]}"
-	local stack_name="test-$example"
+	(
+		local -n config=$1 # name reference (bash 4.3+)
+		local example="${config[example]}"
+		local stack_name="test-$example"
 
-	# # redirect output to file but display any INFO lines to console.
-	# if "$DEBUG" == ""; then
-	#     exec > >(tee "$example.log" | awk '
-	#       {
-	#        # Strip ANSI escape codes for pattern matching
-	# 	line = $0
+		# # redirect output to file but display any INFO lines to console.
+		# if "$DEBUG" == ""; then
+		#     exec > >(tee "$example.log" | awk '
+		#       {
+		#        # Strip ANSI escape codes for pattern matching
+		# 	line = $0
 
-	# 	gsub(/\x1b\[[0-9;]*m/, "", line)
-	# 	 # Skip lines starting with + or -
-	# 	if (line ~ /^[[:space:]]*[+-]/) next
+		# 	gsub(/\x1b\[[0-9;]*m/, "", line)
+		# 	 # Skip lines starting with + or -
+		# 	if (line ~ /^[[:space:]]*[+-]/) next
 
-	# 	 # Print original (colorized) line if it matches INFO or WARN
-	# 	if (line ~ /INFO|WARN|ERROR/) print
-	#       }
-	#     ') 2>&1
- 	#     log::info "Logging $example output to '$example.log'"
-	# fi
-	log::info "Starting test for $example"
-	
-	cd "$SVMKIT_EXAMPLES_DIR/$example"
-        section::begin "Creating stack '$stack_name'"
-	pulumi::run stack init $stack_name  || {
-	    log::warn "Stack '$stack_name' already exists"
-	    pulumi::run stack select $stack_name
-	}
-	
-	if [[ -v config[setup] ]]; then
-	   setup="${config[setup]}"
-	   "$setup"
-	fi
-	pulumi::run config set node:count "$NODE_COUNT"
-	pulumi::run preview
-	section::end
+		# 	 # Print original (colorized) line if it matches INFO or WARN
+		# 	if (line ~ /INFO|WARN|ERROR/) print
+		#       }
+		#     ') 2>&1
+		#     log::info "Logging $example output to '$example.log'"
+		# fi
+		log::info "Starting test for $example"
 
-	# Bring the stack up
-	section::begin "Bringing up stack '$stack_name'"
-	pulumi::run up  --yes
-	section::end
-	# 
-	section::begin "Running tests"
-	tmp=$(mktemp)
-	testing::run  2>&1 | tee "$tmp"
-	if grep -q 'ERROR: ' "$tmp"; then
-	    log::error "❌ Some tests failed"
-	    exit 1
-	else
-	    log::info  "✅ All tests passed"
-	fi
-	rm "$tmp"	
-	section::end
-	# Bring the stack down
-	section::begin "Bring down stack '$stack_name'"
-	pulumi::run down --yes 
-	section::end
+		cd "$SVMKIT_EXAMPLES_DIR/$example"
+		section::begin "Creating stack '$stack_name'"
+		pulumi::run stack init $stack_name || {
+			log::warn "Stack '$stack_name' already exists"
+			pulumi::run stack select $stack_name
+		}
 
-	log::info "Removing stack '$stack_name'"	
-	pulumi::run stack rm --yes $stack_name
+		if [[ -v config[setup] ]]; then
+			setup="${config[setup]}"
+			"$setup"
+		fi
+		pulumi::run config set node:count "$NODE_COUNT"
+		pulumi::run preview
+		section::end
 
-	# Run any cleanup if defined. 
-	if [[ -v config[cleanup] ]]; then
-	    log::info "cleaning up"
-	    ${config[cleanup]}
-	fi
-	log::info "PASS ${FUNCNAME[1]}"
-	return 0
-    )
+		# Bring the stack up
+		section::begin "Bringing up stack '$stack_name'"
+		pulumi::run up --yes
+		section::end
+		#
+		section::begin "Running tests"
+		tmp=$(mktemp)
+		testing::run 2>&1 | tee "$tmp"
+		if grep -q 'ERROR: ' "$tmp"; then
+			log::error "❌ Some tests failed"
+			exit 1
+		else
+			log::info "✅ All tests passed"
+		fi
+		rm "$tmp"
+		section::end
+		# Bring the stack down
+		section::begin "Bring down stack '$stack_name'"
+		pulumi::run down --yes
+		section::end
+
+		log::info "Removing stack '$stack_name'"
+		pulumi::run stack rm --yes $stack_name
+
+		# Run any cleanup if defined.
+		if [[ -v config[cleanup] ]]; then
+			log::info "cleaning up"
+			${config[cleanup]}
+		fi
+		log::info "PASS ${FUNCNAME[1]}"
+		return 0
+	)
 }
 
 gcloud::check_auth() {
-    local account
-    account=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
+	local account
+	account=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
 
-    if [[ -z "$account" ]]; then
-        echo "❌ Not authenticated to Google Cloud."
-        return 1
-    else
-        echo "✅ Authenticated as: $account"
-        return 0
-    fi
+	if [[ -z "$account" ]]; then
+		echo "❌ Not authenticated to Google Cloud."
+		return 1
+	else
+		echo "✅ Authenticated as: $account"
+		return 0
+	fi
 }
 
 print_stack() {
-    echo "Stack trace:"
-    local i
-    for ((i=${#FUNCNAME[@]}-1; i>=1; i--)); do
-        echo "  at ${FUNCNAME[$i]} (${BASH_SOURCE[$i]}:${BASH_LINENO[$((i - 1))]})"
-    done
+	echo "Stack trace:"
+	local i
+	for ((i = ${#FUNCNAME[@]} - 1; i >= 1; i--)); do
+		echo "  at ${FUNCNAME[$i]} (${BASH_SOURCE[$i]}:${BASH_LINENO[$((i - 1))]})"
+	done
 }
 
 testing::register example::test::ufw_status_allows_expected_ports
-testing::register example::test::journal_logging	
+testing::register example::test::journal_logging
 
 declare -A example_config_ts=(
-    ["setup"]=example::setup::ts
-    ["node_count"]="$NODE_COUNT"
-    ["cleanup"]=example::cleanup::ts
+	["setup"]=example::setup::ts
+	["node_count"]="$NODE_COUNT"
+	["cleanup"]=example::cleanup::ts
 )
 
 declare -A example_config_py=(
-    ["setup"]=example::setup::py
-    ["node_count"]="$NODE_COUNT"
-    ["cleanup"]=example::cleanup::py
+	["setup"]=example::setup::py
+	["node_count"]="$NODE_COUNT"
+	["cleanup"]=example::cleanup::py
 )
 
-
 step::100::test-aws-network-spe-py() {
-    (
-	example_config_py[example]="aws-network-spe-py"
-	example::test example_config_py
-    )
+	(
+		example_config_py[example]="aws-network-spe-py"
+		example::test example_config_py
+	)
 }
 
 step::200::test-gcp-network-spe-ts() {
 
-    (
-	gcloud::check_auth
-	example_config_ts[example]="gcp-network-spe-ts"
-	example::test example_config_ts
-    )
+	(
+		gcloud::check_auth
+		example_config_ts[example]="gcp-network-spe-ts"
+		example::test example_config_ts
+	)
 }
 
 step::120::test-aws-validator-agave-ts() {
-    (
-	example_config_ts[example]="aws-validator-agave-ts"
-	example::test example_config_ts
-    )
+	(
+		example_config_ts[example]="aws-validator-agave-ts"
+		example::test example_config_ts
+	)
 }
 
 step::130::test-aws-validator-fd-ts() {
-    (
-	example_config_ts[example]="aws-validator-fd-ts"
-	example::test example_config_ts
-	
-    )
+	(
+		example_config_ts[example]="aws-validator-fd-ts"
+		example::test example_config_ts
+
+	)
 }
 
 step::140::test-aws-validator-xen-ts() {
-    (
-	example_config_ts[example]="aws-validator-xen-ts"
-	example::test example_config_ts
-    )
+	(
+		example_config_ts[example]="aws-validator-xen-ts"
+		example::test example_config_ts
+	)
 }
 
 step::210::test-gcp-validator-agave-ts() {
-    (
-	gcloud::check_auth
-	
-        local func_name="${FUNCNAME[0]}"
-	local example_name="${func_name##*test-}"		
-	
-	example_config_ts[example]="gcp-validator-agave-ts"
-	example::test example_config_ts
-    )
+	(
+		gcloud::check_auth
+
+		local func_name="${FUNCNAME[0]}"
+		local example_name="${func_name##*test-}"
+
+		example_config_ts[example]="gcp-validator-agave-ts"
+		example::test example_config_ts
+	)
 }
-
-
 
 # 0) Parse global flags
 SETUP_ONLY=false
 # build a new positional list without our flag
 _new_args=()
 for arg in "$@"; do
-  case "$arg" in
-    --setup-only)
-      SETUP_ONLY=true
-      ;;
-    *)
-      _new_args+=( "$arg" )
-      ;;
-  esac
+	case "$arg" in
+	--setup-only)
+		SETUP_ONLY=true
+		;;
+	*)
+		_new_args+=("$arg")
+		;;
+	esac
 done
 # replace $@ with filtered args
 set -- "${_new_args[@]}"
@@ -405,52 +401,52 @@ set -- "${_new_args[@]}"
 declare -A _step_map=()
 _valid_steps=()
 while read -r fn; do
-  # fn looks like "step::100::foo-bar"
-  name="${fn#step::*::}"           # strip "step::<digits>::"
-  _step_map["$name"]="$fn"         # map "foo-bar" → "step::100::foo-bar"
-  _valid_steps+=( "$name" )
-  log::info "Step: $name";
-  
+	# fn looks like "step::100::foo-bar"
+	name="${fn#step::*::}"   # strip "step::<digits>::"
+	_step_map["$name"]="$fn" # map "foo-bar" → "step::100::foo-bar"
+	_valid_steps+=("$name")
+	log::info "Step: $name"
+
 done < <(
-  declare -F        |  # list all functions
-  awk '{print $3}'  |
-  grep -E '^step::[0-9]+::'
+	declare -F | # list all functions
+		awk '{print $3}' |
+		grep -E '^step::[0-9]+::'
 )
 
 # 2) Decide what to run
 if $SETUP_ONLY; then
-  # run only steps with number < 100, in numeric order
-  log::info "▶ Running setup‐only (all step numbers <100)"
-  while IFS= read -r fn; do
-    num=${fn#step::}
-    num=${num%%::*}
-    if (( num < 100 )); then
-      name=${fn#step::*::}
-      log::info "  • $name"
-      $fn
-    fi
-  done < <(
-    declare -F | awk '{print $3}' \
-              | grep -E '^step::[0-9]+::' \
-              | sort -t: -k2,2n
-  )
-  exit 0
-elif (( $# > 0 )); then
-  for step_name in "$@"; do
-    fn="${_step_map[$step_name]:-}"
-    if [[ -n "$fn" ]]; then
-      log::info "▶ Running step '$step_name'"
-      $fn
-    else
-      log::error "❌ No step named '$step_name'"
-      log::info  "Valid steps are:"
-      for s in "${_valid_steps[@]}"; do
-        log::info "  • $s"
-      done
-      exit 1
-    fi
-  done
+	# run only steps with number < 100, in numeric order
+	log::info "▶ Running setup‐only (all step numbers <100)"
+	while IFS= read -r fn; do
+		num=${fn#step::}
+		num=${num%%::*}
+		if ((num < 100)); then
+			name=${fn#step::*::}
+			log::info "  • $name"
+			$fn
+		fi
+	done < <(
+		declare -F | awk '{print $3}' |
+			grep -E '^step::[0-9]+::' |
+			sort -t: -k2,2n
+	)
+	exit 0
+elif (($# > 0)); then
+	for step_name in "$@"; do
+		fn="${_step_map[$step_name]:-}"
+		if [[ -n "$fn" ]]; then
+			log::info "▶ Running step '$step_name'"
+			$fn
+		else
+			log::error "❌ No step named '$step_name'"
+			log::info "Valid steps are:"
+			for s in "${_valid_steps[@]}"; do
+				log::info "  • $s"
+			done
+			exit 1
+		fi
+	done
 else
-  # no args: run all steps in order
-  steps::run step
+	# no args: run all steps in order
+	steps::run step
 fi
