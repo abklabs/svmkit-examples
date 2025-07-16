@@ -9,15 +9,21 @@ use case.  You may have performance problems with the default
 
 ## Pulumi Configuration Options
 
-| Name                | Description                                               | Required | Default Value |
-| :------------------ | :-------------------------------------------------------- | :------- | :------------ |
-| solana:network      | The known Solana cluster to connect to.                   | no       | testnet       |
-| validator:version   | The version of the validator APT package to install.      | no       | 2.2.14-1      |
-| node:instanceType   | The AWS instance type to use for all of the nodes.        | no       | t3.2xlarge    |
-| node:instanceArch   | The AWS architecture type to use for AMI lookup.          | no       | x86_64        |
-| node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes. | no       | 32            |
-| node:instanceAmi    | The AMI to use for all of the nodes.                      | no       | _(debian-12)_ |
-| node:user           | The user to log into all of the nodes as.                 | no       | admin         |
+| Name                | Description                                                      | Required | Default Value |
+| :------------------ | :--------------------------------------------------------------- | :------- | :------------ |
+| solana:network      | The known Solana cluster to connect to.                          | no       | testnet       |
+| validator:version   | The version of the validator APT package to install.             | no       | 2.2.14-1      |
+| node:instanceType   | The AWS instance type to use for all of the nodes.               | no       | t3.2xlarge    |
+| node:instanceArch   | The AWS architecture type to use for AMI lookup.                 | no       | x86\_64       |
+| node:volumeIOPS     | The number of IOPS to provide to the ledger and accounts volumes.| no       | 5000          |
+| node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes.        | no       | 32            |
+| node:instanceAmi    | The AMI to use for all of the nodes.                             | no       | _(debian-12)_ |
+| node:user           | The user to log into all of the nodes as.                        | no       | admin         |
+
+### Performance testing
+
+ The default configuration for IOPS is targeted at functional testing.
+ For perfomance testing, set node:volumeIOPS to 16000.
 
 ## Running the Example
 

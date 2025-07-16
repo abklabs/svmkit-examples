@@ -6,6 +6,7 @@ const nodeConfig = new pulumi.Config("node");
 const instanceType = nodeConfig.get("instanceType") ?? "r7a.8xlarge";
 const instanceArch = nodeConfig.get("instanceArch") ?? "x86_64";
 const instanceAmi = nodeConfig.get("instanceAmi");
+const iops = nodeConfig.getNumber("volumeIOPS") ?? 5000;
 export const instanceUser = nodeConfig.get("user") ?? "admin";
 
 const rootVolumeSize = nodeConfig.getNumber("rootVolumeSize") ?? 32;
@@ -91,13 +92,13 @@ export const instance = new aws.ec2.Instance("instance", {
       deviceName: "/dev/sdf",
       volumeSize: 500,
       volumeType: "io2",
-      iops: 16000,
+      iops: iops,
     },
     {
       deviceName: "/dev/sdg",
       volumeSize: 1024,
       volumeType: "io2",
-      iops: 16000,
+      iops: iops,
     },
   ],
   userData: `#!/bin/bash

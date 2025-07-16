@@ -5,13 +5,19 @@ This example brings up a single Frakendancer validator on AWS.
 ## Pulumi Configuration Options
 
 | Name                | Description                                                       | Default Value |
-| :------------------ | :---------------------------------------------------------------- | :------------ |
+|:--------------------|:------------------------------------------------------------------|:--------------|
 | solana:network      | The known Solana cluster to connect to.                           | testnet       |
 | node:instanceType   | The AWS instance type to use for all of the nodes.                | r7a.8xlarge   |
-| node:instanceArch   | The AWS architecture type to use for AMI lookup.                  | x86_64        |
+| node:instanceArch   | The AWS architecture type to use for AMI lookup.                  | x86\_64       |
+| node:volumeIOPS     | The number of IOPS to provide to the ledger and accounts volumes. | 5000          |
 | node:rootVolumeSize | The size of the AWS instance's root volume, in gigabytes.         | 32            |
 | node:instanceAmi    | The AMI to use for all of the nodes.                              | _(debian-12)_ |
 | node:user           | The user to log into all of the nodes as.                         | admin         |
+
+### Performance testing
+
+ The default configuration for IOPS is targeted at functional testing.
+ For perfomance testing, set node:volumeIOPS to 16000.
 
 ## Running the Example
 
