@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as svmkit from "@svmkit/pulumi-svmkit";
-import { Node, agaveVersion, user } from "./spe";
+import { Node, agaveVersion } from "./spe";
 
 const nodeConfig = new pulumi.Config("node");
 const totalNodes = nodeConfig.getNumber("count") ?? 3;
@@ -44,7 +44,7 @@ const firewallParams = genericFirewallParamsOutput.apply((f) => ({
 }));
 
 // Create the Firewall resource on the EC2 instance
-const firewall = new svmkit.firewall.Firewall(
+const _firewall = new svmkit.firewall.Firewall(
   "firewall",
   {
     connection: bootstrapNode.connection,
@@ -75,7 +75,7 @@ const tunerParams = genericTunerParamsOutput.apply((p) => ({
 }));
 
 // Create the Tuner resource on the EC2 instance
-const tuner = new svmkit.tuner.Tuner(
+const _tuner = new svmkit.tuner.Tuner(
   "tuner",
   {
     connection: bootstrapNode.connection,
@@ -199,7 +199,7 @@ nonBootstrapNodes.forEach((node) => {
     node.privateIP.apply((v) => `${v}:${gossipPort}`),
   );
 
-  const tuner = new svmkit.tuner.Tuner(
+  const _tuner = new svmkit.tuner.Tuner(
     node.name + "-tuner",
     {
       connection: node.connection,
