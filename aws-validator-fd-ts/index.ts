@@ -61,7 +61,7 @@ const firewallParams = genericFirewallParamsOutput.apply((f) => ({
 }));
 
 // Create the Firewall resource on the EC2 instance
-const firewall = new svmkit.firewall.Firewall(
+const _firewall = new svmkit.firewall.Firewall(
   "firewall",
   {
     connection,
@@ -92,7 +92,7 @@ const tunerParams = genericTunerParamsOutput.apply((p) => ({
 }));
 
 // Create the Tuner resource on the EC2 instance
-const tuner = new svmkit.tuner.Tuner(
+const _tuner = new svmkit.tuner.Tuner(
   "tuner",
   {
     connection,
